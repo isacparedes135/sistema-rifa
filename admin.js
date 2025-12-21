@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function fetchRevenueData(isInitial = true) {
-        if (!window.sbClient || isLoadingMore) return;
+        if (!window.sbClient) return;
 
         if (isInitial) {
             currentPage = 0;
@@ -128,50 +128,44 @@ document.addEventListener('DOMContentLoaded', () => {
             updateStatsUI(paidCount || 0, reservedCount || 0);
         }
 
-        isLoadingMore = true;
-        const from = currentPage * PAGE_SIZE;
-        const to = from + PAGE_SIZE - 1;
-
         // Server-side filtering
         const term = ticketSearch.value.trim().toLowerCase();
         const status = filterStatus.value;
 
+        // Fetch ALL tickets to properly group by client
+        // We need all data to show all unique users correctly
         let query = window.sbClient
             .from('tickets')
             .select('*')
-            .order('created_at', { ascending: false })
-            .range(from, to);
+            .order('created_at', { ascending: false });
 
         if (status !== 'all') {
             query = query.eq('status', status);
         }
 
-        // Note: Supabase text search is complex. For names/phones, we fetch and group.
-        // But for scaling, we'll fetch the range and group those.
-
         const { data, error } = await query;
 
         if (error) {
             console.error('Error fetching tickets:', error);
-            if (isInitial) tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red">Error al cargar datos.</td></tr>';
-            isLoadingMore = false;
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red">Error al cargar datos.</td></tr>';
             return;
         }
 
-        if (data.length < PAGE_SIZE) {
-            allDataRendered = true;
+        // Apply client-side search filter if term exists
+        let filteredData = data;
+        if (term) {
+            filteredData = data.filter(t =>
+                (t.client_name && t.client_name.toLowerCase().includes(term)) ||
+                (t.client_phone && t.client_phone.toLowerCase().includes(term)) ||
+                (t.ticket_number && t.ticket_number.toString().includes(term))
+            );
         }
 
-        if (isInitial) {
-            currentFilteredData = data;
-            tableBody.innerHTML = '';
-        } else {
-            currentFilteredData = [...currentFilteredData, ...data];
-        }
+        currentFilteredData = filteredData;
+        allDataRendered = true;
+        tableBody.innerHTML = '';
 
         renderTable(currentFilteredData);
-        currentPage++;
-        isLoadingMore = false;
     }
 
     function updateStatsUI(paidCount, reservedCount) {
