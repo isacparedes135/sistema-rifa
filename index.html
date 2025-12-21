@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIFAS ME | Sorteos de Lujo</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Outfit:wght@400;600;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="containerHeader">
+            <div class="logo">RIFAS<span>ME</span></div>
+
+            <!-- Hamburger Button -->
+            <button id="mobile-menu-btn" class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Navigation Actions (Desktop & Mobile Menu Content) -->
+            <nav id="nav-menu" class="nav-menu">
+                <div class="mobile-menu-header">
+                    <div class="logo">RIFAS<span>ME</span></div>
+                    <button id="close-menu-btn" class="close-menu-btn">&times;</button>
+                </div>
+                <div class="nav-actions">
+                    <button id="btn-payment-methods" class="btn-secondary">Formas de Pago</button>
+                    <button id="btn-mis-boletos" class="btn-secondary">Mis Boletos</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <span class="badge">Sorteo Activo</span>
+                    <h1>Sorteo Gran Camioneta 2024</h1>
+                    <p class="prize-description">¡Participa y gana la camioneta de tus sueños! Cada boleto cuenta.</p>
+
+                    <!-- Countdown Timer -->
+                    <div class="countdown-container">
+                        <div class="time-block">
+                            <span class="time-value" id="days">15</span>
+                            <span class="time-label">DÍAS</span>
+                        </div>
+                        <div class="time-separator">:</div>
+                        <div class="time-block">
+                            <span class="time-value" id="hours">00</span>
+                            <span class="time-label">HRS</span>
+                        </div>
+                        <div class="time-separator">:</div>
+                        <div class="time-block">
+                            <span class="time-value" id="minutes">00</span>
+                            <span class="time-label">MIN</span>
+                        </div>
+                        <div class="time-separator">:</div>
+                        <div class="time-block">
+                            <span class="time-value" id="seconds">00</span>
+                            <span class="time-label">SEG</span>
+                        </div>
+                    </div>
+
+                    <!-- Visual Progress Bar (No Numbers) -->
+                    <div class="progress-container-premium">
+                        <div class="progress-bar-track">
+                            <div class="progress-fill-animated" style="width: 0%;"></div>
+                        </div>
+                        <p class="progress-shimmer-text">¡Últimos boletos disponibles!</p>
+                    </div>
+
+                    <div class="promotions">
+                        <div class="promo-card">
+                            <p>3 Boletos por</p>
+                            <span class="price">$500</span>
+                        </div>
+                        <div class="promo-card featured">
+                            <p>10 Boletos por</p>
+                            <span class="price">$1,200</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="prize.png" alt="Premio Mayor" class="floating-prize">
+                </div>
+            </div>
+        </section>
+
+        <!-- Selector Section -->
+        <section class="selection-section">
+            <div class="container text-center">
+                <h2>¿Cómo quieres elegir tus boletos?</h2>
+                <div class="selection-options">
+                    <button id="btn-manual" class="btn-option">Selección Manual</button>
+                    <button id="btn-lucky" class="btn-option featured">¡Cofre de la Suerte!</button>
+                </div>
+
+                <!-- Chest Modal (New Overlay) -->
+                <div id="chest-modal" class="modal hidden">
+                    <div class="modal-content"
+                        style="background: transparent; box-shadow: none; max-width: 100%; height: auto; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: visible;">
+                        <span class="close-modal">&times;</span>
+                        <h3 style="color: #ffd700; text-shadow: 0 0 10px #000; margin-bottom: 2rem;">¡Haz clic en el
+                            cofre para abrirlo!</h3>
+                        <div id="chest-container" class="chest-container" style="cursor: pointer;">
+                            <div class="scene">
+                                <div class="chest-3d">
+                                    <div class="chest-base">
+                                        <div class="chest-face front"></div>
+                                        <div class="chest-face back"></div>
+                                        <div class="chest-face right"></div>
+                                        <div class="chest-face left"></div>
+                                        <div class="chest-face bottom"></div>
+                                    </div>
+                                    <div class="lid">
+                                        <div class="lid-strip s1"></div>
+                                        <div class="lid-strip s2"></div>
+                                        <div class="lid-strip s3"></div>
+                                        <div class="lid-strip s4"></div>
+                                        <div class="lid-strip s5"></div>
+                                        <div class="lid-strip s6"></div>
+                                        <div class="lid-strip s7"></div>
+                                        <div class="lid-strip s8"></div>
+                                        <div class="lid-strip s9"></div>
+                                        <div class="lid-strip s10"></div>
+                                        <div class="lid-strip s11"></div>
+                                        <div class="lid-strip s12"></div>
+                                        <div class="lid-strip s13"></div>
+                                        <div class="lid-strip s14"></div>
+                                        <div class="lid-strip s15"></div>
+                                        <div class="lid-strip s16"></div>
+                                        <div class="lid-strip s17"></div>
+                                        <div class="lid-strip s18"></div>
+                                        <div class="lid-strip s19"></div>
+                                        <div class="lid-strip s20"></div>
+                                        <div class="chest-face lid-left"></div>
+                                        <div class="chest-face lid-right"></div>
+                                        <div class="chest-face lid-front">
+                                            <div class="chest-latch"></div>
+                                        </div>
+                                        <div class="chest-face lid-back"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="particles"></div>
+                            <p class="chest-instruction">Haz click para abrir el cofre</p>
+                        </div>
+                    </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container text-center">
+            <p>&copy; 2025 RifasME. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+
+    <!-- 0. User Data Modal (First Step) -->
+    <div id="user-data-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Tus Datos</h3>
+            <p style="font-size: 0.9em; color: #ccc; margin-bottom: 20px;">Ingresa tus datos para contactarte si ganas.
+            </p>
+
+            <div class="input-group">
+                <input type="tel" id="user-phone" placeholder="Teléfono (10 dígitos)" maxlength="10">
+                <input type="text" id="user-name" placeholder="Nombre(s)" disabled>
+                <input type="text" id="user-lastname" placeholder="Apellidos" disabled>
+
+                <select id="user-state" disabled
+                    style="background: rgba(255,255,255,0.1); border: 1px solid #444; padding: 12px; border-radius: 8px; color: white; outline: none;">
+                    <option value="" disabled selected>Selecciona tu Estado</option>
+                    <option value="Aguascalientes">Aguascalientes</option>
+                    <option value="Baja California">Baja California</option>
+                    <option value="Baja California Sur">Baja California Sur</option>
+                    <option value="Campeche">Campeche</option>
+                    <option value="Chiapas">Chiapas</option>
+                    <option value="Chihuahua">Chihuahua</option>
+                    <option value="Ciudad de México">Ciudad de México</option>
+                    <option value="Coahuila">Coahuila</option>
+                    <option value="Colima">Colima</option>
+                    <option value="Durango">Durango</option>
+                    <option value="Estado de México">Estado de México</option>
+                    <option value="Guanajuato">Guanajuato</option>
+                    <option value="Guerrero">Guerrero</option>
+                    <option value="Hidalgo">Hidalgo</option>
+                    <option value="Jalisco">Jalisco</option>
+                    <option value="Michoacán">Michoacán</option>
+                    <option value="Morelos">Morelos</option>
+                    <option value="Nayarit">Nayarit</option>
+                    <option value="Nuevo León">Nuevo León</option>
+                    <option value="Oaxaca">Oaxaca</option>
+                    <option value="Puebla">Puebla</option>
+                    <option value="Querétaro">Querétaro</option>
+                    <option value="Quintana Roo">Quintana Roo</option>
+                    <option value="San Luis Potosí">San Luis Potosí</option>
+                    <option value="Sinaloa">Sinaloa</option>
+                    <option value="Sonora">Sonora</option>
+                    <option value="Tabasco">Tabasco</option>
+                    <option value="Tamaulipas">Tamaulipas</option>
+                    <option value="Tlaxcala">Tlaxcala</option>
+                    <option value="Veracruz">Veracruz</option>
+                    <option value="Yucatán">Yucatán</option>
+                    <option value="Zacatecas">Zacatecas</option>
+                    <option value="Estados Unidos">Estados Unidos</option>
+                    <option value="Otro">Otro</option>
+                </select>
+
+                <button id="btn-confirm-user-data" class="btn-primary">Continuar</button>
+            </div>
+
+            <!-- Policy Info -->
+            <div
+                style="margin-top: 20px; text-align: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                <p style="font-size: 0.85rem; color: #aaa; margin-bottom: 8px;">
+                    <i class="fab fa-whatsapp" style="color: #25d366; margin-right: 5px;"></i>
+                    Al apartar serás redirigido a WhatsApp para enviar la información de tu boleto.
+                </p>
+                <p style="font-size: 0.85rem; color: #ffd700; font-weight: bold;">
+                    <i class="fas fa-clock" style="margin-right: 5px;"></i>
+                    Tu boleto solo dura 5 horas apartado.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. Quantity Modal (Generic) -->
+    <div id="quantity-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3 id="quantity-title">¿Cuántos boletos quieres?</h3>
+            <div class="input-group">
+                <input type="number" id="ticket-quantity-input" min="1" max="500" value="1" placeholder="Ej. 5">
+                <button id="btn-confirm-quantity" class="btn-primary">Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Manual Selection Modal -->
+    <div id="manual-modal" class="modal hidden">
+        <div class="modal-content large">
+            <span class="close-modal">&times;</span>
+            <h3>Elige tus números</h3>
+            <div class="manual-tracker">
+                <p>Seleccionados: <span id="manual-current-count">0</span> / <span id="manual-total-count">0</span></p>
+                <div class="progress-bar-small">
+                    <div id="manual-progress-fill" class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="manual-search-input" placeholder="Busca tu número (ej. 55555)" maxlength="5">
+                <button id="btn-search-add" class="btn-secondary">Agregar</button>
+            </div>
+
+            <!-- Tickets Mosaic Grid -->
+            <div id="tickets-mosaic-container" class="tickets-mosaic-container">
+                <div id="tickets-mosaic" class="tickets-mosaic">
+                    <!-- Tiles generated via JS -->
+                </div>
+            </div>
+
+            <p id="search-message" class="status-message"></p>
+
+            <div class="selected-list" id="manual-selected-list">
+                <!-- Selected numbers pills will appear here -->
+            </div>
+
+            <button id="btn-finish-manual" class="btn-primary" disabled>Confirmar Selección</button>
+        </div>
+    </div>
+
+    <!-- Floating Cart / Summary -->
+    <div id="floating-cart" class="floating-cart hidden">
+        <div class="cart-icon">🎟️</div>
+        <div class="cart-info">
+            <span id="cart-count">0</span> Boletos
+        </div>
+        <button id="btn-view-cart" class="btn-small">Ver</button>
+    </div>
+
+    <!-- Ticket Lookup Modal -->
+    <div id="my-tickets-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Consulta tus Boletos</h3>
+            <p style="font-size: 0.9em; color: #ccc; margin-bottom: 20px;">Ingresa el teléfono que usaste para apartar.
+            </p>
+            <div class="search-box">
+                <input type="tel" id="lookup-phone" placeholder="Teléfono a 10 dígitos" maxlength="10">
+                <button id="btn-search-tickets" class="btn-primary">Buscar</button>
+            </div>
+            <div id="lookup-results" class="lookup-results-container">
+                <!-- Se llenará dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Methods Modal -->
+    <div id="payment-methods-modal" class="modal hidden">
+        <div class="modal-content large">
+            <span class="close-modal">&times;</span>
+            <h3>Formas de Pago</h3>
+            <p style="color: #ccc; margin-bottom: 25px;">Realiza tu pago y envía el comprobante al WhatsApp del
+                organizador para validar tus boletos.</p>
+
+            <div class="payment-cards-container">
+                <!-- Transferencia -->
+                <div class="payment-card">
+                    <div class="card-icon"><i class="fas fa-university"></i></div>
+                    <h4>Transferencia Bancaria</h4>
+                    <p><strong>Banco:</strong> Citibanamex</p>
+                    <p><strong>Titular:</strong> Marisela Enriquez</p>
+                    <p><strong>CLABE:</strong> <span class="copyable">000 000 0000 0000 0000</span></p>
+                </div>
+
+                <!-- OXXO / Depósito -->
+                <div class="payment-card">
+                    <div class="card-icon"><i class="fas fa-store"></i></div>
+                    <h4>Pago en OXXO / Ventanilla</h4>
+                    <p><strong>Titular:</strong> Marisela Enriquez</p>
+                    <p><strong>Número de Tarjeta:</strong> <span class="copyable">0000 0000 0000 0000</span></p>
+                </div>
+            </div>
+
+            <div
+                style="margin-top: 30px; padding: 20px; background: rgba(255, 215, 0, 0.1); border: 1px dashed #ffd700; border-radius: 10px;">
+                <p style="font-size: 0.9rem; margin-bottom: 0;">⚠️ <strong>Recuerda:</strong> Tienes 5 horas para enviar
+                    tu comprobante antes de que los boletos se liberen automáticamente.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+
+</html>

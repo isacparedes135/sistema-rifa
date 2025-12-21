@@ -1,0 +1,1328 @@
+:root {
+    --primary: #ffffff;
+    --background: #020617;
+    --surface: #0f172a;
+    --surface-light: #1e293b;
+    --text: #f8fafc;
+    --text-muted: #64748b;
+    --accent: #38bdf8;
+    /* Cian sutil para algunos detalles */
+    --transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+.logo {
+    font-family: 'Outfit', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Countdown Timer Styles */
+.countdown-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 30px 0;
+}
+
+.time-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    padding: 10px 15px;
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    min-width: 70px;
+}
+
+.time-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    line-height: 1;
+}
+
+.time-label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 1px;
+    margin-top: 5px;
+}
+
+.time-separator {
+    font-size: 2rem;
+    color: #ffd700;
+    font-weight: bold;
+    margin-top: -10px;
+}
+
+/* Premium Visual Progress Bar */
+.progress-container-premium {
+    width: 100%;
+    max-width: 500px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+.progress-bar-track {
+    width: 100%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    position: relative;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.progress-fill-animated {
+    height: 100%;
+    background: linear-gradient(90deg, #b8860b, #ffd700, #ffec8b, #ffd700, #b8860b);
+    background-size: 200% 100%;
+    border-radius: 20px;
+    position: relative;
+    animation: goldShimmer 3s infinite linear;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+}
+
+.progress-shimmer-text {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #ffd700;
+    font-style: italic;
+    opacity: 0.9;
+}
+
+@keyframes goldShimmer {
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: -100% 0;
+    }
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Header */
+header {
+    padding: 1rem 0;
+    background: rgba(2, 6, 23, 0.9);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+.containerHeader {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+}
+
+.nav-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.mobile-menu-btn,
+.mobile-menu-header {
+    display: none;
+}
+
+/* Scroll Lock */
+body.menu-open,
+body.lock-scroll {
+    overflow: hidden;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.logo span {
+    color: var(--accent);
+    margin-left: 2px;
+}
+
+/* Hero Section */
+.hero {
+    padding: 8rem 0;
+    background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.05), transparent 40%);
+}
+
+.hero .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+@media (max-width: 992px) {
+    .hero .container {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+}
+
+.badge {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: inline-block;
+    margin-bottom: 2rem;
+}
+
+h1 {
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 2rem;
+}
+
+.prize-description {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 500px;
+}
+
+.hero-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.floating-prize {
+    width: 110%;
+    /* Larger than container */
+    max-width: 700px;
+    /* High cap */
+    height: auto;
+    border-radius: 20px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+    animation: float 6s ease-in-out infinite;
+    z-index: 2;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+/* Selection Buttons */
+.selection-options {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 4rem 0;
+}
+
+.btn-option {
+    background: var(--surface);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1.5rem 2.5rem;
+    border-radius: 4px;
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-option:hover {
+    background: var(--surface-light);
+    border-color: var(--primary);
+    transform: translateY(-5px);
+}
+
+.btn-option.featured {
+    background: var(--primary);
+    color: var(--background);
+}
+
+/* 3D Chest Scene */
+/* 3D Chest Scene */
+.chest-container {
+    margin: 5rem 0;
+    display: none;
+    perspective: 1200px;
+    overflow: visible;
+    padding-top: 50px;
+    margin-bottom: 50px;
+}
+
+@keyframes floatingScene {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-30px);
+    }
+}
+
+.scene {
+    width: 300px;
+    height: 200px;
+    margin: 0 auto;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: floatingScene 4s ease-in-out infinite;
+}
+
+/* Stop floating when chest is open to keep it stable */
+.chest-open .scene {
+    animation-play-state: paused;
+}
+
+/* Base 3D Object */
+.chest-3d {
+    width: 200px;
+    height: 100px;
+    position: absolute;
+    /* Center in 300x200 scene */
+    left: 50px;
+    top: 50px;
+
+    transform-style: preserve-3d;
+    transform: rotateX(-20deg) rotateY(30deg);
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chest-3d:hover {
+    /* Subtle rotation on hover, perfectly 3D */
+    transform: rotateX(-20deg) rotateY(45deg);
+}
+
+.chest-open .chest-3d {
+    transform: rotateX(-10deg) rotateY(10deg) scale(1.1);
+}
+
+.chest-base {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transform-style: preserve-3d;
+}
+
+.chest-face {
+    position: absolute;
+    background:
+        repeating-linear-gradient(0deg,
+            rgba(0, 0, 0, 0.3) 0px,
+            rgba(0, 0, 0, 0.3) 2px,
+            transparent 2px,
+            transparent 25px),
+        linear-gradient(135deg, #5d4037 0%, #3e2723 100%);
+    border: 4px solid #ffd700;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+    /* Ensure visibility from all angles */
+    backface-visibility: visible;
+    transform-style: preserve-3d;
+}
+
+.chest-face::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px dashed rgba(0, 0, 0, 0.3);
+    margin: 4px;
+    pointer-events: none;
+}
+
+/* Faces Geometry - Parent is 200x100 */
+
+.front {
+    width: 200px;
+    height: 100px;
+    transform: rotateY(0deg) translateZ(50px);
+}
+
+.back {
+    width: 200px;
+    height: 100px;
+    transform: rotateY(180deg) translateZ(50px);
+}
+
+.left {
+    width: 100px;
+    height: 100px;
+    /* Center horizontally in parent (200w) to pivot correctly */
+    left: 50px;
+    transform: rotateY(-90deg) translateZ(100px);
+}
+
+.right {
+    width: 100px;
+    height: 100px;
+    /* Center horizontally */
+    left: 50px;
+    transform: rotateY(90deg) translateZ(100px);
+}
+
+.bottom {
+    width: 200px;
+    height: 100px;
+    /* Bottom needs to be at vertical center height but rotated? 
+       Actually standard cube box: Top/Bottom are Y faces.
+       Chest height 100.
+       Bottom is at Y=50.
+    */
+    transform: rotateX(-90deg) translateZ(50px);
+    background: #2d1b16;
+}
+
+
+/* LID */
+.lid {
+    position: absolute;
+    width: 200px;
+    height: 0;
+    /* Container is just for the hinge hinge pivot */
+    top: 0;
+    left: 0;
+    transform-style: preserve-3d;
+    /* Pivot hinge at Back Edge (Z=-50) */
+    transform-origin: center top -50px;
+    transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 5;
+}
+
+/* Base wood for lid sub-parts */
+.lid .chest-face {
+    background: linear-gradient(135deg, #6d4c41 0%, #4e342e 100%);
+    border: 2px solid #ffd700;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7);
+    backface-visibility: visible;
+}
+
+/* Lid Strips forming the arch */
+.lid-strip {
+    /* 200px wide */
+    width: 200px;
+    height: 10px;
+    /* Slight overlap for radius 50 (circumference/20 = ~7.85) */
+    position: absolute;
+    left: 0;
+    top: -5px;
+    /* Centered on the Y=0 axis to rotate around the hinge point more easily */
+    transform-origin: center center;
+
+    background: linear-gradient(to bottom, #5d4037, #4e342e);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    /* Essential for 3D strips */
+    transform-style: preserve-3d;
+}
+
+/* Arch Construction (180 degrees total) 
+   Radius 50px centered at Y=0, Z=0.
+*/
+
+.s1 {
+    transform: rotateX(175.5deg) translateZ(50px);
+}
+
+.s2 {
+    transform: rotateX(166.5deg) translateZ(50px);
+}
+
+.s3 {
+    transform: rotateX(157.5deg) translateZ(50px);
+}
+
+.s4 {
+    transform: rotateX(148.5deg) translateZ(50px);
+}
+
+.s5 {
+    transform: rotateX(139.5deg) translateZ(50px);
+}
+
+.s6 {
+    transform: rotateX(130.5deg) translateZ(50px);
+}
+
+.s7 {
+    transform: rotateX(121.5deg) translateZ(50px);
+}
+
+.s8 {
+    transform: rotateX(112.5deg) translateZ(50px);
+}
+
+.s9 {
+    transform: rotateX(103.5deg) translateZ(50px);
+}
+
+.s10 {
+    transform: rotateX(94.5deg) translateZ(50px);
+}
+
+.s11 {
+    transform: rotateX(85.5deg) translateZ(50px);
+}
+
+.s12 {
+    transform: rotateX(76.5deg) translateZ(50px);
+}
+
+.s13 {
+    transform: rotateX(67.5deg) translateZ(50px);
+}
+
+.s14 {
+    transform: rotateX(58.5deg) translateZ(50px);
+}
+
+.s15 {
+    transform: rotateX(49.5deg) translateZ(50px);
+}
+
+.s16 {
+    transform: rotateX(40.5deg) translateZ(50px);
+}
+
+.s17 {
+    transform: rotateX(31.5deg) translateZ(50px);
+}
+
+.s18 {
+    transform: rotateX(22.5deg) translateZ(50px);
+}
+
+.s19 {
+    transform: rotateX(13.5deg) translateZ(50px);
+}
+
+.s20 {
+    transform: rotateX(4.5deg) translateZ(50px);
+}
+
+
+/* Metal Straps */
+.lid-strip::after {
+    content: '';
+    position: absolute;
+    left: 20px;
+    width: 8px;
+    height: 100%;
+    background: linear-gradient(90deg, #b8860b, #ffd700, #b8860b);
+    z-index: 2;
+}
+
+.lid-strip::before {
+    content: '';
+    position: absolute;
+    right: 20px;
+    width: 8px;
+    height: 100%;
+    background: linear-gradient(90deg, #b8860b, #ffd700, #b8860b);
+    z-index: 2;
+}
+
+/* Semicircle Caps */
+.lid-left,
+.lid-right {
+    width: 100px;
+    height: 50px;
+    position: absolute;
+    top: -50px;
+    /* Fully sits above Y=0 */
+    left: 50%;
+    margin-left: -50px;
+
+    background: radial-gradient(circle at bottom center, #5d4037 0%, #3e2723 70%);
+    border: 4px solid #ffd700;
+    border-bottom: none;
+    border-radius: 50px 50px 0 0;
+    transform-style: preserve-3d;
+}
+
+.lid-left {
+    transform: rotateY(-90deg) translateZ(100px);
+}
+
+.lid-right {
+    transform: rotateY(90deg) translateZ(100px);
+}
+
+/* Front/Back rim (minimal for transition) */
+.lid-front {
+    height: 10px;
+    transform: translateZ(50px) translateY(-5px);
+}
+
+.lid-back {
+    height: 10px;
+    transform: rotateY(180deg) translateZ(50px) translateY(-5px);
+}
+
+/* Ensure Side Straps/Borders are visible */
+.lid-left::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    left: 10px;
+    /* Strap offset */
+    background: #ffd700;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    /* Make sure it follows the semi-circle */
+    border-radius: 50px 0 0 0;
+    /* Rough approx if needed or just straight line */
+}
+
+/* Remove strap from Right Side as requested */
+.lid-right::after {
+    display: none;
+}
+
+/* Main Latch (Clasp) */
+.chest-latch {
+    position: absolute;
+    top: 5px;
+    /* Alignment with lid rim */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(to bottom, #ffd700, #b8860b);
+    border: 2px solid #8b6508;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chest-latch::after {
+    /* Keyhole detail */
+    content: '';
+    width: 8px;
+    height: 14px;
+    background: #231510;
+    border-radius: 4px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.lid .lid-front,
+.lid .lid-back {
+    border-top: none !important;
+}
+
+.lid-front {
+    width: 200px;
+    height: 10px;
+    /* Minimal rim */
+    transform: translateZ(50px) translateY(-5px);
+}
+
+.lid-back {
+    width: 200px;
+    height: 10px;
+    transform: rotateY(180deg) translateZ(50px) translateY(-5px);
+}
+
+/* Legacy lid styles removed */
+
+/* Open State */
+.chest-open .lid {
+    /* Rotate POSITIVE to flip top-edge BACKWARDS (Open Up) */
+    transform: rotateX(110deg);
+}
+
+.chest-open .chest-3d {
+    transform: rotateX(-10deg) rotateY(10deg) scale(1.1);
+    /* Slight tilt to see inside */
+}
+
+/* Particles & Glow */
+.particles {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    pointer-events: none;
+}
+
+/* Golden Tickets */
+.gold-ticket {
+    position: absolute;
+    width: 20px;
+    height: 10px;
+    background: linear-gradient(135deg, #ffd700, #ffec8b, #d4af37);
+    border: 1px solid #b8860b;
+    border-radius: 1px;
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    z-index: 10;
+    pointer-events: none;
+    /* Inicio en el centro */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: ticketExplosion 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes ticketExplosion {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1) rotate(var(--rot));
+        opacity: 0;
+    }
+}
+
+
+.chest-face::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05));
+    pointer-events: none;
+}
+
+/* Modals Overlay */
+.modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    display: flex;
+    /* Flex to center content */
+}
+
+/* Modal Content Box */
+.modal-content {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+    border: 1px solid #ffd700;
+    margin: auto;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+    text-align: center;
+    color: white;
+}
+
+/* Custom Scrollbar for Modal Content */
+.modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #ffd700, #b8860b);
+    border-radius: 10px;
+}
+
+.modal-content.large {
+    max-width: 600px;
+}
+
+/* Close Button */
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-modal:hover {
+    color: #ffd700;
+}
+
+/* Inputs in Modal */
+.input-group {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.input-group input,
+.search-box input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #444;
+    padding: 12px;
+    border-radius: 8px;
+    color: white;
+    font-size: 1.2rem;
+    text-align: center;
+    outline: none;
+}
+
+.input-group input:focus,
+.search-box input:focus {
+    border-color: #ffd700;
+}
+
+/* Internal Modal Elements (Manual Selection) */
+.manual-tracker {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.progress-bar-small {
+    width: 100%;
+    height: 6px;
+    background: #444;
+    border-radius: 3px;
+    margin-top: 5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar-small .progress-fill {
+    height: 100%;
+    background: #ffd700;
+    transition: width 0.3s ease;
+}
+
+.search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.search-box input {
+    flex: 1;
+}
+
+/* --- Payment & Lookup Styles --- */
+.lookup-results-container {
+    margin-top: 20px;
+    max-height: 400px;
+    /* Increased height */
+    overflow-y: auto;
+    padding: 10px 5px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 columns for better density */
+    gap: 12px;
+}
+
+.lookup-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #444;
+    padding: 12px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    /* Stack vertically within the card */
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+    transition: background 0.3s;
+}
+
+.lookup-item:hover {
+    background: rgba(255, 215, 0, 0.05);
+}
+
+.ticket-status-badge {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.selected-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
+    min-height: 50px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+/* Custom Scrollbar for selected list */
+.selected-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.selected-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.selected-list::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #ffd700, #b8860b);
+    border-radius: 10px;
+}
+
+.ticket-pill {
+    background: rgba(255, 215, 0, 0.2);
+    border: 1px solid #ffd700;
+    color: #ffd700;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.ticket-pill .remove-ticket {
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.ticket-pill .remove-ticket:hover {
+    color: white;
+}
+
+/* Custom Scrollbar for results */
+.lookup-results-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.lookup-results-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.lookup-results-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #ffd700, #b8860b);
+    border-radius: 10px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.lookup-results-container::-webkit-scrollbar-thumb:hover {
+    background: #ffd700;
+}
+
+/* Tickets Mosaic (Manual Grid) */
+.tickets-mosaic-container {
+    width: 100%;
+    height: 350px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 215, 0, 0.1);
+    border-radius: 15px;
+    margin: 15px 0;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+/* Custom Scrollbar for Mosaic */
+.tickets-mosaic-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tickets-mosaic-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.tickets-mosaic-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #ffd700, #b8860b);
+    border-radius: 10px;
+}
+
+.tickets-mosaic {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.ticket-tile {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #444;
+    color: #fff;
+    padding: 10px 5px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.ticket-tile:hover {
+    border-color: #ffd700;
+    background: rgba(255, 215, 0, 0.1);
+}
+
+.ticket-tile.selected {
+    background: #ffd700;
+    border-color: #ffd700;
+    color: #000;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.ticket-tile.taken {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: #222;
+    color: #444;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Mobile mosaic adjustment */
+@media (max-width: 480px) {
+    .tickets-mosaic {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+
+    .ticket-tile {
+        font-size: 0.75rem;
+        padding: 8px 2px;
+    }
+}
+
+.status-message {
+    font-size: 0.9rem;
+    min-height: 20px;
+}
+
+.status-success {
+    color: #4caf50;
+}
+
+.status-error {
+    color: #f44336;
+}
+
+/* Global Buttons for Modals */
+.btn-primary {
+    background: linear-gradient(45deg, #ffd700, #b8860b);
+    border: none;
+    padding: 12px 25px;
+    color: #000;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+}
+
+.btn-primary:disabled {
+    background: #555;
+    color: #888;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid #ffd700;
+    color: #ffd700;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 215, 0, 0.1);
+}
+
+/* Floating Cart */
+.floating-cart {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(135deg, #ffd700, #b8860b);
+    padding: 15px 25px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    z-index: 900;
+    color: #000;
+    font-weight: bold;
+    transform: translateY(0);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.floating-cart.hidden {
+    transform: translateY(200%);
+    /* Slide down out of view */
+}
+
+.btn-small {
+    background: #000;
+    color: #ffd700;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+/* --- Mobile Optimization --- */
+@media (max-width: 768px) {
+
+    /* Hero Adjustments */
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero .prize-description {
+        font-size: 1.1rem;
+    }
+
+    /* Chest Scaling */
+    .selection-section {
+        overflow: hidden;
+    }
+
+    .chest-container {
+        transform: scale(0.65);
+        margin: 0 auto;
+        height: 250px;
+    }
+
+    /* Mobile Header Refinement */
+    header {
+        padding: 0.8rem 0;
+    }
+
+    .containerHeader {
+        justify-content: space-between;
+        /* Space for hamburger and logo */
+        position: relative;
+    }
+
+    /* Move logo to absolute center on mobile */
+    header .logo {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 1.4rem;
+        z-index: 1100;
+        pointer-events: none;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+        background: none;
+        border: none;
+        color: var(--primary);
+        font-size: 1.5rem;
+        cursor: pointer;
+        z-index: 1100;
+        order: 1;
+        /* Keep it on the side */
+    }
+
+    /* The Drawer */
+    .nav-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        /* Hidden by default */
+        width: 80%;
+        max-width: 300px;
+        height: 100vh;
+        background: linear-gradient(135deg, #0d1117 0%, #010409 100%);
+        flex-direction: column;
+        justify-content: flex-start;
+        padding: 2rem;
+        z-index: 2000;
+        transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        border-left: 1px solid rgba(255, 215, 0, 0.2);
+    }
+
+    .nav-menu.active {
+        right: 0;
+        /* Slide in */
+    }
+
+    .mobile-menu-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 3rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .close-menu-btn {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 2.5rem;
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    .nav-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 1.5rem;
+    }
+
+    .nav-actions button {
+        width: 100%;
+        padding: 1.2rem;
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    /* Modals */
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .modal-content.large {
+        width: 95%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    /* Inputs larger for touch */
+    .input-group input,
+    .search-box input,
+    #user-state {
+        font-size: 1rem;
+        padding: 15px;
+    }
+
+    /* Promotions Stack */
+    .promotions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .promo-card {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    /* Countdown scale */
+    .time-value {
+        font-size: 1.8rem;
+    }
+
+    .time-block {
+        min-width: 50px;
+        padding: 8px;
+    }
+
+    /* Floating Cart */
+    .floating-cart {
+        bottom: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        width: auto;
+        max-width: 90%;
+    }
+}
