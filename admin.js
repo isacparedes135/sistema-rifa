@@ -114,13 +114,53 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchRevenueData();
     }
 
+    // Helper function to fetch ALL tickets using pagination (Supabase has 1000 row limit)
+    async function fetchAllTickets(status) {
+        const BATCH_SIZE = 1000;
+        let allTickets = [];
+        let from = 0;
+        let hasMore = true;
+
+        while (hasMore) {
+            let query = window.sbClient
+                .from('tickets')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .range(from, from + BATCH_SIZE - 1);
+
+            if (status !== 'all') {
+                query = query.eq('status', status);
+            }
+
+            const { data, error } = await query;
+
+            if (error) {
+                console.error('Error fetching tickets batch:', error);
+                return null;
+            }
+
+            if (data && data.length > 0) {
+                allTickets = [...allTickets, ...data];
+                from += BATCH_SIZE;
+                // If we got less than BATCH_SIZE, we've reached the end
+                if (data.length < BATCH_SIZE) {
+                    hasMore = false;
+                }
+            } else {
+                hasMore = false;
+            }
+        }
+
+        return allTickets;
+    }
+
     async function fetchRevenueData(isInitial = true) {
         if (!window.sbClient) return;
 
         if (isInitial) {
             currentPage = 0;
             allDataRendered = false;
-            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center">Cargando datos...</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center">Cargando todos los clientes...</td></tr>';
 
             // Fetch Global Stats (Accurate counts)
             const { count: paidCount } = await window.sbClient.from('tickets').select('*', { count: 'exact', head: true }).eq('status', 'paid');
@@ -132,21 +172,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const term = ticketSearch.value.trim().toLowerCase();
         const status = filterStatus.value;
 
-        // Fetch ALL tickets to properly group by client
-        // We need all data to show all unique users correctly
-        let query = window.sbClient
-            .from('tickets')
-            .select('*')
-            .order('created_at', { ascending: false });
+        // Fetch ALL tickets using pagination to overcome 1000 row limit
+        const data = await fetchAllTickets(status);
 
-        if (status !== 'all') {
-            query = query.eq('status', status);
-        }
-
-        const { data, error } = await query;
-
-        if (error) {
-            console.error('Error fetching tickets:', error);
+        if (data === null) {
             tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red">Error al cargar datos.</td></tr>';
             return;
         }
