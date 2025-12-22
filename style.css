@@ -306,6 +306,38 @@ h1 {
     margin-bottom: 50px;
 }
 
+/* Spinning animation before chest opens */
+@keyframes chestSpin {
+    0% {
+        transform: rotateX(-20deg) rotateY(30deg);
+    }
+
+    25% {
+        transform: rotateX(-20deg) rotateY(390deg);
+    }
+
+    50% {
+        transform: rotateX(-20deg) rotateY(750deg);
+    }
+
+    75% {
+        transform: rotateX(-20deg) rotateY(1110deg);
+    }
+
+    100% {
+        transform: rotateX(-20deg) rotateY(1440deg);
+    }
+}
+
+.chest-spinning .chest-3d {
+    animation: chestSpin 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Pause floating animation during spin */
+.chest-spinning .scene {
+    animation-play-state: paused;
+}
+
 @keyframes floatingScene {
 
     0%,

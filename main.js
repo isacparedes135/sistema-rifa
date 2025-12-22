@@ -581,9 +581,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const onChestClick = () => {
             chestContainer.removeEventListener('click', onChestClick); // Execute once
 
-            chestContainer.classList.add('chest-open');
-            createAdvancedParticles();
-            generateLuckyNumbers();
+            // First, add spinning animation for excitement
+            chestContainer.classList.add('chest-spinning');
+
+            // Hide instruction text during spin
+            const instructionText = chestContainer.querySelector('.chest-instruction');
+            if (instructionText) instructionText.style.opacity = '0';
+
+            // After spin animation completes (1.5s), open the chest
+            setTimeout(() => {
+                chestContainer.classList.remove('chest-spinning');
+                chestContainer.classList.add('chest-open');
+                createAdvancedParticles();
+                generateLuckyNumbers();
+            }, 1500);
         };
 
         chestContainer.addEventListener('click', onChestClick);
