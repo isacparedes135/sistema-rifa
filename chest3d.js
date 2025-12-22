@@ -1,6 +1,6 @@
 // Chest 3D Logic using Three.js
 
-let scene, camera, renderer, chestGroup, lidGroup, chestBase, glowLight;
+let scene, camera, renderer, chestGroup, lidGroup, chestBase, glowLight, glowSphere;
 let isSpinning = false;
 let isOpen = false;
 let floatFrame = 0;
@@ -76,10 +76,16 @@ function init3DChest() {
         frontLight.castShadow = true;
         scene.add(frontLight);
 
-        // Sun Glow (Hidden initially)
-        glowLight = new THREE.PointLight(0xfff000, 0, 50);
+        // Sun Glow (Light)
+        glowLight = new THREE.PointLight(0xffffff, 0, 100);
         glowLight.position.set(0, 0, 5);
         scene.add(glowLight);
+
+        // Sun Glow (Physical Sphere for blinding effect)
+        const glowSphereGeo = new THREE.SphereGeometry(1, 32, 32);
+        const glowSphereMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 });
+        glowSphere = new THREE.Mesh(glowSphereGeo, glowSphereMat);
+        scene.add(glowSphere);
 
         const fillLight = new THREE.PointLight(0xffd700, 0.8, 50);
         fillLight.position.set(-15, 5, 10);
@@ -160,7 +166,7 @@ function buildChest() {
         color: 0x5d4037,
         roughness: 0.8,
         metalness: 0.1,
-        // bumpMap: woodMap, // Bump map can be expensive on low-end, keeping map is enough usually
+        side: THREE.DoubleSide // Fix transparency
     });
 
     // Worn Iron/Bronze
@@ -262,18 +268,23 @@ function buildChest() {
     lidGroup.add(rSide);
 
     // Detailed Inner Lid
-    const innerLidGeo = new THREE.CylinderGeometry(lidRadius - 0.1, lidRadius - 0.1, W - 0.1, 32, 1, true, 0, Math.PI);
+    const innerLidGeo = new THREE.CylinderGeometry(lidRadius - 0.05, lidRadius - 0.05, W - 0.1, 32, 1, true, 0, Math.PI);
     innerLidGeo.rotateZ(Math.PI / 2);
-    const innerLid = new THREE.Mesh(innerLidGeo, agedWoodMat); // Wood inside
+    const innerLid = new THREE.Mesh(innerLidGeo, agedWoodMat);
     innerLid.position.z = D / 2;
     lidGroup.add(innerLid);
 
-    // Inner Band
-    const innerBandGeo = new THREE.CylinderGeometry(lidRadius - 0.15, lidRadius - 0.15, 1.5, 32, 1, true, 0, Math.PI);
+    // Inner Bands (Detailed structure)
+    const innerBandGeo = new THREE.CylinderGeometry(lidRadius - 0.1, lidRadius - 0.1, 1.2, 32, 1, true, 0, Math.PI);
     innerBandGeo.rotateZ(Math.PI / 2);
     const innerBand = new THREE.Mesh(innerBandGeo, ironMat);
     innerBand.position.z = D / 2;
     lidGroup.add(innerBand);
+
+    // Vertical internal band
+    const innerBandV = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.1, D - 0.2), ironMat);
+    innerBandV.position.set(0, lidRadius - 0.1, D / 2);
+    lidGroup.add(innerBandV);
 
     // --- LID DETAILS (Iron Bands) ---
     const archBandGeo = new THREE.CylinderGeometry(lidRadius + 0.1, lidRadius + 0.1, 1.2, 32, 1, false, 0, Math.PI);
@@ -372,25 +383,34 @@ function start3DSpin(callback) {
 
         // Acceleration: t^3 means slow start, very fast end
         const speedFactor = Math.pow(progress, 3);
+        const totalRotations = Math.PI * 16; // Even faster
         chestGroup.rotation.y = startRot + (totalRotations * speedFactor);
 
-        // Sun Glow: Brightens as it speeds up
-        if (ambient) ambient.intensity = 1.5 + (3.5 * progress);
-        if (glowLight) {
-            glowLight.intensity = (progress > 0.5) ? (progress - 0.5) * 20 : 0;
-            // Also move light closer or bigger? Intensity is enough usually.
+        // Sun Glow Intensity
+        if (ambient) ambient.intensity = 1.5 + (8.5 * progress);
+        if (renderer) renderer.toneMappingExposure = 1.3 + (3.7 * progress); // Max blinding exposure
+
+        if (glowLight) glowLight.intensity = progress * 100;
+        if (glowSphere) {
+            glowSphere.material.opacity = progress * 1.5;
+            // Scale up to hide chest at the end
+            const s = 1 + progress * 40;
+            glowSphere.scale.set(s, s, s);
         }
 
         if (progress < 1) {
             animationId = requestAnimationFrame(spinLoop);
         } else {
             isSpinning = false;
-            // Reset world light slightly before opening or keep bright?
-            // User said "shine like sun then stops to the other animation"
             open3DChest(() => {
-                // Return light to normal after sequence
+                // Return lights and sphere to normal
                 if (ambient) ambient.intensity = 1.5;
+                if (renderer) renderer.toneMappingExposure = 1.3;
                 if (glowLight) glowLight.intensity = 0;
+                if (glowSphere) {
+                    glowSphere.material.opacity = 0;
+                    glowSphere.scale.set(1, 1, 1);
+                }
                 if (callback) callback();
             });
         }
@@ -429,7 +449,7 @@ function create3DParticles() {
         posArray[i] = (Math.random() - 0.5) * 25;
     }
     geo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-    const mat = new THREE.PointsMaterial({ size: 0.8, color: 0xffaa00, transparent: true, opacity: 0.8 });
+    const mat = new THREE.PointsMaterial({ size: 0.8, color: 0xffffff, transparent: true, opacity: 0.8 });
     const pts = new THREE.Points(geo, mat);
     scene.add(pts);
     particles.push({ mesh: pts });
@@ -445,7 +465,7 @@ function animate() {
         }
         particles.forEach(p => {
             p.mesh.rotation.y += 0.005;
-            p.mesh.position.y += 0.02;
+            p.mesh.position.y += 0.1; // Faster fly up
         });
         renderer.render(scene, camera);
     }
