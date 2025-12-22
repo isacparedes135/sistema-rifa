@@ -287,25 +287,67 @@ function buildChest() {
         lidGroup.add(b);
     });
 
-    // Big Heavy Latch (Fixed positions)
-    // Lock Plate on Base (Was floating at D+0.2, needs to be D/2 + thickness)
-    const lockPlate = new THREE.Mesh(new THREE.BoxGeometry(2.5, 3, 0.5), ironMat);
-    lockPlate.position.set(0, 0, D / 2 + 0.26); // Attached to front wall
-    chestBase.add(lockPlate);
+    // --- DETAILED LOCK MECHANISM (Skeleton Key Ready) ---
 
-    // Hasp on Lid (Hangs down)
-    // Lid front edge is roughly at Z=D relative to hinge.
-    const lidHasp = new THREE.Mesh(new THREE.BoxGeometry(2, 2.5, 0.6), ironMat);
-    lidHasp.position.set(0, -0.5, D + 0.3); // Relative to lidGroup pivot
-    lidHasp.rotation.x = Math.PI / 12;
-    lidGroup.add(lidHasp);
+    // 1. Lock Body (Attached to Base)
+    // A thick, iron housing for the mechanism
+    const lockWidth = 2.0;
+    const lockHeight = 2.2;
+    const lockDepth = 0.8;
+    const lockBodyGeo = new THREE.BoxGeometry(lockWidth, lockHeight, lockDepth);
+    const lockBody = new THREE.Mesh(lockBodyGeo, ironMat);
+    // Position on front wall (D/2), centered
+    lockBody.position.set(0, 0, D / 2 + lockDepth / 2);
+    chestBase.add(lockBody);
 
-    // Padlock Ring
-    const ringGeo = new THREE.TorusGeometry(0.6, 0.15, 8, 16);
-    const ring = new THREE.Mesh(ringGeo, wornMetalMat);
-    ring.position.set(0, -1.8, D + 0.6); // Slightly in front of hasp
-    ring.rotation.y = Math.PI / 2;
-    lidGroup.add(ring);
+    // Decorative Plate (Bronze/Gold border on lock)
+    const plateGeo = new THREE.BoxGeometry(lockWidth + 0.2, lockHeight + 0.2, 0.2);
+    const lockPlateDeco = new THREE.Mesh(plateGeo, wornMetalMat);
+    lockPlateDeco.position.set(0, 0, -0.4); // slightly behind front face of lockBody
+    lockBody.add(lockPlateDeco);
+
+    // 2. The Keyhole (Functional looking black void)
+    // Cylinder for the round part
+    const keyHoleRoundGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16);
+    keyHoleRoundGeo.rotateX(Math.PI / 2);
+    const keyHoleRound = new THREE.Mesh(keyHoleRoundGeo, new THREE.MeshBasicMaterial({ color: 0x000000 }));
+    keyHoleRound.position.set(0, 0.2, lockDepth / 2 + 0.01);
+    lockBody.add(keyHoleRound);
+
+    // Box for the slit part
+    const keyHoleSlitGeo = new THREE.BoxGeometry(0.15, 0.6, 0.5);
+    const keyHoleSlit = new THREE.Mesh(keyHoleSlitGeo, new THREE.MeshBasicMaterial({ color: 0x000000 }));
+    keyHoleSlit.position.set(0, 0, lockDepth / 2 + 0.01);
+    lockBody.add(keyHoleSlit);
+
+    // 3. The Hasp (Hinged part from Lid)
+    // Must look like it goes OVER the lock loop (implied loop)
+    const haspWidth = 1.0;
+    const haspheight = 2.5;
+    const haspThick = 0.3;
+
+    // Main vertical strip
+    const haspGeo = new THREE.BoxGeometry(haspWidth, haspheight, haspThick);
+    const hasp = new THREE.Mesh(haspGeo, ironMat);
+    // Hasp pivot point is at the top edge of the base usually, or attached to lid.
+    // If attached to lid, it rotates with lid.
+    // Position relative to Lid Group: 
+    // It should hang down from front center.
+    hasp.position.set(0, -1.0, D + 0.4); // Hanging down
+    hasp.rotation.x = Math.PI / 12; // Slight angle out
+    lidGroup.add(hasp);
+
+    // The "Loop" or "staple" on the hasp that goes over the lock? 
+    // Usually the hasp has a slot, and a loop comes from the lock. 
+    // Let's create the visible "Slot" on the hasp
+    const haspSlot = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.8, 0.1), new THREE.MeshBasicMaterial({ color: 0x111111 }));
+    haspSlot.position.set(0, -0.8, 0.16); // Surface of hasp
+    hasp.add(haspSlot);
+
+    // Padlock Ring/Loop (Optional, but user asked for "key" lock, usually integral)
+    // We'll assume it's an integral lock (chest lock), so the Hasp just clicks in.
+    // The keyhole is ON the chest body (lockBody).
+    // The hasp latches INTO the lock body. This is consistent with "Skeleton Key" chests.
 
     // Side Handles (Heavy Rings)
     const handleGeo = new THREE.TorusGeometry(1.2, 0.25, 8, 16);
