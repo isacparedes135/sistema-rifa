@@ -497,7 +497,7 @@ h1 {
 }
 
 .modal-content::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #ffd700, #b8860b);
+    background: linear-gradient(to bottom, var(--primary), var(--accent-secondary));
     border-radius: 10px;
 }
 
@@ -519,7 +519,7 @@ h1 {
 }
 
 .close-modal:hover {
-    color: #ffd700;
+    color: var(--primary);
 }
 
 /* Inputs in Modal */
@@ -569,7 +569,7 @@ h1 {
 
 .progress-bar-small .progress-fill {
     height: 100%;
-    background: #ffd700;
+    background: var(--primary);
     transition: width 0.3s ease;
 }
 
@@ -645,7 +645,7 @@ h1 {
 }
 
 .selected-list::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #ffd700, #b8860b);
+    background: linear-gradient(to bottom, var(--primary), var(--accent-secondary));
     border-radius: 10px;
 }
 
@@ -715,7 +715,7 @@ h1 {
 }
 
 .tickets-mosaic-container::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #ffd700, #b8860b);
+    background: linear-gradient(to bottom, var(--primary), var(--accent-secondary));
     border-radius: 10px;
 }
 
