@@ -156,9 +156,10 @@ function buildHeart() {
     ];
     const crackGeo = new THREE.BufferGeometry().setFromPoints(crackPoints);
     const crackMat = new THREE.LineBasicMaterial({
-        color: 0xffffff,
+        color: 0xcc0044, // Stronger, deeper red/magenta for visibility
         transparent: true,
-        opacity: 0
+        opacity: 0,
+        linewidth: 2 // Note: linewidth is only supported in some renderers, but good to have
     });
     crackLine = new THREE.Line(crackGeo, crackMat);
     heartGroup.add(crackLine);
@@ -170,8 +171,8 @@ function buildHeart() {
     innerCrack.scale.set(1, 1, 0.9);
     heartGroup.add(innerCrack);
 
-    // Add a glowing core to the crack
-    const crackGlow = new THREE.PointLight(0xffffff, 0, 10);
+    // Add a glowing core to the crack (magenta glow)
+    const crackGlow = new THREE.PointLight(0xff0055, 0, 10);
     crackGlow.position.set(0, 0, 1.5);
     crackLine.add(crackGlow);
 
