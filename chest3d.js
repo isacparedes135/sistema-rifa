@@ -1,6 +1,6 @@
 // Chest 3D Logic using Three.js
 
-let scene, camera, renderer, chestGroup, lidGroup, chestBase;
+let scene, camera, renderer, chestGroup, lidGroup, chestBase, glowLight;
 let isSpinning = false;
 let isOpen = false;
 let floatFrame = 0;
@@ -27,7 +27,7 @@ function init3DChest() {
         isSpinning = false;
         isOpen = false;
         floatFrame = 0;
-        particles = []; // Clear particles array logic
+        particles = [];
 
         container.innerHTML = '';
 
@@ -66,22 +66,25 @@ function init3DChest() {
         renderer.toneMappingExposure = 1.3; // Increased exposure significantly
         container.appendChild(renderer.domElement);
 
-        // Lighting - Brighter "Studio" Lighting for visibility
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Boosted Ambient
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+        ambientLight.name = "ambient";
         scene.add(ambientLight);
 
-        // Strong Front Key Light
-        const frontLight = new THREE.DirectionalLight(0xfffaed, 1.8); // Boosted Front Light
-        frontLight.position.set(5, 10, 20); // Front-Right-Top
+        const frontLight = new THREE.DirectionalLight(0xfffaed, 1.8);
+        frontLight.position.set(5, 10, 20);
         frontLight.castShadow = true;
         scene.add(frontLight);
 
-        // Fill Light from left
+        // Sun Glow (Hidden initially)
+        glowLight = new THREE.PointLight(0xfff000, 0, 50);
+        glowLight.position.set(0, 0, 5);
+        scene.add(glowLight);
+
         const fillLight = new THREE.PointLight(0xffd700, 0.8, 50);
         fillLight.position.set(-15, 5, 10);
         scene.add(fillLight);
 
-        // Rim Light for edge definition (Back)
         const rimLight = new THREE.SpotLight(0x4a90e2, 2);
         rimLight.position.set(0, 15, -20);
         rimLight.lookAt(0, 0, 0);
@@ -174,12 +177,6 @@ function buildChest() {
         metalness: 0.5
     });
 
-    const innerMat = new THREE.MeshStandardMaterial({
-        color: 0x1a0f0a,
-        roughness: 1.0,
-        side: THREE.BackSide
-    });
-
     // --- GEOMETRY ---
     // Make it "fat" and heavy
     const W = 11;
@@ -190,7 +187,7 @@ function buildChest() {
     chestBase = new THREE.Group();
     chestGroup.add(chestBase);
 
-    // Box Walls (Tapered effect manually?) 
+    // Box Walls (Tapered effect manually?)
     // Just standard thick walls for solidity
 
     const floor = new THREE.Mesh(new THREE.BoxGeometry(W, thickness, D), agedWoodMat);
@@ -236,10 +233,6 @@ function buildChest() {
         const r1 = new THREE.Mesh(rivGeo, wornMetalMat);
         r1.position.set(pos.x, H / 3, pos.z + (pos.z > 0 ? 0.6 : -0.6));
         chestBase.add(r1);
-
-        const r2 = new THREE.Mesh(rivGeo, wornMetalMat);
-        r2.position.set(pos.x + (pos.x > 0 ? 0.6 : -0.6), H / 3, pos.z);
-        chestBase.add(r2);
     });
 
     // --- LID (Curved Pirate Style) ---
@@ -268,12 +261,19 @@ function buildChest() {
     rSide.position.set(W / 2, 0, D / 2);
     lidGroup.add(rSide);
 
-    // Inner Lid (Fix: Use smaller geometry instead of scaling to avoid distortion)
+    // Detailed Inner Lid
     const innerLidGeo = new THREE.CylinderGeometry(lidRadius - 0.1, lidRadius - 0.1, W - 0.1, 32, 1, true, 0, Math.PI);
     innerLidGeo.rotateZ(Math.PI / 2);
-    const innerLid = new THREE.Mesh(innerLidGeo, innerMat);
+    const innerLid = new THREE.Mesh(innerLidGeo, agedWoodMat); // Wood inside
     innerLid.position.z = D / 2;
     lidGroup.add(innerLid);
+
+    // Inner Band
+    const innerBandGeo = new THREE.CylinderGeometry(lidRadius - 0.15, lidRadius - 0.15, 1.5, 32, 1, true, 0, Math.PI);
+    innerBandGeo.rotateZ(Math.PI / 2);
+    const innerBand = new THREE.Mesh(innerBandGeo, ironMat);
+    innerBand.position.z = D / 2;
+    lidGroup.add(innerBand);
 
     // --- LID DETAILS (Iron Bands) ---
     const archBandGeo = new THREE.CylinderGeometry(lidRadius + 0.1, lidRadius + 0.1, 1.2, 32, 1, false, 0, Math.PI);
@@ -297,27 +297,21 @@ function buildChest() {
     const lockBodyGeo = new THREE.BoxGeometry(lockWidth, lockHeight, lockDepth);
     const lockBody = new THREE.Mesh(lockBodyGeo, ironMat);
     // Position on front wall (D/2), centered
-    lockBody.position.set(0, 0, D / 2 + lockDepth / 2);
+    lockBody.position.set(0, 0, D / 2 + 0.4);
     chestBase.add(lockBody);
-
-    // Decorative Plate (Bronze/Gold border on lock)
-    const plateGeo = new THREE.BoxGeometry(lockWidth + 0.2, lockHeight + 0.2, 0.2);
-    const lockPlateDeco = new THREE.Mesh(plateGeo, wornMetalMat);
-    lockPlateDeco.position.set(0, 0, -0.4); // slightly behind front face of lockBody
-    lockBody.add(lockPlateDeco);
 
     // 2. The Keyhole (Functional looking black void)
     // Cylinder for the round part
     const keyHoleRoundGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16);
     keyHoleRoundGeo.rotateX(Math.PI / 2);
     const keyHoleRound = new THREE.Mesh(keyHoleRoundGeo, new THREE.MeshBasicMaterial({ color: 0x000000 }));
-    keyHoleRound.position.set(0, 0.2, lockDepth / 2 + 0.01);
+    keyHoleRound.position.set(0, 0.2, 0.41);
     lockBody.add(keyHoleRound);
 
     // Box for the slit part
     const keyHoleSlitGeo = new THREE.BoxGeometry(0.15, 0.6, 0.5);
     const keyHoleSlit = new THREE.Mesh(keyHoleSlitGeo, new THREE.MeshBasicMaterial({ color: 0x000000 }));
-    keyHoleSlit.position.set(0, 0, lockDepth / 2 + 0.01);
+    keyHoleSlit.position.set(0, 0, 0.41);
     lockBody.add(keyHoleSlit);
 
     // 3. The Hasp (Hinged part from Lid)
@@ -331,18 +325,11 @@ function buildChest() {
     const hasp = new THREE.Mesh(haspGeo, ironMat);
     // Hasp pivot point is at the top edge of the base usually, or attached to lid.
     // If attached to lid, it rotates with lid.
-    // Position relative to Lid Group: 
+    // Position relative to Lid Group:
     // It should hang down from front center.
     hasp.position.set(0, -1.0, D + 0.4); // Hanging down
     hasp.rotation.x = Math.PI / 12; // Slight angle out
     lidGroup.add(hasp);
-
-    // The "Loop" or "staple" on the hasp that goes over the lock? 
-    // Usually the hasp has a slot, and a loop comes from the lock. 
-    // Let's create the visible "Slot" on the hasp
-    const haspSlot = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.8, 0.1), new THREE.MeshBasicMaterial({ color: 0x111111 }));
-    haspSlot.position.set(0, -0.8, 0.16); // Surface of hasp
-    hasp.add(haspSlot);
 
     // Padlock Ring/Loop (Optional, but user asked for "key" lock, usually integral)
     // We'll assume it's an integral lock (chest lock), so the Hasp just clicks in.
@@ -369,26 +356,43 @@ function buildChest() {
 function start3DSpin(callback) {
     if (isSpinning || isOpen) return;
     isSpinning = true;
-    const duration = 2000; // Slower, heavier spin
+    const duration = 2800; // Increased duration for dramatic acceleration
     const startTime = Date.now();
     const startRot = chestGroup.rotation.y;
-    const totalSpin = Math.PI * 4;
+    const totalRotations = Math.PI * 12; // High speed peak
+
+    // Light refs
+    const ambient = scene.getObjectByName("ambient");
 
     create3DParticles();
 
     function spinLoop() {
         const now = Date.now();
         const progress = Math.min((now - startTime) / duration, 1);
-        // Ease In Out for heavy feel
-        const ease = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
 
-        chestGroup.rotation.y = startRot + (totalSpin * ease);
+        // Acceleration: t^3 means slow start, very fast end
+        const speedFactor = Math.pow(progress, 3);
+        chestGroup.rotation.y = startRot + (totalRotations * speedFactor);
+
+        // Sun Glow: Brightens as it speeds up
+        if (ambient) ambient.intensity = 1.5 + (3.5 * progress);
+        if (glowLight) {
+            glowLight.intensity = (progress > 0.5) ? (progress - 0.5) * 20 : 0;
+            // Also move light closer or bigger? Intensity is enough usually.
+        }
 
         if (progress < 1) {
             animationId = requestAnimationFrame(spinLoop);
         } else {
             isSpinning = false;
-            open3DChest(callback);
+            // Reset world light slightly before opening or keep bright?
+            // User said "shine like sun then stops to the other animation"
+            open3DChest(() => {
+                // Return light to normal after sequence
+                if (ambient) ambient.intensity = 1.5;
+                if (glowLight) glowLight.intensity = 0;
+                if (callback) callback();
+            });
         }
     }
     spinLoop();
@@ -419,7 +423,7 @@ function open3DChest(callback) {
 
 function create3DParticles() {
     const geo = new THREE.BufferGeometry();
-    const count = 60;
+    const count = 100;
     const posArray = new Float32Array(count * 3);
     for (let i = 0; i < count * 3; i++) {
         posArray[i] = (Math.random() - 0.5) * 25;
