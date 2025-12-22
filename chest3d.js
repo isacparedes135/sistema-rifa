@@ -1,11 +1,12 @@
 // Chest 3D Logic using Three.js
 
-let scene, camera, renderer, chestGroup, lidGroup, chestBase, glowLight;
+let scene, camera, renderer, chestGroup, lidGroup, chestBase, ticketPile;
 let isSpinning = false;
 let isOpen = false;
 let floatFrame = 0;
 let animationId;
 let particles = [];
+let flyingTickets = [];
 
 // Cache textures to avoid stutter on reload
 let cachedWoodTexture = null;
@@ -23,11 +24,12 @@ function init3DChest() {
     try {
         if (animationId) cancelAnimationFrame(animationId);
 
-        // Reset State (Fix for re-opening bug)
+        // Reset State
         isSpinning = false;
         isOpen = false;
         floatFrame = 0;
         particles = [];
+        flyingTickets = [];
 
         container.innerHTML = '';
 
@@ -76,12 +78,9 @@ function init3DChest() {
         frontLight.castShadow = true;
         scene.add(frontLight);
 
-        // Sun Glow (Light)
-        glowLight = new THREE.PointLight(0xffffff, 0, 100);
-        glowLight.position.set(0, 0, 5);
-        scene.add(glowLight);
-
         const fillLight = new THREE.PointLight(0xffd700, 0.8, 50);
+        fillLight.position.set(-15, 5, 10);
+        scene.add(fillLight);
         fillLight.position.set(-15, 5, 10);
         scene.add(fillLight);
 
@@ -353,53 +352,47 @@ function buildChest() {
     hR.rotation.y = Math.PI / 2;
     chestBase.add(hR);
 
-    // Initial setup
+    buildTicketPile();
+
     chestGroup.rotation.y = -0.5;
     chestGroup.rotation.x = 0.1;
+}
+
+function buildTicketPile() {
+    // A golden mass inside to look like a lot of tickets
+    const ticketGeo = new THREE.BoxGeometry(9, 2, 5);
+    const ticketMat = new THREE.MeshStandardMaterial({
+        color: 0xffd700,
+        metalness: 0.8,
+        roughness: 0.2,
+        emissive: 0xffaa00,
+        emissiveIntensity: 0.2
+    });
+    ticketPile = new THREE.Mesh(ticketGeo, ticketMat);
+    ticketPile.position.y = -1; // Bottom of chest
+    chestBase.add(ticketPile);
 }
 
 function start3DSpin(callback) {
     if (isSpinning || isOpen) return;
     isSpinning = true;
-    const duration = 2800; // Increased duration for dramatic acceleration
+    const duration = 2800;
     const startTime = Date.now();
     const startRot = chestGroup.rotation.y;
-    const totalRotations = Math.PI * 12; // High speed peak
-
-    // Light refs
-    const ambient = scene.getObjectByName("ambient");
-
-    create3DParticles();
+    const totalRotations = Math.PI * 12;
 
     function spinLoop() {
         const now = Date.now();
         const progress = Math.min((now - startTime) / duration, 1);
 
         const speedFactor = Math.pow(progress, 3);
-        const totalRotations = Math.PI * 16;
         chestGroup.rotation.y = startRot + (totalRotations * speedFactor);
-
-        // Localized Sun Glow
-        if (ambient) ambient.intensity = 1.5 + (4.5 * progress);
-        if (renderer) renderer.toneMappingExposure = 1.3 + (0.9 * progress); // Cap at 2.2
-
-        if (glowLight) {
-            // High intensity PointLight creates focal glow
-            const flicker = 1 + (Math.random() - 0.5) * 0.2; // 20% flicker
-            glowLight.intensity = progress * 300 * flicker;
-        }
 
         if (progress < 1) {
             animationId = requestAnimationFrame(spinLoop);
         } else {
             isSpinning = false;
-            open3DChest(() => {
-                // Reset to normal
-                if (ambient) ambient.intensity = 1.5;
-                if (renderer) renderer.toneMappingExposure = 1.3;
-                if (glowLight) glowLight.intensity = 0;
-                if (callback) callback();
-            });
+            open3DChest(callback);
         }
     }
     spinLoop();
@@ -407,17 +400,21 @@ function start3DSpin(callback) {
 
 function open3DChest(callback) {
     isOpen = true;
-    const duration = 1200; // Slower open (heavy lid)
+    const duration = 1200;
     const startTime = Date.now();
+    let explosionTriggered = false;
 
     function openLoop() {
         const now = Date.now();
         const progress = Math.min((now - startTime) / duration, 1);
-        // Bounce at end (heavy impact)
-        // const ease = 1 + 2.70158 * Math.pow(progress - 1, 3) + 1.70158 * Math.pow(progress - 1, 2);
-        const ease = 1 - Math.pow(1 - progress, 3); // Cubic out (simple soft open)
-
+        const ease = 1 - Math.pow(1 - progress, 3);
         lidGroup.rotation.x = -2.2 * ease;
+
+        // Trigger explosion when slightly open
+        if (progress > 0.2 && !explosionTriggered) {
+            explosionTriggered = true;
+            createTicketExplosion();
+        }
 
         if (progress < 1) {
             requestAnimationFrame(openLoop);
@@ -426,6 +423,39 @@ function open3DChest(callback) {
         }
     }
     openLoop();
+}
+
+function createTicketExplosion() {
+    const ticketCount = 40;
+    const ticketGeo = new THREE.PlaneGeometry(0.8, 0.4);
+    const ticketMat = new THREE.MeshStandardMaterial({
+        color: 0xffd700,
+        metalness: 0.5,
+        roughness: 0.3,
+        side: THREE.DoubleSide
+    });
+
+    for (let i = 0; i < ticketCount; i++) {
+        const ticket = new THREE.Mesh(ticketGeo, ticketMat);
+        // Start inside chest
+        ticket.position.set(0, 0, 0);
+        scene.add(ticket);
+
+        flyingTickets.push({
+            mesh: ticket,
+            velocity: new THREE.Vector3(
+                (Math.random() - 0.5) * 0.8,
+                Math.random() * 0.6 + 0.3,
+                Math.random() * 0.4 + 0.2
+            ),
+            rotationSpeed: new THREE.Vector3(
+                Math.random() * 0.2,
+                Math.random() * 0.2,
+                Math.random() * 0.2
+            ),
+            gravity: -0.015
+        });
+    }
 }
 
 function create3DParticles() {
@@ -447,13 +477,24 @@ function animate() {
     if (scene && camera && renderer) {
         if (!isSpinning && !isOpen) {
             floatFrame += 0.015;
-            // Heavier float
             chestGroup.position.y = Math.sin(floatFrame) * 0.3;
         }
+
+        // Particle logic (keep system for potential future use or clean if needed)
         particles.forEach(p => {
             p.mesh.rotation.y += 0.005;
-            p.mesh.position.y += 0.1; // Faster fly up
+            p.mesh.position.y += 0.1;
         });
+
+        // Flying Tickets Logic
+        flyingTickets.forEach(t => {
+            t.mesh.position.add(t.velocity);
+            t.mesh.rotation.x += t.rotationSpeed.x;
+            t.mesh.rotation.y += t.rotationSpeed.y;
+            t.mesh.rotation.z += t.rotationSpeed.z;
+            t.velocity.y += t.gravity; // Gravity pull
+        });
+
         renderer.render(scene, camera);
     }
 }
