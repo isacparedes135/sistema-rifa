@@ -588,16 +588,58 @@ document.addEventListener('DOMContentLoaded', () => {
             const instructionText = chestContainer.querySelector('.chest-instruction');
             if (instructionText) instructionText.style.opacity = '0';
 
-            // After spin animation completes (1.5s), open the chest
+            // Create orbiting sparkle particles
+            createSpinParticles();
+
+            // After spin animation completes (1.8s), open the chest
             setTimeout(() => {
+                // Remove spin particles
+                removeSpinParticles();
+
                 chestContainer.classList.remove('chest-spinning');
                 chestContainer.classList.add('chest-open');
                 createAdvancedParticles();
                 generateLuckyNumbers();
-            }, 1500);
+            }, 1800);
         };
 
         chestContainer.addEventListener('click', onChestClick);
+    }
+
+    // Create orbiting sparkle particles during spin
+    function createSpinParticles() {
+        const scene = document.querySelector('.scene');
+        if (!scene) return;
+
+        const particleCount = 12;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'spin-particle';
+
+            // Random orbit radius and speed
+            const orbitRadius = 80 + Math.random() * 60;
+            const duration = 0.4 + Math.random() * 0.3;
+            const delay = (i / particleCount) * 0.3;
+            const startAngle = (i / particleCount) * 360;
+
+            particle.style.cssText = `
+                --orbit-radius: ${orbitRadius}px;
+                top: 50%;
+                left: 50%;
+                animation: orbitSpin ${duration}s linear infinite, sparkleTrail 0.3s ease-in-out infinite alternate;
+                animation-delay: ${delay}s;
+                transform: rotate(${startAngle}deg) translateX(${orbitRadius}px);
+            `;
+
+            scene.appendChild(particle);
+        }
+    }
+
+    // Remove spin particles
+    function removeSpinParticles() {
+        const particles = document.querySelectorAll('.spin-particle');
+        particles.forEach(p => p.remove());
     }
 
     async function generateLuckyNumbers() {
