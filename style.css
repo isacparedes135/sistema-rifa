@@ -327,7 +327,7 @@ h1 {
 }
 
 #chest-modal .modal-content {
-    background: var(--surface) !important;
+    background: var(--background) !important;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
     border: 2px solid var(--primary);
 }
