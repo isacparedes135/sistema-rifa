@@ -105,8 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
             userStateInput.disabled = true;
 
             // Visual feedback
-            userNameInput.style.borderColor = '#22c55e';
-            userLastnameInput.style.borderColor = '#22c55e';
+            userNameInput.style.borderColor = '#a8e6cf'; // Pastel Mint
+            userLastnameInput.style.borderColor = '#a8e6cf';
         } else {
             // NOT FOUND: UNLOCK
             userNameInput.disabled = false;
@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
             userStateInput.value = data.client_state || '';
 
             // Visual feedback of success
-            userNameInput.style.borderColor = '#22c55e';
+            userNameInput.style.borderColor = '#a8e6cf'; // Pastel Mint
             // Found -> KEEP DISABLED
             userNameInput.disabled = true;
             userLastnameInput.disabled = true;
