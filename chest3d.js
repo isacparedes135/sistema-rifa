@@ -12,8 +12,23 @@ function init3DChest() {
     const container = document.getElementById('chest-container');
     if (!container) return;
 
-    // Clear loading text
+    // Stop previous animation if running
+    if (animationId) cancelAnimationFrame(animationId);
+
+    // Clear container (removes old canvas and loading text)
     container.innerHTML = '';
+
+    // Re-add instruction text overlay
+    const instruction = document.createElement('p');
+    instruction.className = 'chest-instruction';
+    instruction.innerText = 'Haz clic para abrir';
+    instruction.style.position = 'absolute';
+    instruction.style.bottom = '20px';
+    instruction.style.color = '#ffd700';
+    instruction.style.textShadow = '0 0 5px #000';
+    instruction.style.zIndex = '10';
+    instruction.style.pointerEvents = 'none';
+    container.appendChild(instruction);
 
     // 1. Scene & Camera
     scene = new THREE.Scene();
