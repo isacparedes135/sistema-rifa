@@ -161,18 +161,20 @@ function buildChest() {
         side: THREE.DoubleSide
     });
 
-    // Original Bronze
+    // Worn Gold/Bronze (Pop look)
     const wornMetalMat = new THREE.MeshStandardMaterial({
-        color: 0x6d5635,
-        roughness: 0.4,
-        metalness: 0.6,
+        color: 0xffd700, // Gold
+        roughness: 0.2,
+        metalness: 0.9,
     });
 
-    // Original Black Iron
+    // Metallic trim
     const ironMat = new THREE.MeshStandardMaterial({
-        color: 0x222222,
-        roughness: 0.7,
-        metalness: 0.5
+        color: 0xdaa520, // Goldenrod / Bronze
+        roughness: 0.3,
+        metalness: 0.8,
+        emissive: 0xdaa520,
+        emissiveIntensity: 0.05
     });
 
     // --- GEOMETRY ---
@@ -353,7 +355,7 @@ function buildChest() {
 
     buildTicketPile();
 
-    chestGroup.scale.set(1.0, 1.0, 1.0); // Reverted to previous size (before 1.1x)
+    chestGroup.scale.set(0.9, 0.9, 0.9); // Smaller than v16's 1.0x
     chestGroup.rotation.y = -0.5;
     chestGroup.rotation.x = 0.1;
 }
