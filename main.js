@@ -582,13 +582,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const particlesContainer = document.querySelector('.particles');
         if (particlesContainer) particlesContainer.innerHTML = '';
 
-        // Initialize Three.js Chest with a small delay
+        // Initialize 3D Heart with a small delay
         requestAnimationFrame(() => {
-            if (window.init3DChest) {
-                window.init3DChest();
+            if (window.init3DHeart) {
+                window.init3DHeart();
             } else {
-                console.error("Critical: logic chest3d.js not loaded.");
-                alert("Error: No se ha cargado el módulo del cofre 3D (chest3d.js).");
+                console.error("Critical: heart3d.js not loaded.");
+                alert("Error: No se ha cargado el módulo del corazón 3D (heart3d.js).");
             }
         });
 
@@ -597,7 +597,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Interaction Handler
         if (window.updateChestInstruction) {
-            window.updateChestInstruction('Toca el cofre para descubrir tus números');
+            window.updateChestInstruction('Toca el corazón para descubrir tus números');
         }
 
         // Cleanup previous listener
@@ -611,8 +611,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (window.updateChestInstruction) window.updateChestInstruction('');
 
-            if (window.start3DSpin) {
-                window.start3DSpin(() => {
+            if (window.startHeartBreak) {
+                window.startHeartBreak(() => {
                     generateLuckyNumbers();
                     createAdvancedParticles();
                 });
