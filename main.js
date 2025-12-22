@@ -586,20 +586,50 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Interaction Handler
+        let clickCount = 0;
+
+        // Remove previous instruction if any
+        let instruction = document.getElementById('chest-tap-instruction');
+        if (!instruction) {
+            instruction = document.createElement('p');
+            instruction.id = 'chest-tap-instruction';
+            instruction.style.cssText = `
+                position: absolute;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                color: #ffd700;
+                font-weight: bold;
+                text-shadow: 0 0 10px #000;
+                z-index: 100;
+                pointer-events: none;
+                font-size: 1.1rem;
+            `;
+            chestContainer.appendChild(instruction);
+        }
+        instruction.innerText = 'Toca el cofre para abrirlo';
+
         const onChestClick = () => {
-            chestContainer.removeEventListener('click', onChestClick); // Execute once
+            clickCount++;
 
-            // Hide instruction text
-            const instructionText = chestContainer.querySelector('.chest-instruction');
-            if (instructionText) instructionText.style.display = 'none';
+            if (clickCount === 1) {
+                if (window.shakeChest) window.shakeChest(0.4);
+                instruction.innerText = '¡Dale de nuevo!';
+            } else if (clickCount === 2) {
+                if (window.shakeChest) window.shakeChest(0.8);
+                instruction.innerText = '¡Casi listo, una más!';
+            } else if (clickCount === 3) {
+                chestContainer.removeEventListener('click', onChestClick); // Finish sequence
+                if (window.shakeChest) window.shakeChest(1.5);
+                instruction.innerText = ''; // Clear text
 
-            // Start 3D Spin Animation
-            if (window.start3DSpin) {
-                window.start3DSpin(() => {
-                    // Callback when chest is fully open
-                    generateLuckyNumbers();
-                    createAdvancedParticles(); // Keep DOM particles for now
-                });
+                // Start opening
+                if (window.start3DSpin) {
+                    window.start3DSpin(() => {
+                        generateLuckyNumbers();
+                        createAdvancedParticles();
+                    });
+                }
             }
         };
 
@@ -759,7 +789,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tryAgainBtn = document.createElement('button');
         tryAgainBtn.className = 'btn-reset-lucky';
         tryAgainBtn.id = 'btn-reopen-chest-summary';
-        tryAgainBtn.innerText = '¿No te gustaron? Inténtalo de nuevo 🔄';
+        tryAgainBtn.innerText = '¿No te gustaron? Inténtalo de nuevo';
         tryAgainBtn.onclick = () => {
             closeModal(manualModal);
             startLuckyChestSequence();

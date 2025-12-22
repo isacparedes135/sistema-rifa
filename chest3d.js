@@ -342,7 +342,7 @@ function buildChest() {
 
     buildTicketPile();
 
-    chestGroup.scale.set(1.3, 1.3, 1.3); // Bigger chest
+    chestGroup.scale.set(1.1, 1.1, 1.1); // Reduced scale (1.3 -> 1.1)
     chestGroup.rotation.y = -0.5;
     chestGroup.rotation.x = 0.1;
 }
@@ -491,5 +491,28 @@ function animate() {
     }
 }
 
+function shakeChest(intensity = 0.5) {
+    const startTime = Date.now();
+    const duration = 400;
+    const startPos = { x: chestGroup.position.x, z: chestGroup.position.z };
+
+    function shakeLoop() {
+        const now = Date.now();
+        const progress = (now - startTime) / duration;
+
+        if (progress < 1) {
+            const currentIntensity = intensity * (1 - progress); // Decay
+            chestGroup.position.x = startPos.x + (Math.random() - 0.5) * currentIntensity;
+            chestGroup.position.z = startPos.z + (Math.random() - 0.5) * currentIntensity;
+            requestAnimationFrame(shakeLoop);
+        } else {
+            chestGroup.position.x = startPos.x;
+            chestGroup.position.z = startPos.z;
+        }
+    }
+    shakeLoop();
+}
+
 window.init3DChest = init3DChest;
 window.start3DSpin = start3DSpin;
+window.shakeChest = shakeChest;
