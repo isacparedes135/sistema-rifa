@@ -1,14 +1,13 @@
 :root {
     --primary: #ffb6c1;
     /* Light Pink */
-    --background: #fdf5f6;
-    /* Blush White */
+    --background: #fdf0f1;
+    /* Softer Blush (less bright) */
     --surface: #ffffff;
-    --surface-light: #fff0f5;
-    /* Lavender Blush */
-    --text: #5d4037;
-    /* Warm Wood Grey */
-    --text-muted: #9e8b84;
+    --surface-light: #fff5f7;
+    --text: #4e342e;
+    /* Slightly darker for better contrast on soft bg */
+    --text-muted: #8d6e63;
     --accent: #a8e6cf;
     /* Pastel Mint Green */
     --accent-secondary: #e0bbe4;
@@ -327,9 +326,9 @@ h1 {
 }
 
 #chest-modal .modal-content {
-    background: #0a0a0a !important;
-    box-shadow: 0 0 40px rgba(255, 215, 0, 0.15) !important;
-    border: 1px solid #222;
+    background: var(--surface) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
+    border: 2px solid var(--primary);
 }
 
 #chest-tap-instruction {
@@ -337,9 +336,9 @@ h1 {
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-    color: #ffd700;
+    color: var(--primary);
     font-weight: 900;
-    text-shadow: 0 0 15px rgba(0, 0, 0, 1), 0 0 5px rgba(255, 215, 0, 0.5);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 500;
     pointer-events: none;
     font-size: 1.4rem;
@@ -407,10 +406,10 @@ h1 {
     position: absolute;
     width: 20px;
     height: 10px;
-    background: linear-gradient(135deg, #ffd700, #ffec8b, #d4af37);
-    border: 1px solid #b8860b;
+    background: linear-gradient(135deg, var(--primary), var(--accent), var(--accent-secondary));
+    border: 1px solid white;
     border-radius: 1px;
-    box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     z-index: 10;
     pointer-events: none;
     /* Inicio en el centro */
@@ -544,7 +543,8 @@ h1 {
 
 .input-group input:focus,
 .search-box input:focus {
-    border-color: #ffd700;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(255, 182, 193, 0.2);
 }
 
 /* Internal Modal Elements (Manual Selection) */
@@ -694,8 +694,8 @@ h1 {
 .tickets-mosaic-container {
     width: 100%;
     height: 350px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 215, 0, 0.1);
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--primary);
     border-radius: 15px;
     margin: 15px 0;
     overflow-y: auto;

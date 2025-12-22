@@ -882,7 +882,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     item.innerHTML = `
                         <div>
-                            <strong style="font-size: 1.1rem; color: #ffd700;">#${ticket.ticket_number}</strong>
+                            <strong style="font-size: 1.1rem; color: var(--primary);">#${ticket.ticket_number}</strong>
                             <div style="font-size: 0.8rem; color: #aaa;">${new Date(ticket.created_at).toLocaleDateString()}</div>
                         </div>
                         <span class="ticket-status-badge ${statusClass}">${statusText}</span>

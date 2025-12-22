@@ -1,10 +1,10 @@
 :root {
     --gold: #ffb6c1;
     /* Using Pink as primary gold replacement */
-    --dark-bg: #fdf5f6;
+    --dark-bg: #fdf0f1;
     --card-bg: #ffffff;
-    --text-primary: #5d4037;
-    --text-secondary: #9e8b84;
+    --text-primary: #4e342e;
+    --text-secondary: #8d6e63;
     --success: #a8e6cf;
     --warning: #ffec8b;
     --danger: #ffb2b2;
