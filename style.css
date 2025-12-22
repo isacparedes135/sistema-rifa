@@ -298,14 +298,15 @@ h1 {
 /* 3D Chest Scene */
 /* 3D Chest Scene */
 .chest-container {
-    margin: 1.5rem 0;
+    margin: 0.5rem 0;
+    /* Reduced from 1.5rem */
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
     width: 100%;
-    min-height: 520px;
-    /* Increased from 420px */
+    min-height: 480px;
+    /* Slightly reduced as cofre is smaller */
     overflow: visible;
 }
 
@@ -464,10 +465,13 @@ h1 {
     background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
     border: 1px solid #ffd700;
     margin: auto;
-    padding: 30px;
+    padding: 20px;
+    /* Reduced from 30px */
     border-radius: 15px;
-    width: 90%;
-    max-width: 400px;
+    width: 95%;
+    /* More space for small devices */
+    max-width: 340px;
+    /* Reduced from 400px */
     max-height: 90vh;
     overflow-y: auto;
     position: relative;

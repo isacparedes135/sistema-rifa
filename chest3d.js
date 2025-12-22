@@ -44,8 +44,8 @@ function init3DChest() {
 
         const aspect = width / height;
         camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 1000);
-        camera.position.set(0, 8, 30); // Closer but adjusted for 1.0x scale
-        camera.lookAt(0, -2, 0);
+        camera.position.set(0, 10, 38); // Further back and higher for headroom
+        camera.lookAt(0, -3.5, 0); // Aim lower to see more top space
 
         renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
         renderer.setSize(width, height);
@@ -280,8 +280,9 @@ function buildChest() {
     innerBandV.position.set(0, lidRadius - 0.1, D / 2);
     lidGroup.add(innerBandV);
 
-    // --- LID DETAILS (Iron Bands) ---
-    const archBandGeo = new THREE.CylinderGeometry(lidRadius + 0.1, lidRadius + 0.1, 1.2, 32, 1, false, 0, Math.PI);
+    // --- LID DETAILS (Iron/Gold Bands) ---
+    // Increase offset to 0.2 to avoid Z-fighting/Texture flickering
+    const archBandGeo = new THREE.CylinderGeometry(lidRadius + 0.2, lidRadius + 0.2, 1.2, 32, 1, false, 0, Math.PI);
     archBandGeo.rotateZ(Math.PI / 2);
 
     // 3 Bands: Left, Center, Right
@@ -356,7 +357,7 @@ function buildChest() {
     buildTicketPile();
 
     chestGroup.scale.set(0.9, 0.9, 0.9); // Smaller than v16's 1.0x
-    chestGroup.rotation.y = -0.5;
+    chestGroup.position.y = -3; // Lowered from -2 to give more ceiling space
     chestGroup.rotation.x = 0.1;
 }
 
