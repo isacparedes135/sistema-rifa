@@ -617,14 +617,33 @@ h1 {
     left: 0;
     width: 100%;
     height: 8px;
-    background: linear-gradient(to bottom, #3e2723, #2d1b16);
-    border-bottom: 1px solid rgba(255, 215, 0, 0.3);
-    transform-origin: top center;
-    transform: rotateX(-90deg);
+    background: linear-gradient(to bottom, #5d4037, #4e342e);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    /* Essential for 3D strips */
+    transform-style: preserve-3d;
+}
+
+/* Inner Thickness 3D Plane - Visible when chest opens */
+.lid-thickness {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    /* Thickness depth */
+    background: linear-gradient(to right, #3e2723, #2d1b16);
+    transform-origin: top;
+    transform: rotateX(90deg);
+    /* Fold inwards */
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.8);
+    /* Shadow inside the wood grain */
+    border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+    /* Slight gold reflection on edge */
 }
 
 /* Arch Construction (180 degrees total) 
-   Radius 60px centered at Y=0, Z=0.
+   Radius 50px centered at Y=0, Z=0.
 */
 
 .s1 {
