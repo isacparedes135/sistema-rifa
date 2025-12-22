@@ -308,11 +308,31 @@ h1 {
     overflow: visible;
 }
 
-/* Chest 3D Styles Removed - Replaced by Three.js Canvas */
-.chest-container canvas {
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
+/* Chest Modal Specific Refinements */
+#chest-modal .modal-content {
+    background: #111 !important;
+    /* Solid background */
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.2) !important;
+    border: 1px solid #333;
 }
+
+#chest-tap-instruction {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ffd700;
+    font-weight: 800;
+    text-shadow: 0 2px 10px #000;
+    z-index: 200;
+    pointer-events: none;
+    font-size: 1.3rem;
+    text-align: center;
+    width: 90%;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 1px;
+}
+
 
 .chest-latch::after {
     /* Keyhole detail */

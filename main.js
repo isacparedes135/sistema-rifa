@@ -613,17 +613,16 @@ document.addEventListener('DOMContentLoaded', () => {
             clickCount++;
 
             if (clickCount === 1) {
-                if (window.shakeChest) window.shakeChest(0.4);
+                if (window.shakeChest) window.shakeChest(0.8); // Much stronger
                 instruction.innerText = '¡Dale de nuevo!';
             } else if (clickCount === 2) {
-                if (window.shakeChest) window.shakeChest(0.8);
+                if (window.shakeChest) window.shakeChest(1.5); // Very strong
                 instruction.innerText = '¡Casi listo, una más!';
             } else if (clickCount === 3) {
-                chestContainer.removeEventListener('click', onChestClick); // Finish sequence
-                if (window.shakeChest) window.shakeChest(1.5);
-                instruction.innerText = ''; // Clear text
+                chestContainer.removeEventListener('click', onChestClick);
+                if (window.shakeChest) window.shakeChest(3.0); // MASSIVE
+                instruction.innerText = '';
 
-                // Start opening
                 if (window.start3DSpin) {
                     window.start3DSpin(() => {
                         generateLuckyNumbers();

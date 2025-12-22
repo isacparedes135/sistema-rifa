@@ -53,7 +53,7 @@ function init3DChest() {
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 2.2; // Brighter exposure
+        renderer.toneMappingExposure = 2.5; // Even brighter (was 2.2)
         container.appendChild(renderer.domElement);
 
         // Lighting
@@ -61,18 +61,25 @@ function init3DChest() {
         ambientLight.name = "ambient";
         scene.add(ambientLight);
 
-        const frontLight = new THREE.DirectionalLight(0xfffaed, 1.8);
+        const frontLight = new THREE.DirectionalLight(0xfffaed, 2.0); // Boosted
         frontLight.position.set(5, 10, 20);
         frontLight.castShadow = true;
         scene.add(frontLight);
 
-        const fillLight = new THREE.PointLight(0xffd700, 0.8, 50);
-        fillLight.position.set(-15, 5, 10);
-        scene.add(fillLight);
+        // EXTRA FRONT LIGHTS for brightness
+        const sideLight = new THREE.PointLight(0xffffff, 2.0, 50);
+        sideLight.position.set(20, 5, 20);
+        scene.add(sideLight);
+
+        const sideLight2 = new THREE.PointLight(0xffffff, 2.0, 50);
+        sideLight2.position.set(-20, 5, 20);
+        scene.add(sideLight2);
+
+        const fillLight = new THREE.PointLight(0xffd700, 1.5, 50); // Boosted
         fillLight.position.set(-15, 5, 10);
         scene.add(fillLight);
 
-        const rimLight = new THREE.SpotLight(0x4a90e2, 2);
+        const rimLight = new THREE.SpotLight(0x4a90e2, 2.5);
         rimLight.position.set(0, 15, -20);
         rimLight.lookAt(0, 0, 0);
         scene.add(rimLight);
@@ -355,7 +362,7 @@ function buildTicketPile() {
         metalness: 0.9,
         roughness: 0.1,
         emissive: 0xffaa00,
-        emissiveIntensity: 0.15
+        emissiveIntensity: 0.3 // More emissive for shimmer
     });
     const baseMass = new THREE.Mesh(baseGeo, goldMat);
     baseMass.position.y = -0.5;
@@ -493,7 +500,8 @@ function animate() {
 
 function shakeChest(intensity = 0.5) {
     const startTime = Date.now();
-    const duration = 400;
+    const duration = 500; // Slightly longer for more noticeability
+    const actualIntensity = intensity * 2.5; // MORE THAN DOUBLE (was 1.0, now much stronger)
     const startPos = { x: chestGroup.position.x, z: chestGroup.position.z };
 
     function shakeLoop() {
@@ -501,12 +509,14 @@ function shakeChest(intensity = 0.5) {
         const progress = (now - startTime) / duration;
 
         if (progress < 1) {
-            const currentIntensity = intensity * (1 - progress); // Decay
+            const currentIntensity = actualIntensity * (1 - Math.pow(progress, 2)); // Smoother decay
             chestGroup.position.x = startPos.x + (Math.random() - 0.5) * currentIntensity;
+            chestGroup.position.y = (Math.random() - 0.5) * (currentIntensity * 0.3); // Slight vertical jitter
             chestGroup.position.z = startPos.z + (Math.random() - 0.5) * currentIntensity;
             requestAnimationFrame(shakeLoop);
         } else {
             chestGroup.position.x = startPos.x;
+            chestGroup.position.y = 0;
             chestGroup.position.z = startPos.z;
         }
     }
