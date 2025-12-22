@@ -36,6 +36,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const secsEl = document.getElementById('seconds');
     const closeModals = document.querySelectorAll('.close-modal');
 
+    // Mobile Menu elements
+    const navMenu = document.getElementById('nav-menu');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const closeMenuBtn = document.getElementById('close-menu-btn');
+
     // Mosaic Elements
     const ticketsMosaic = document.getElementById('tickets-mosaic');
     const mosaicContainer = document.getElementById('tickets-mosaic-container');
@@ -200,9 +205,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Mobile Menu Toggle
+    if (mobileMenuBtn && navMenu) {
+        mobileMenuBtn.addEventListener('click', () => {
+            navMenu.classList.add('active');
+            document.body.classList.add('menu-open');
+        });
+    }
+
+    if (closeMenuBtn && navMenu) {
+        closeMenuBtn.addEventListener('click', () => {
+            navMenu.classList.remove('active');
+            document.body.classList.remove('menu-open');
+        });
+    }
+
     window.onclick = (event) => {
         if (event.target.classList.contains('modal')) {
             event.target.classList.remove('active');
+            toggleBodyScroll(false);
         }
     };
 

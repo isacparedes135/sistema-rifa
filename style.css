@@ -1,12 +1,12 @@
 :root {
     --primary: #ffb6c1;
     /* Light Pink */
-    --background: #fdf0f1;
-    /* Softer Blush (less bright) */
+    --background: #f7e8e9;
+    /* Muted Pastel Pink (Slightly darker, easier on eyes) */
     --surface: #ffffff;
-    --surface-light: #fff5f7;
+    --surface-light: #fff0f2;
     --text: #4e342e;
-    /* Slightly darker for better contrast on soft bg */
+    /* Deep espresso for readability */
     --text-muted: #8d6e63;
     --accent: #a8e6cf;
     /* Pastel Mint Green */
@@ -812,17 +812,24 @@ h1 {
 }
 
 .btn-secondary {
-    background: transparent;
-    border: 1px solid #ffd700;
-    color: #ffd700;
-    padding: 10px 20px;
-    border-radius: 8px;
+    background: white;
+    border: 2px solid var(--accent);
+    color: var(--text);
+    padding: 10px 22px;
+    border-radius: 12px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 700;
+    transition: var(--transition);
+    box-shadow: 0 4px 6px rgba(168, 230, 207, 0.2);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
 }
 
 .btn-secondary:hover {
-    background: rgba(255, 215, 0, 0.1);
+    background: var(--accent);
+    color: var(--text);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(168, 230, 207, 0.3);
 }
 
 /* Floating Cart */
@@ -1024,20 +1031,23 @@ h1 {
 }
 
 .btn-reset-lucky {
-    background: transparent;
-    border: 1px solid #ffd700 !important;
-    color: #ffd700 !important;
-    padding: 10px 15px;
-    border-radius: 8px;
+    background: white;
+    border: 2px solid var(--primary) !important;
+    color: var(--primary) !important;
+    padding: 12px 15px;
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin-top: 15px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-top: 20px;
     display: block;
     transition: all 0.2s;
     width: 100%;
 }
 
 .btn-reset-lucky:hover {
-    background: rgba(255, 215, 0, 0.1);
+    background: var(--surface-light);
+    transform: scale(1.02);
 }
+
+```
