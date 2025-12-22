@@ -229,6 +229,8 @@ function breakHeart(callback) {
     isBroken = true;
     const duration = 1800;
     const startTime = Date.now();
+    let exploded = false;
+    let fragmentsCreated = false;
 
     // Hide crack light, it's about to explode
     crackLine.children[0].intensity = 50;
@@ -239,9 +241,9 @@ function breakHeart(callback) {
         const ease = 1 - Math.pow(1 - progress, 4);
 
         // Final explosion of fragments
-        if (progress < 0.1 && !this.fragmentsCreated) {
+        if (progress < 0.1 && !fragmentsCreated) {
             for (let i = 0; i < 30; i++) createFragment(0.5);
-            this.fragmentsCreated = true;
+            fragmentsCreated = true;
         }
 
         // Explode halves - Limited distance so it doesn't go off screen
@@ -269,9 +271,9 @@ function breakHeart(callback) {
         leftHalf.material.transparent = true;
         rightHalf.material.transparent = true;
 
-        if (progress > 0.05 && !this.exploded) {
-            createTicketExplosion(300); // Increased from 150
-            this.exploded = true;
+        if (progress > 0.05 && !exploded) {
+            createTicketExplosion(350); // Slightly more tickets
+            exploded = true;
         }
 
         if (progress < 1) {
@@ -280,7 +282,7 @@ function breakHeart(callback) {
             if (callback) callback();
         }
     }
-    breakLoop.bind({ exploded: false, fragmentsCreated: false })();
+    breakLoop();
 }
 
 function createFragment(scale = 1) {
