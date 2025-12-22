@@ -12,84 +12,96 @@ function init3DChest() {
     const container = document.getElementById('chest-container');
     if (!container) return;
 
-    // Stop previous animation if running
-    if (animationId) cancelAnimationFrame(animationId);
-
-    // Clear container (removes old canvas and loading text)
-    container.innerHTML = '';
-
-    // Re-add instruction text overlay
-    const instruction = document.createElement('p');
-    instruction.className = 'chest-instruction';
-    instruction.innerText = 'Haz clic para abrir';
-    instruction.style.position = 'absolute';
-    instruction.style.bottom = '20px';
-    instruction.style.color = '#ffd700';
-    instruction.style.textShadow = '0 0 5px #000';
-    instruction.style.zIndex = '10';
-    instruction.style.pointerEvents = 'none';
-    container.appendChild(instruction);
-
-    // 1. Scene & Camera
-    scene = new THREE.Scene();
-
-    // Debug: Check dimensions
-    let width = container.clientWidth;
-    let height = container.clientHeight;
-
-    if (width === 0 || height === 0) {
-        console.warn('Chest3D: Container has 0 dimensions. Using fallback 300x400.');
-        width = 300;
-        height = 400;
-        // Verify style
-        container.style.width = '100%';
-        container.style.height = '400px';
+    // Check if Three.js is loaded
+    if (typeof THREE === 'undefined') {
+        alert('Error: Three.js no ha cargado. Verifica tu conexión a internet.');
+        console.error('Three.js not found');
+        return;
     }
-    console.log(`Chest3D: Initializing with ${width}x${height}`);
 
-    // Perspective Camera: FOV, Aspect, Near, Far
-    const aspect = width / height;
-    camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
-    camera.position.set(0, 10, 30);
-    camera.lookAt(0, 0, 0);
+    try {
+        // Stop previous animation if running
+        if (animationId) cancelAnimationFrame(animationId);
 
-    // 2. Renderer
-    renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.shadowMap.enabled = true;
-    container.appendChild(renderer.domElement);
+        // Clear container (removes old canvas and loading text)
+        container.innerHTML = '';
 
-    // 3. Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
+        // Re-add instruction text overlay
+        const instruction = document.createElement('p');
+        instruction.className = 'chest-instruction';
+        instruction.innerText = 'Haz clic para abrir';
+        instruction.style.position = 'absolute';
+        instruction.style.bottom = '20px';
+        instruction.style.color = '#ffd700';
+        instruction.style.textShadow = '0 0 5px #000';
+        instruction.style.zIndex = '10';
+        instruction.style.pointerEvents = 'none';
+        container.appendChild(instruction);
 
-    const dirLight = new THREE.DirectionalLight(0xffd700, 1.5);
-    dirLight.position.set(10, 20, 10);
-    dirLight.castShadow = true;
-    scene.add(dirLight);
+        // 1. Scene & Camera
+        scene = new THREE.Scene();
 
-    const pointLight = new THREE.PointLight(0xffaa00, 1, 50);
-    pointLight.position.set(-5, 5, 5);
-    scene.add(pointLight);
+        // Debug: Check dimensions
+        let width = container.clientWidth;
+        let height = container.clientHeight;
 
-    // 4. Build Chest
-    buildChest();
+        if (width === 0 || height === 0) {
+            console.warn('Chest3D: Container has 0 dimensions. Using fallback 300x400.');
+            width = 300;
+            height = 400;
+            // Verify style
+            container.style.width = '100%';
+            container.style.height = '400px';
+        }
+        console.log(`Chest3D: Initializing with ${width}x${height}`);
 
-    // 5. Interaction
-    // We handle click in main.js via DOM event on the container, which calls start3DSpin()
+        // Perspective Camera: FOV, Aspect, Near, Far
+        const aspect = width / height;
+        camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
+        camera.position.set(0, 10, 30);
+        camera.lookAt(0, 0, 0);
 
-    // 6. Animation Loop
-    animate();
+        // 2. Renderer
+        renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        container.appendChild(renderer.domElement);
 
-    // Resize Handler
-    window.addEventListener('resize', () => {
-        if (!container) return;
-        const newAspect = container.clientWidth / container.clientHeight;
-        camera.aspect = newAspect;
-        camera.updateProjectionMatrix();
-        renderer.setSize(container.clientWidth, container.clientHeight);
-    });
+        // 3. Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffd700, 1.5);
+        dirLight.position.set(10, 20, 10);
+        dirLight.castShadow = true;
+        scene.add(dirLight);
+
+        const pointLight = new THREE.PointLight(0xffaa00, 1, 50);
+        pointLight.position.set(-5, 5, 5);
+        scene.add(pointLight);
+
+        // 4. Build Chest
+        buildChest();
+
+        // 5. Interaction
+        // We handle click in main.js via DOM event on the container, which calls start3DSpin()
+
+        // 6. Animation Loop
+        animate();
+
+        // Resize Handler
+        window.addEventListener('resize', () => {
+            if (!container) return;
+            const newAspect = container.clientWidth / container.clientHeight;
+            camera.aspect = newAspect;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+    } catch (e) {
+        console.error("Critical Error initializing 3D Chest:", e);
+        alert("Error crítico iniciando gráficos 3D: " + e.message);
+    }
 }
 
 function buildChest() {
