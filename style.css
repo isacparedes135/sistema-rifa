@@ -298,13 +298,13 @@ h1 {
 /* 3D Chest Scene */
 /* 3D Chest Scene */
 .chest-container {
-    margin: 1rem 0;
+    margin: 1.5rem 0;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
     width: 100%;
-    min-height: 320px;
+    min-height: 420px;
     overflow: visible;
 }
 
@@ -837,9 +837,9 @@ h1 {
     }
 
     .chest-container {
-        transform: scale(0.65);
+        transform: scale(0.8);
         margin: 0 auto;
-        height: 220px;
+        height: 300px;
     }
 
     /* Mobile Header Refinement */
@@ -980,4 +980,23 @@ h1 {
         width: auto;
         max-width: 90%;
     }
+}
+
+.btn-reset-lucky {
+    background: transparent;
+    border: 1px solid #ffd700 !important;
+    color: #ffd700 !important;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-top: 15px;
+    display: block;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.btn-reset-lucky:hover {
+    background: rgba(255, 215, 0, 0.1);
 }

@@ -33,8 +33,6 @@ function init3DChest() {
 
         container.innerHTML = '';
 
-        container.innerHTML = '';
-
         scene = new THREE.Scene();
 
         let width = container.clientWidth;
@@ -45,21 +43,21 @@ function init3DChest() {
         }
 
         const aspect = width / height;
-        camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 1000); // Lower FOV for more cinematic look
-        camera.position.set(0, 8, 40);
+        camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 1000);
+        camera.position.set(0, 8, 32); // Closer camera
         camera.lookAt(0, -2, 0);
 
         renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
         renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Cap pixel ratio for performance
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Softer shadows
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.8; // Brightened significantly
+        renderer.toneMappingExposure = 2.2; // Brighter exposure
         container.appendChild(renderer.domElement);
 
         // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 2.5); // Much brighter ambient
+        const ambientLight = new THREE.AmbientLight(0xffffff, 3.0); // Maximum brightness
         ambientLight.name = "ambient";
         scene.add(ambientLight);
 
@@ -344,6 +342,7 @@ function buildChest() {
 
     buildTicketPile();
 
+    chestGroup.scale.set(1.3, 1.3, 1.3); // Bigger chest
     chestGroup.rotation.y = -0.5;
     chestGroup.rotation.x = 0.1;
 }
@@ -359,12 +358,12 @@ function buildTicketPile() {
         emissiveIntensity: 0.15
     });
     const baseMass = new THREE.Mesh(baseGeo, goldMat);
-    baseMass.position.y = -0.5; // Raised so it's clearly visible
+    baseMass.position.y = -0.5;
     chestBase.add(baseMass);
 
     // Interior focus light
-    const interiorLight = new THREE.PointLight(0xffd700, 2, 8);
-    interiorLight.position.set(0, 1, 0);
+    const interiorLight = new THREE.PointLight(0xffd700, 3, 10); // Brighter interior
+    interiorLight.position.set(0, 1.5, 0);
     chestBase.add(interiorLight);
 
     // 2. Individual tickets (Messy top layer - more count)
@@ -387,36 +386,16 @@ function buildTicketPile() {
 
 function start3DSpin(callback) {
     if (isSpinning || isOpen) return;
-    isSpinning = true;
-    const duration = 2800;
-    const startTime = Date.now();
-    const startRot = chestGroup.rotation.y;
-    const totalRotations = Math.PI * 12;
-
-    function spinLoop() {
-        const now = Date.now();
-        const progress = Math.min((now - startTime) / duration, 1);
-
-        const speedFactor = Math.pow(progress, 3);
-        chestGroup.rotation.y = startRot + (totalRotations * speedFactor);
-
-        if (progress < 1) {
-            animationId = requestAnimationFrame(spinLoop);
-        } else {
-            isSpinning = false;
-            open3DChest(callback);
-        }
-    }
-    spinLoop();
+    open3DChest(callback);
 }
 
 function open3DChest(callback) {
     isOpen = true;
-    const duration = 1500;
+    const duration = 1800; // Slower open for drama
     const startTime = Date.now();
 
     // Wave triggers
-    const waves = [0.15, 0.3, 0.5, 0.7];
+    const waves = [0.1, 0.25, 0.45, 0.65, 0.85];
     let waveIdx = 0;
 
     function openLoop() {
@@ -427,48 +406,17 @@ function open3DChest(callback) {
 
         // Continuous waves
         if (waveIdx < waves.length && progress > waves[waveIdx]) {
-            createTicketExplosion(40); // 40 tickets per wave
+            createTicketExplosion(35); // Multiple waves
             waveIdx++;
         }
 
         if (progress < 1) {
             requestAnimationFrame(openLoop);
         } else {
-            showResetButton();
             if (callback) callback();
         }
     }
     openLoop();
-}
-
-function showResetButton() {
-    const container = document.getElementById('chest-container');
-    if (!container) return;
-
-    // Check if button exists already
-    if (document.getElementById('btn-reopen-chest')) return;
-
-    const btn = document.createElement('button');
-    btn.id = 'btn-reopen-chest';
-    btn.innerText = 'Re-abrir Cofre';
-    btn.style.position = 'absolute';
-    btn.style.bottom = '-40px';
-    btn.style.padding = '10px 20px';
-    btn.style.background = '#ffd700';
-    btn.style.color = '#000';
-    btn.style.border = 'none';
-    btn.style.borderRadius = '5px';
-    btn.style.fontWeight = 'bold';
-    btn.style.cursor = 'pointer';
-    btn.style.zIndex = '100';
-
-    btn.onclick = () => {
-        init3DChest();
-        // Since we are in a modal, we might need to reset the global state in main.js
-        // but init3DChest resets internal state well enough.
-    };
-
-    container.appendChild(btn);
 }
 
 function createTicketExplosion(count = 150) {
@@ -488,16 +436,16 @@ function createTicketExplosion(count = 150) {
         flyingTickets.push({
             mesh: ticket,
             velocity: new THREE.Vector3(
-                (Math.random() - 0.5) * 1.1, // Slower (1.5 -> 1.1)
-                Math.random() * 0.6 + 0.3,   // Slower
-                (Math.random() - 0.5) * 0.8 + 0.3 // Slower
+                (Math.random() - 0.5) * 1.0,
+                Math.random() * 0.5 + 0.3,
+                (Math.random() - 0.5) * 0.7 + 0.3
             ),
             rotationSpeed: new THREE.Vector3(
-                Math.random() * 0.3 - 0.15,
-                Math.random() * 0.3 - 0.15,
-                Math.random() * 0.3 - 0.15
+                Math.random() * 0.2 - 0.1,
+                Math.random() * 0.2 - 0.1,
+                Math.random() * 0.2 - 0.1
             ),
-            gravity: -0.01 - (Math.random() * 0.004)
+            gravity: -0.008 - (Math.random() * 0.003) // Slower fall
         });
     }
 }

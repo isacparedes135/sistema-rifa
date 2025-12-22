@@ -754,6 +754,17 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.manual-tracker').style.display = 'none';
         document.querySelector('.search-box').style.display = 'none';
         if (mosaicContainer) mosaicContainer.style.display = 'none';
+
+        // Add "Try Again" Button
+        const tryAgainBtn = document.createElement('button');
+        tryAgainBtn.className = 'btn-reset-lucky';
+        tryAgainBtn.id = 'btn-reopen-chest-summary';
+        tryAgainBtn.innerText = '¿No te gustaron? Inténtalo de nuevo 🔄';
+        tryAgainBtn.onclick = () => {
+            closeModal(manualModal);
+            startLuckyChestSequence();
+        };
+        manualSelectedList.appendChild(tryAgainBtn);
     }
 
     // --- Cart & Checkout Logic ---
