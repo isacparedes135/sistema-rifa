@@ -575,10 +575,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const particlesContainer = document.querySelector('.particles');
         if (particlesContainer) particlesContainer.innerHTML = '';
 
-        // Initialize Three.js Chest with a small delay to ensure DOM reflow (dimensions are calculated correctly)
+        // Initialize Three.js Chest with a small delay
         requestAnimationFrame(() => {
             if (window.init3DChest) {
                 window.init3DChest();
+            } else {
+                console.error("Critical: logic chest3d.js not loaded.");
+                alert("Error: No se ha cargado el módulo del cofre 3D (chest3d.js).");
             }
         });
 
