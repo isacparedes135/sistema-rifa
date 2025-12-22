@@ -11,6 +11,8 @@
 
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Three.js for 3D Graphics -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
     <script src="supabaseClient.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -116,90 +118,42 @@
                         <span class="close-modal">&times;</span>
                         <h3 style="color: #ffd700; text-shadow: 0 0 10px #000; margin-bottom: 2rem;">¡Haz clic en el
                             cofre para abrirlo!</h3>
-                        <div id="chest-container" class="chest-container" style="cursor: pointer;">
-                            <div class="scene">
-                                <div class="chest-3d">
-                                    <div class="chest-base">
-                                        <div class="chest-face front"></div>
-                                        <div class="chest-face back"></div>
-                                        <div class="chest-face right"></div>
-                                        <div class="chest-face left"></div>
-                                        <div class="chest-face bottom"></div>
-                                    </div>
-                                    <div class="lid">
-                                        <div class="lid-strip s1">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s2">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s3">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s4">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s5">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s6">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s7">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s8">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s9">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s10">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s11">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s12">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s13">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s14">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s15">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s16">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s17">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s18">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s19">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="lid-strip s20">
-                                            <div class="lid-thickness"></div>
-                                        </div>
-                                        <div class="chest-face lid-left"></div>
-                                        <div class="chest-face lid-right"></div>
-                                        <div class="chest-face lid-front">
-                                            <div class="chest-latch"></div>
-                                        </div>
-                                        <div class="chest-face lid-back"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="particles"></div>
-                            <p class="chest-instruction">Haz click para abrir el cofre</p>
-                        </div>
+                        <div class="lid-thickness"></div>
                     </div>
+                    <div class="lid-strip s14">
+                        <div class="lid-thickness"></div>
+                    </div>
+                    <div class="lid-strip s15">
+                        <div class="lid-thickness"></div>
+                    </div>
+                    <div class="lid-strip s16">
+                        <div class="lid-thickness"></div>
+                    </div>
+                    <div class="lid-strip s17">
+                        <div class="lid-thickness"></div>
+                    </div>
+                    <div class="lid-strip s18">
+                        <div class="lid-thickness"></div>
+                    </div>
+                    <div class="lid-strip s19">
+                        <div class="lid-thickness"></div>
+                    </div>
+                    <div class="lid-strip s20">
+                        <div class="lid-thickness"></div>
+                    </div>
+                    <div class="chest-face lid-left"></div>
+                    <div class="chest-face lid-right"></div>
+                    <div class="chest-face lid-front">
+                        <div class="chest-latch"></div>
+                    </div>
+                    <div class="chest-face lid-back"></div>
+                </div>
+            </div>
+            </div>
+            <div class="particles"></div>
+            <p class="chest-instruction">Haz click para abrir el cofre</p>
+            </div>
+            </div>
         </section>
     </main>
 
@@ -388,6 +342,7 @@
         </div>
     </div>
 
+    <script src="chest3d.js"></script>
     <script src="main.js"></script>
 </body>
 

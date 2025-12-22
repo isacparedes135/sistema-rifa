@@ -575,32 +575,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const particlesContainer = document.querySelector('.particles');
         if (particlesContainer) particlesContainer.innerHTML = '';
 
-        // Remove Autoplay
-        // Add "Click to Open" functionality
-        // We use a named function to allow removing the listener to prevent multiple clicks
+        // Initialize Three.js Chest
+        if (window.init3DChest) {
+            window.init3DChest();
+        }
+
+        // Interaction Handler
         const onChestClick = () => {
             chestContainer.removeEventListener('click', onChestClick); // Execute once
 
-            // First, add spinning animation for excitement
-            chestContainer.classList.add('chest-spinning');
-
-            // Hide instruction text during spin
+            // Hide instruction text
             const instructionText = chestContainer.querySelector('.chest-instruction');
-            if (instructionText) instructionText.style.opacity = '0';
+            if (instructionText) instructionText.style.display = 'none';
 
-            // Create orbiting sparkle particles
-            createSpinParticles();
-
-            // After spin animation completes (1.8s), open the chest
-            setTimeout(() => {
-                // Remove spin particles
-                removeSpinParticles();
-
-                chestContainer.classList.remove('chest-spinning');
-                chestContainer.classList.add('chest-open');
-                createAdvancedParticles();
-                generateLuckyNumbers();
-            }, 1800);
+            // Start 3D Spin Animation
+            if (window.start3DSpin) {
+                window.start3DSpin(() => {
+                    // Callback when chest is fully open
+                    generateLuckyNumbers();
+                    createAdvancedParticles(); // Keep DOM particles for now
+                });
+            }
         };
 
         chestContainer.addEventListener('click', onChestClick);
