@@ -974,9 +974,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCountdown(); // Init
 
     // --- Mobile Menu Interaction ---
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const closeMenuBtn = document.getElementById('close-menu-btn');
-    const navMenu = document.getElementById('nav-menu');
     const navActionsButtons = document.querySelectorAll('.nav-actions button');
 
     function toggleMenu() {
