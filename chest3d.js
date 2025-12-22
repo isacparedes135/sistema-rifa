@@ -155,26 +155,24 @@ function buildChest() {
 
     const agedWoodMat = new THREE.MeshStandardMaterial({
         map: woodMap,
-        color: 0x8d6e63, // Lighter wood
-        roughness: 0.7,
+        color: 0x5d4037, // Original dark wood
+        roughness: 0.8,
         metalness: 0.1,
         side: THREE.DoubleSide
     });
 
-    // Worn Gold/Bronze
+    // Original Bronze
     const wornMetalMat = new THREE.MeshStandardMaterial({
-        color: 0xffd700, // Gold
-        roughness: 0.2,
-        metalness: 0.9,
+        color: 0x6d5635,
+        roughness: 0.4,
+        metalness: 0.6,
     });
 
-    // Metallic trim
+    // Original Black Iron
     const ironMat = new THREE.MeshStandardMaterial({
-        color: 0xdaa520, // Goldenrod / Bronze
-        roughness: 0.3,
-        metalness: 0.8,
-        emissive: 0xdaa520,
-        emissiveIntensity: 0.1
+        color: 0x222222,
+        roughness: 0.7,
+        metalness: 0.5
     });
 
     // --- GEOMETRY ---
@@ -368,7 +366,7 @@ function buildTicketPile() {
         metalness: 0.9,
         roughness: 0.1,
         emissive: 0xffaa00,
-        emissiveIntensity: 0.3 // More emissive for shimmer
+        emissiveIntensity: 0.4 // Extra shimmer for tickets
     });
     const baseMass = new THREE.Mesh(baseGeo, goldMat);
     baseMass.position.y = -0.5;

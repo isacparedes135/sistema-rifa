@@ -304,7 +304,8 @@ h1 {
     align-items: center;
     position: relative;
     width: 100%;
-    min-height: 420px;
+    min-height: 520px;
+    /* Increased from 420px */
     overflow: visible;
 }
 
@@ -865,7 +866,8 @@ h1 {
     .chest-container {
         transform: scale(0.8);
         margin: 0 auto;
-        height: 300px;
+        height: 400px;
+        /* Increased from 300px */
     }
 
     /* Mobile Header Refinement */
