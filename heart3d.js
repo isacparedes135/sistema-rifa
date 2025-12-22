@@ -80,12 +80,12 @@ function buildHeart() {
     scene.add(heartGroup);
 
     const extrudeSettings = {
-        depth: 1.2,
+        depth: 1.5, // Deeper for more relief
         bevelEnabled: true,
-        bevelSegments: 15,
+        bevelSegments: 20,
         steps: 2,
-        bevelSize: 0.4,
-        bevelThickness: 0.4
+        bevelSize: 0.6, // Larger bevel for smoother rounds
+        bevelThickness: 0.6 // Thicker relief
     };
 
     // Premium Material: Glass/Gem Look
@@ -102,13 +102,6 @@ function buildHeart() {
         emissiveIntensity: 0.1
     });
 
-    const goldMat = new THREE.MeshStandardMaterial({
-        color: 0xffd700,
-        metalness: 1.0,
-        roughness: 0.2,
-        emissive: 0xd4af37,
-        emissiveIntensity: 0.2
-    });
 
     // --- Left Half ---
     const leftShape = new THREE.Shape();
@@ -122,11 +115,6 @@ function buildHeart() {
     leftHalf = new THREE.Mesh(leftGeo, heartMat);
     heartGroup.add(leftHalf);
 
-    // Ornament: Gold Trim for Left
-    const leftTrim = new THREE.Mesh(leftGeo, goldMat);
-    leftTrim.scale.set(1.05, 1.05, 1.05);
-    leftTrim.position.z = -0.1;
-    leftHalf.add(leftTrim);
 
     // --- Right Half ---
     const rightShape = new THREE.Shape();
@@ -140,11 +128,6 @@ function buildHeart() {
     rightHalf = new THREE.Mesh(rightGeo, heartMat);
     heartGroup.add(rightHalf);
 
-    // Ornament: Gold Trim for Right
-    const rightTrim = new THREE.Mesh(rightGeo, goldMat);
-    rightTrim.scale.set(1.05, 1.05, 1.05);
-    rightTrim.position.z = -0.1;
-    rightHalf.add(rightTrim);
 
     // --- Rupture Line (The Crack) ---
     // A jagged glowing line in the center
@@ -186,15 +169,19 @@ function startHeartBreak(callback) {
     function phase1() {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / phase1Duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 2);
 
         // Shake Intensity increases
-        const shake = progress * 0.8;
+        const shake = progress * 1.0;
         heartGroup.position.x = (Math.random() - 0.5) * shake;
         heartGroup.position.y = (Math.random() - 0.5) * shake;
 
+        // Rotate towards the front (but slightly sideways)
+        heartGroup.rotation.y = -0.2 + (0.5 * ease);
+
         // Form the crack
         crackLine.material.opacity = progress;
-        crackLine.children[0].intensity = progress * 20;
+        crackLine.children[0].intensity = progress * 40; // Brighter crack
 
         if (progress < 1) {
             requestAnimationFrame(phase1);
@@ -219,16 +206,16 @@ function breakHeart(callback) {
         const progress = Math.min(elapsed / duration, 1);
         const ease = 1 - Math.pow(1 - progress, 4);
 
-        // Explode halves
-        leftHalf.position.x = -12 * ease;
-        leftHalf.position.y = 4 * ease;
-        leftHalf.rotation.z = -1.5 * ease;
-        leftHalf.rotation.y = -1.2 * ease;
+        // Explode halves - Limited distance so it doesn't go off screen
+        leftHalf.position.x = -6 * ease;
+        leftHalf.position.y = 1 * ease;
+        leftHalf.rotation.z = -0.8 * ease;
+        leftHalf.rotation.y = -0.5 * ease;
 
-        rightHalf.position.x = 12 * ease;
-        rightHalf.position.y = 4 * ease;
-        rightHalf.rotation.z = 1.5 * ease;
-        rightHalf.rotation.y = 1.2 * ease;
+        rightHalf.position.x = 6 * ease;
+        rightHalf.position.y = 1 * ease;
+        rightHalf.rotation.z = 0.8 * ease;
+        rightHalf.rotation.y = 0.5 * ease;
 
         crackLine.visible = false;
 
