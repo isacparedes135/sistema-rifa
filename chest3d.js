@@ -22,6 +22,13 @@ function init3DChest() {
 
     try {
         if (animationId) cancelAnimationFrame(animationId);
+
+        // Reset State (Fix for re-opening bug)
+        isSpinning = false;
+        isOpen = false;
+        floatFrame = 0;
+        particles = []; // Clear particles array logic
+
         container.innerHTML = '';
 
         // Instruction text
@@ -56,16 +63,15 @@ function init3DChest() {
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Softer shadows
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.0;
+        renderer.toneMappingExposure = 1.3; // Increased exposure significantly
         container.appendChild(renderer.domElement);
 
-        // Lighting - Dramatic Pirate Lighting
         // Lighting - Brighter "Studio" Lighting for visibility
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1.2); // Much brighter base
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Boosted Ambient
         scene.add(ambientLight);
 
         // Strong Front Key Light
-        const frontLight = new THREE.DirectionalLight(0xfffaed, 1.5);
+        const frontLight = new THREE.DirectionalLight(0xfffaed, 1.8); // Boosted Front Light
         frontLight.position.set(5, 10, 20); // Front-Right-Top
         frontLight.castShadow = true;
         scene.add(frontLight);
