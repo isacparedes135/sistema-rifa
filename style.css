@@ -307,16 +307,23 @@ h1 {
 /* 3D Chest Scene */
 /* 3D Chest Scene */
 .chest-container {
-    margin: 0.5rem 0;
-    /* Reduced from 1.5rem */
+    margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
     width: 100%;
-    min-height: 480px;
-    /* Slightly reduced as cofre is smaller */
+    height: 400px;
+    /* Reduced from 480px */
+    min-height: 350px;
     overflow: visible;
+}
+
+@media (max-width: 768px) {
+    .chest-container {
+        height: 320px;
+        min-height: 300px;
+    }
 }
 
 /* Chest Modal Specific Refinements */
