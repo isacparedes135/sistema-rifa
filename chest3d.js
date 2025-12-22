@@ -359,6 +359,7 @@ function buildChest() {
     chestGroup.scale.set(0.9, 0.9, 0.9); // Smaller than v16's 1.0x
     chestGroup.position.y = -3; // Lowered from -2 to give more ceiling space
     chestGroup.rotation.x = 0.1;
+    chestGroup.rotation.y = -0.4; // Tilted to the side
 }
 
 function buildTicketPile() {
