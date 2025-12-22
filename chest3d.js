@@ -268,9 +268,10 @@ function buildChest() {
     rSide.position.set(W / 2, 0, D / 2);
     lidGroup.add(rSide);
 
-    // Inner Lid
-    const innerLid = new THREE.Mesh(lidArchGeo, innerMat);
-    innerLid.scale.set(0.95, 0.95, 0.98); // Slightly smaller
+    // Inner Lid (Fix: Use smaller geometry instead of scaling to avoid distortion)
+    const innerLidGeo = new THREE.CylinderGeometry(lidRadius - 0.1, lidRadius - 0.1, W - 0.1, 32, 1, true, 0, Math.PI);
+    innerLidGeo.rotateZ(Math.PI / 2);
+    const innerLid = new THREE.Mesh(innerLidGeo, innerMat);
     innerLid.position.z = D / 2;
     lidGroup.add(innerLid);
 
@@ -286,20 +287,23 @@ function buildChest() {
         lidGroup.add(b);
     });
 
-    // Big Heavy Latch
+    // Big Heavy Latch (Fixed positions)
+    // Lock Plate on Base (Was floating at D+0.2, needs to be D/2 + thickness)
     const lockPlate = new THREE.Mesh(new THREE.BoxGeometry(2.5, 3, 0.5), ironMat);
-    lockPlate.position.set(0, 0, D + 0.2);
+    lockPlate.position.set(0, 0, D / 2 + 0.26); // Attached to front wall
     chestBase.add(lockPlate);
 
+    // Hasp on Lid (Hangs down)
+    // Lid front edge is roughly at Z=D relative to hinge.
     const lidHasp = new THREE.Mesh(new THREE.BoxGeometry(2, 2.5, 0.6), ironMat);
-    lidHasp.position.set(0, -0.5, D + 0.3); // Hangs down from lid
+    lidHasp.position.set(0, -0.5, D + 0.3); // Relative to lidGroup pivot
     lidHasp.rotation.x = Math.PI / 12;
     lidGroup.add(lidHasp);
 
     // Padlock Ring
     const ringGeo = new THREE.TorusGeometry(0.6, 0.15, 8, 16);
     const ring = new THREE.Mesh(ringGeo, wornMetalMat);
-    ring.position.set(0, -1.8, D + 0.6);
+    ring.position.set(0, -1.8, D + 0.6); // Slightly in front of hasp
     ring.rotation.y = Math.PI / 2;
     lidGroup.add(ring);
 
