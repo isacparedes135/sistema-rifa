@@ -1,10 +1,11 @@
 // Chest 3D Logic using Three.js
 
-let scene, camera, renderer, chestGroup, lidGroup, chestBase, keyGroup;
-let isAnimating = false;
+let scene, camera, renderer, chestGroup, lidGroup, chestBase;
+let isSpinning = false;
 let isOpen = false;
 let floatFrame = 0;
 let animationId;
+let particles = [];
 
 // Cache textures to avoid stutter on reload
 let cachedWoodTexture = null;
@@ -22,10 +23,11 @@ function init3DChest() {
     try {
         if (animationId) cancelAnimationFrame(animationId);
 
-        // Reset State
-        isAnimating = false;
+        // Reset State (Fix for re-opening bug)
+        isSpinning = false;
         isOpen = false;
         floatFrame = 0;
+        particles = []; // Clear particles array logic
 
         container.innerHTML = '';
 
@@ -51,40 +53,41 @@ function init3DChest() {
         }
 
         const aspect = width / height;
-        camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 1000);
+        camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 1000); // Lower FOV for more cinematic look
         camera.position.set(0, 8, 40);
         camera.lookAt(0, -2, 0);
 
         renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
         renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Cap pixel ratio for performance
         renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Softer shadows
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.3;
+        renderer.toneMappingExposure = 1.3; // Increased exposure significantly
         container.appendChild(renderer.domElement);
 
-        // Lighting 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+        // Lighting - Brighter "Studio" Lighting for visibility
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.5); // Boosted Ambient
         scene.add(ambientLight);
 
-        const frontLight = new THREE.DirectionalLight(0xfffaed, 1.8);
-        frontLight.position.set(5, 10, 20);
+        // Strong Front Key Light
+        const frontLight = new THREE.DirectionalLight(0xfffaed, 1.8); // Boosted Front Light
+        frontLight.position.set(5, 10, 20); // Front-Right-Top
         frontLight.castShadow = true;
         scene.add(frontLight);
 
+        // Fill Light from left
         const fillLight = new THREE.PointLight(0xffd700, 0.8, 50);
         fillLight.position.set(-15, 5, 10);
         scene.add(fillLight);
 
+        // Rim Light for edge definition (Back)
         const rimLight = new THREE.SpotLight(0x4a90e2, 2);
         rimLight.position.set(0, 15, -20);
         rimLight.lookAt(0, 0, 0);
         scene.add(rimLight);
 
         buildChest();
-        buildKey(); // Prepare the key (hidden initially)
-
         animate();
 
         window.addEventListener('resize', () => {
@@ -109,25 +112,30 @@ function getWoodTexture() {
     canvas.width = 512;
     canvas.height = 512;
     const ctx = canvas.getContext('2d');
+
+    // Dark, aged wood base
     ctx.fillStyle = '#21130d';
     ctx.fillRect(0, 0, 512, 512);
 
+    // Weathered grain
     for (let i = 0; i < 150; i++) {
         const x = Math.random() * 512;
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.bezierCurveTo(x + (Math.random() - 0.5) * 100, 200, x + (Math.random() - 0.5) * 100, 400, x, 512);
+        // Varying thickness and opacity for depth
         ctx.strokeStyle = Math.random() > 0.5 ? '#1a0f0a' : '#2e1c12';
         ctx.lineWidth = Math.random() * 4 + 1;
         ctx.stroke();
     }
 
+    // Scratches/Noise
     const imageData = ctx.getImageData(0, 0, 512, 512);
     const data = imageData.data;
     for (let i = 0; i < data.length; i += 4) {
         if (Math.random() > 0.95) {
             const val = data[i] + (Math.random() - 0.5) * 40;
-            data[i] = data[i + 1] = data[i + 2] = val;
+            data[i] = data[i + 1] = data[i + 2] = val; // Grayscale scratches
         }
     }
     ctx.putImageData(imageData, 0, 0);
@@ -141,90 +149,137 @@ function buildChest() {
     chestGroup = new THREE.Group();
     scene.add(chestGroup);
 
-    // Materials
+    // --- MATERIALS (Aged Pirate Look) ---
     const woodMap = getWoodTexture();
+
     const agedWoodMat = new THREE.MeshStandardMaterial({
-        map: woodMap, color: 0x5d4037, roughness: 0.8, metalness: 0.1
-    });
-    const wornMetalMat = new THREE.MeshStandardMaterial({
-        color: 0x6d5635, roughness: 0.4, metalness: 0.6
-    });
-    const ironMat = new THREE.MeshStandardMaterial({
-        color: 0x222222, roughness: 0.7, metalness: 0.5
-    });
-    const innerMat = new THREE.MeshStandardMaterial({
-        color: 0x1a0f0a, roughness: 1.0, side: THREE.BackSide
+        map: woodMap,
+        color: 0x5d4037,
+        roughness: 0.8,
+        metalness: 0.1,
+        // bumpMap: woodMap, // Bump map can be expensive on low-end, keeping map is enough usually
     });
 
-    // Geometry
-    const W = 11; const H = 6; const D = 7; const thickness = 0.8;
+    // Worn Iron/Bronze
+    const wornMetalMat = new THREE.MeshStandardMaterial({
+        color: 0x6d5635, // Dull Bronze
+        roughness: 0.4,
+        metalness: 0.6,
+    });
+
+    // Black Iron (for structural bands)
+    const ironMat = new THREE.MeshStandardMaterial({
+        color: 0x222222,
+        roughness: 0.7,
+        metalness: 0.5
+    });
+
+    const innerMat = new THREE.MeshStandardMaterial({
+        color: 0x1a0f0a,
+        roughness: 1.0,
+        side: THREE.BackSide
+    });
+
+    // --- GEOMETRY ---
+    // Make it "fat" and heavy
+    const W = 11;
+    const H = 6;
+    const D = 7;
+    const thickness = 0.8;
+
     chestBase = new THREE.Group();
     chestGroup.add(chestBase);
 
-    // Box
+    // Box Walls (Tapered effect manually?) 
+    // Just standard thick walls for solidity
+
     const floor = new THREE.Mesh(new THREE.BoxGeometry(W, thickness, D), agedWoodMat);
     floor.position.y = -H / 2 + thickness / 2;
     floor.receiveShadow = true;
     chestBase.add(floor);
+
     const front = new THREE.Mesh(new THREE.BoxGeometry(W, H, thickness), agedWoodMat);
     front.position.z = D / 2 - thickness / 2;
     front.receiveShadow = true;
     chestBase.add(front);
+
     const back = new THREE.Mesh(new THREE.BoxGeometry(W, H, thickness), agedWoodMat);
     back.position.z = -D / 2 + thickness / 2;
     back.receiveShadow = true;
     chestBase.add(back);
+
     const left = new THREE.Mesh(new THREE.BoxGeometry(thickness, H, D - thickness * 2), agedWoodMat);
-    left.position.x = -W / 2 + thickness / 2; left.receiveShadow = true;
+    left.position.x = -W / 2 + thickness / 2;
+    left.receiveShadow = true;
     chestBase.add(left);
+
     const right = new THREE.Mesh(new THREE.BoxGeometry(thickness, H, D - thickness * 2), agedWoodMat);
-    right.position.x = W / 2 - thickness / 2; right.receiveShadow = true;
+    right.position.x = W / 2 - thickness / 2;
+    right.receiveShadow = true;
     chestBase.add(right);
 
-    // Bands & Details
-    const bandGeo = new THREE.BoxGeometry(1.2, H, 1.2 * 1.5);
-    const corners = [{ x: -W / 2, z: D / 2 }, { x: W / 2, z: D / 2 }, { x: -W / 2, z: -D / 2 }, { x: W / 2, z: -D / 2 }];
+    // --- HEAVY IRON BANDS ---
+    // Vertical bands interacting with lid
+    const bandGeo = new THREE.BoxGeometry(1.2, H, 1.2 * 1.5); // Thicker corners
+    const corners = [
+        { x: -W / 2, z: D / 2 }, { x: W / 2, z: D / 2 },
+        { x: -W / 2, z: -D / 2 }, { x: W / 2, z: -D / 2 }
+    ];
     corners.forEach(pos => {
+        // Main Corner Post
         const post = new THREE.Mesh(bandGeo, ironMat);
         post.position.set(pos.x, 0, pos.z);
         chestBase.add(post);
-        const r1 = new THREE.Mesh(new THREE.SphereGeometry(0.25, 8, 8), wornMetalMat);
+
+        // Rivets
+        const rivGeo = new THREE.SphereGeometry(0.25, 8, 8);
+        const r1 = new THREE.Mesh(rivGeo, wornMetalMat);
         r1.position.set(pos.x, H / 3, pos.z + (pos.z > 0 ? 0.6 : -0.6));
         chestBase.add(r1);
-        const r2 = new THREE.Mesh(new THREE.SphereGeometry(0.25, 8, 8), wornMetalMat);
+
+        const r2 = new THREE.Mesh(rivGeo, wornMetalMat);
         r2.position.set(pos.x + (pos.x > 0 ? 0.6 : -0.6), H / 3, pos.z);
         chestBase.add(r2);
     });
 
-    // Lid
+    // --- LID (Curved Pirate Style) ---
     lidGroup = new THREE.Group();
     lidGroup.position.set(0, H / 2, -D / 2);
     chestGroup.add(lidGroup);
 
+    // Main Arch
     const lidRadius = D / 2;
+    // slightly larger radius so it overhangs
     const lidArchGeo = new THREE.CylinderGeometry(lidRadius, lidRadius, W, 32, 1, false, 0, Math.PI);
     lidArchGeo.rotateZ(Math.PI / 2);
     const lidMesh = new THREE.Mesh(lidArchGeo, agedWoodMat);
     lidMesh.position.z = D / 2;
     lidGroup.add(lidMesh);
 
+    // Lid Sides
     const lidSideGeo = new THREE.CircleGeometry(lidRadius, 32, 0, Math.PI);
     const lSide = new THREE.Mesh(lidSideGeo, agedWoodMat);
-    lSide.rotation.y = -Math.PI / 2; lSide.position.set(-W / 2, 0, D / 2);
+    lSide.rotation.y = -Math.PI / 2;
+    lSide.position.set(-W / 2, 0, D / 2);
     lidGroup.add(lSide);
+
     const rSide = new THREE.Mesh(lidSideGeo, agedWoodMat);
-    rSide.rotation.y = Math.PI / 2; rSide.position.set(W / 2, 0, D / 2);
+    rSide.rotation.y = Math.PI / 2;
+    rSide.position.set(W / 2, 0, D / 2);
     lidGroup.add(rSide);
 
+    // Inner Lid (Fix: Use smaller geometry instead of scaling to avoid distortion)
     const innerLidGeo = new THREE.CylinderGeometry(lidRadius - 0.1, lidRadius - 0.1, W - 0.1, 32, 1, true, 0, Math.PI);
     innerLidGeo.rotateZ(Math.PI / 2);
     const innerLid = new THREE.Mesh(innerLidGeo, innerMat);
     innerLid.position.z = D / 2;
     lidGroup.add(innerLid);
 
-    // Lid Bands
+    // --- LID DETAILS (Iron Bands) ---
     const archBandGeo = new THREE.CylinderGeometry(lidRadius + 0.1, lidRadius + 0.1, 1.2, 32, 1, false, 0, Math.PI);
     archBandGeo.rotateZ(Math.PI / 2);
+
+    // 3 Bands: Left, Center, Right
     const bandPos = [-W / 2 + 0.6, 0, W / 2 - 0.6];
     bandPos.forEach(x => {
         const b = new THREE.Mesh(archBandGeo, ironMat);
@@ -232,159 +287,165 @@ function buildChest() {
         lidGroup.add(b);
     });
 
-    // --- LOCK MECHANISM ---
-    const lockWidth = 2.0; const lockHeight = 2.2; const lockDepth = 0.8;
-    const lockBody = new THREE.Mesh(new THREE.BoxGeometry(lockWidth, lockHeight, lockDepth), ironMat);
+    // --- DETAILED LOCK MECHANISM (Skeleton Key Ready) ---
+
+    // 1. Lock Body (Attached to Base)
+    // A thick, iron housing for the mechanism
+    const lockWidth = 2.0;
+    const lockHeight = 2.2;
+    const lockDepth = 0.8;
+    const lockBodyGeo = new THREE.BoxGeometry(lockWidth, lockHeight, lockDepth);
+    const lockBody = new THREE.Mesh(lockBodyGeo, ironMat);
+    // Position on front wall (D/2), centered
     lockBody.position.set(0, 0, D / 2 + lockDepth / 2);
     chestBase.add(lockBody);
 
-    const lockPlateDeco = new THREE.Mesh(new THREE.BoxGeometry(lockWidth + 0.2, lockHeight + 0.2, 0.2), wornMetalMat);
-    lockPlateDeco.position.set(0, 0, -0.4);
+    // Decorative Plate (Bronze/Gold border on lock)
+    const plateGeo = new THREE.BoxGeometry(lockWidth + 0.2, lockHeight + 0.2, 0.2);
+    const lockPlateDeco = new THREE.Mesh(plateGeo, wornMetalMat);
+    lockPlateDeco.position.set(0, 0, -0.4); // slightly behind front face of lockBody
     lockBody.add(lockPlateDeco);
 
-    const keyHoleRound = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16), new THREE.MeshBasicMaterial({ color: 0x000000 }));
-    keyHoleRound.rotateX(Math.PI / 2); keyHoleRound.position.set(0, 0.2, lockDepth / 2 + 0.01);
+    // 2. The Keyhole (Functional looking black void)
+    // Cylinder for the round part
+    const keyHoleRoundGeo = new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16);
+    keyHoleRoundGeo.rotateX(Math.PI / 2);
+    const keyHoleRound = new THREE.Mesh(keyHoleRoundGeo, new THREE.MeshBasicMaterial({ color: 0x000000 }));
+    keyHoleRound.position.set(0, 0.2, lockDepth / 2 + 0.01);
     lockBody.add(keyHoleRound);
-    const keyHoleSlit = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.6, 0.5), new THREE.MeshBasicMaterial({ color: 0x000000 }));
+
+    // Box for the slit part
+    const keyHoleSlitGeo = new THREE.BoxGeometry(0.15, 0.6, 0.5);
+    const keyHoleSlit = new THREE.Mesh(keyHoleSlitGeo, new THREE.MeshBasicMaterial({ color: 0x000000 }));
     keyHoleSlit.position.set(0, 0, lockDepth / 2 + 0.01);
     lockBody.add(keyHoleSlit);
 
-    const hasp = new THREE.Mesh(new THREE.BoxGeometry(1.0, 2.5, 0.3), ironMat);
-    hasp.position.set(0, -1.0, D + 0.4); hasp.rotation.x = Math.PI / 12;
+    // 3. The Hasp (Hinged part from Lid)
+    // Must look like it goes OVER the lock loop (implied loop)
+    const haspWidth = 1.0;
+    const haspheight = 2.5;
+    const haspThick = 0.3;
+
+    // Main vertical strip
+    const haspGeo = new THREE.BoxGeometry(haspWidth, haspheight, haspThick);
+    const hasp = new THREE.Mesh(haspGeo, ironMat);
+    // Hasp pivot point is at the top edge of the base usually, or attached to lid.
+    // If attached to lid, it rotates with lid.
+    // Position relative to Lid Group: 
+    // It should hang down from front center.
+    hasp.position.set(0, -1.0, D + 0.4); // Hanging down
+    hasp.rotation.x = Math.PI / 12; // Slight angle out
     lidGroup.add(hasp);
 
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.6, 0.15, 8, 16), wornMetalMat);
-    ring.position.set(0, -1.8, D + 0.6); ring.rotation.y = Math.PI / 2;
-    lidGroup.add(ring);
+    // The "Loop" or "staple" on the hasp that goes over the lock? 
+    // Usually the hasp has a slot, and a loop comes from the lock. 
+    // Let's create the visible "Slot" on the hasp
+    const haspSlot = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.8, 0.1), new THREE.MeshBasicMaterial({ color: 0x111111 }));
+    haspSlot.position.set(0, -0.8, 0.16); // Surface of hasp
+    hasp.add(haspSlot);
 
+    // Padlock Ring/Loop (Optional, but user asked for "key" lock, usually integral)
+    // We'll assume it's an integral lock (chest lock), so the Hasp just clicks in.
+    // The keyhole is ON the chest body (lockBody).
+    // The hasp latches INTO the lock body. This is consistent with "Skeleton Key" chests.
+
+    // Side Handles (Heavy Rings)
     const handleGeo = new THREE.TorusGeometry(1.2, 0.25, 8, 16);
     const hL = new THREE.Mesh(handleGeo, ironMat);
-    hL.position.set(-W / 2 - 0.3, 0, 0); hL.rotation.y = Math.PI / 2;
+    hL.position.set(-W / 2 - 0.3, 0, 0);
+    hL.rotation.y = Math.PI / 2;
     chestBase.add(hL);
+
     const hR = new THREE.Mesh(handleGeo, ironMat);
-    hR.position.set(W / 2 + 0.3, 0, 0); hR.rotation.y = Math.PI / 2;
+    hR.position.set(W / 2 + 0.3, 0, 0);
+    hR.rotation.y = Math.PI / 2;
     chestBase.add(hR);
 
+    // Initial setup
     chestGroup.rotation.y = -0.5;
     chestGroup.rotation.x = 0.1;
 }
 
-function buildKey() {
-    keyGroup = new THREE.Group();
-    // Start Key Hidden and far away
-    keyGroup.visible = false;
-    scene.add(keyGroup);
-
-    const keyMat = new THREE.MeshStandardMaterial({
-        color: 0xfffaed, // Antique Bone/Bright Brass
-        roughness: 0.3,
-        metalness: 0.8
-    });
-
-    // Shaft
-    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 4, 8), keyMat);
-    shaft.rotation.x = Math.PI / 2; // Point z-axis
-    keyGroup.add(shaft);
-
-    // Bow (Ring handle)
-    const bow = new THREE.Mesh(new THREE.TorusGeometry(0.6, 0.15, 8, 16), keyMat);
-    bow.position.set(0, 0, 2);
-    keyGroup.add(bow);
-
-    // Bit (Teeth)
-    const bit = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.8, 0.15), keyMat);
-    bit.position.set(0, 0.5, -1.8);
-    keyGroup.add(bit);
-}
-
-// --- NEW ANIMATION SEQUENCE ---
-
 function start3DSpin(callback) {
-    // Alias to keep main.js compatible, but now triggers Key Sequence
-    startKeySequence(callback);
-}
-
-function startKeySequence(callback) {
-    if (isAnimating || isOpen) return;
-    isAnimating = true;
-
-    // Reset Key Position
-    keyGroup.visible = true;
-    keyGroup.position.set(0, 0.3, 10); // Start far front
-    keyGroup.rotation.z = 0;
-
-    // Animate Key Insertion
-    const duration = 2500;
+    if (isSpinning || isOpen) return;
+    isSpinning = true;
+    const duration = 2000; // Slower, heavier spin
     const startTime = Date.now();
+    const startRot = chestGroup.rotation.y;
+    const totalSpin = Math.PI * 4;
 
-    function keyLoop() {
+    create3DParticles();
+
+    function spinLoop() {
         const now = Date.now();
-        const t = (now - startTime) / duration;
+        const progress = Math.min((now - startTime) / duration, 1);
+        // Ease In Out for heavy feel
+        const ease = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
 
-        if (t < 0.4) {
-            // Phase 1: Approach (0 - 0.4)
-            const p = t / 0.4;
-            const ease = p * (2 - p); // Quad out
-            // Move from Z=10 to Z=4.2 (Just in front of lock)
-            keyGroup.position.z = 10 - (5.8 * ease);
-        } else if (t < 0.6) {
-            // Phase 2: Insert (0.4 - 0.6)
-            const p = (t - 0.4) / 0.2;
-            // Move from Z=4.2 to Z=3.5 (Inside lock)
-            keyGroup.position.z = 4.2 - (0.7 * p);
-        } else if (t < 0.9) {
-            // Phase 3: Turn (0.6 - 0.9)
-            const p = (t - 0.6) / 0.3;
-            const ease = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p; // Ease in out
-            keyGroup.rotation.z = -Math.PI / 2 * ease;
-        } else {
-            // Phase 4: Wait/Finish
-        }
+        chestGroup.rotation.y = startRot + (totalSpin * ease);
 
-        if (t < 1) {
-            animationId = requestAnimationFrame(keyLoop);
+        if (progress < 1) {
+            animationId = requestAnimationFrame(spinLoop);
         } else {
-            // Unlock!
-            keyGroup.visible = false; // Hide key
+            isSpinning = false;
             open3DChest(callback);
         }
     }
-    keyLoop();
+    spinLoop();
 }
 
 function open3DChest(callback) {
     isOpen = true;
-    const duration = 1000;
+    const duration = 1200; // Slower open (heavy lid)
     const startTime = Date.now();
 
     function openLoop() {
         const now = Date.now();
         const progress = Math.min((now - startTime) / duration, 1);
-        const ease = 1 - Math.pow(1 - progress, 3); // Cubic out
+        // Bounce at end (heavy impact)
+        // const ease = 1 + 2.70158 * Math.pow(progress - 1, 3) + 1.70158 * Math.pow(progress - 1, 2);
+        const ease = 1 - Math.pow(1 - progress, 3); // Cubic out (simple soft open)
 
         lidGroup.rotation.x = -2.2 * ease;
 
         if (progress < 1) {
             requestAnimationFrame(openLoop);
         } else {
-            isAnimating = false;
             if (callback) callback();
         }
     }
     openLoop();
 }
 
+function create3DParticles() {
+    const geo = new THREE.BufferGeometry();
+    const count = 60;
+    const posArray = new Float32Array(count * 3);
+    for (let i = 0; i < count * 3; i++) {
+        posArray[i] = (Math.random() - 0.5) * 25;
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const mat = new THREE.PointsMaterial({ size: 0.8, color: 0xffaa00, transparent: true, opacity: 0.8 });
+    const pts = new THREE.Points(geo, mat);
+    scene.add(pts);
+    particles.push({ mesh: pts });
+}
+
 function animate() {
     requestAnimationFrame(animate);
     if (scene && camera && renderer) {
-        if (!isAnimating && !isOpen) {
+        if (!isSpinning && !isOpen) {
             floatFrame += 0.015;
+            // Heavier float
             chestGroup.position.y = Math.sin(floatFrame) * 0.3;
-            // Key floats with chest if visible? No, handled by sequence
         }
+        particles.forEach(p => {
+            p.mesh.rotation.y += 0.005;
+            p.mesh.position.y += 0.02;
+        });
         renderer.render(scene, camera);
     }
 }
 
 window.init3DChest = init3DChest;
-window.start3DSpin = start3DSpin; // Maintained for main.js compatibility
+window.start3DSpin = start3DSpin;
