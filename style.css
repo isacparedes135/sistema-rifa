@@ -406,8 +406,8 @@ h1 {
 }
 
 .scene {
-    width: 300px;
-    height: 200px;
+    width: 360px;
+    height: 240px;
     margin: 0 auto;
     position: relative;
     transform-style: preserve-3d;
@@ -419,14 +419,14 @@ h1 {
     animation-play-state: paused;
 }
 
-/* Base 3D Object */
+/* Base 3D Object - 20% larger */
 .chest-3d {
-    width: 200px;
-    height: 100px;
+    width: 240px;
+    height: 120px;
     position: absolute;
-    /* Center in 300x200 scene */
-    left: 50px;
-    top: 50px;
+    /* Center in 360x240 scene */
+    left: 60px;
+    top: 60px;
 
     transform-style: preserve-3d;
     transform: rotateX(-20deg) rotateY(30deg);
@@ -456,81 +456,114 @@ h1 {
             rgba(0, 0, 0, 0.3) 0px,
             rgba(0, 0, 0, 0.3) 2px,
             transparent 2px,
-            transparent 25px),
+            transparent 30px),
         linear-gradient(135deg, #5d4037 0%, #3e2723 100%);
-    border: 4px solid #ffd700;
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+    border: 5px solid #ffd700;
+    box-shadow:
+        inset 0 0 25px rgba(0, 0, 0, 0.8),
+        inset 5px 5px 10px rgba(0, 0, 0, 0.5),
+        inset -5px -5px 10px rgba(139, 90, 43, 0.3);
     /* Ensure visibility from all angles */
     backface-visibility: visible;
     transform-style: preserve-3d;
 }
 
+/* Inner edge detail - creates thickness illusion */
 .chest-face::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+    border: 3px solid rgba(78, 52, 46, 0.9);
+    box-shadow:
+        inset 2px 2px 8px rgba(0, 0, 0, 0.6),
+        inset -2px -2px 8px rgba(139, 90, 43, 0.2);
+    pointer-events: none;
+}
+
+/* Wood grain texture overlay */
+.chest-face::after {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    border: 2px dashed rgba(0, 0, 0, 0.3);
-    margin: 4px;
+    background:
+        repeating-linear-gradient(90deg,
+            transparent 0px,
+            rgba(0, 0, 0, 0.05) 1px,
+            transparent 2px,
+            transparent 8px);
     pointer-events: none;
 }
 
-/* Faces Geometry - Parent is 200x100 */
+/* Faces Geometry - Parent is 240x120 (20% larger) */
 
 .front {
-    width: 200px;
-    height: 100px;
-    transform: rotateY(0deg) translateZ(50px);
+    width: 240px;
+    height: 120px;
+    transform: rotateY(0deg) translateZ(60px);
 }
 
 .back {
-    width: 200px;
-    height: 100px;
-    transform: rotateY(180deg) translateZ(50px);
+    width: 240px;
+    height: 120px;
+    transform: rotateY(180deg) translateZ(60px);
 }
 
 .left {
-    width: 100px;
-    height: 100px;
-    /* Center horizontally in parent (200w) to pivot correctly */
-    left: 50px;
-    transform: rotateY(-90deg) translateZ(100px);
+    width: 120px;
+    height: 120px;
+    /* Center horizontally in parent (240w) to pivot correctly */
+    left: 60px;
+    transform: rotateY(-90deg) translateZ(120px);
 }
 
 .right {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     /* Center horizontally */
-    left: 50px;
-    transform: rotateY(90deg) translateZ(100px);
+    left: 60px;
+    transform: rotateY(90deg) translateZ(120px);
 }
 
 .bottom {
-    width: 200px;
-    height: 100px;
-    /* Bottom needs to be at vertical center height but rotated? 
-       Actually standard cube box: Top/Bottom are Y faces.
-       Chest height 100.
-       Bottom is at Y=50.
-    */
-    transform: rotateX(-90deg) translateZ(50px);
-    background: #2d1b16;
+    width: 240px;
+    height: 120px;
+    transform: rotateX(-90deg) translateZ(60px);
+    background:
+        linear-gradient(135deg, #2d1b16 0%, #1a0f0a 100%);
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.9);
+}
+
+/* Inner bottom rim for volume */
+.bottom::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    background: linear-gradient(135deg, #1a0f0a 0%, #0d0705 100%);
+    border: 2px solid rgba(45, 27, 22, 0.8);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
 }
 
 
-/* LID */
+/* LID - 20% larger */
 .lid {
     position: absolute;
-    width: 200px;
+    width: 240px;
     height: 0;
-    /* Container is just for the hinge hinge pivot */
+    /* Container is just for the hinge pivot */
     top: 0;
     left: 0;
     transform-style: preserve-3d;
-    /* Pivot hinge at Back Edge (Z=-50) */
-    transform-origin: center top -50px;
+    /* Pivot hinge at Back Edge (Z=-60) */
+    transform-origin: center top -60px;
     transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     z-index: 5;
 }
@@ -538,171 +571,171 @@ h1 {
 /* Base wood for lid sub-parts */
 .lid .chest-face {
     background: linear-gradient(135deg, #6d4c41 0%, #4e342e 100%);
-    border: 2px solid #ffd700;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7);
+    border: 3px solid #ffd700;
+    box-shadow:
+        inset 0 0 15px rgba(0, 0, 0, 0.7),
+        inset 3px 3px 8px rgba(0, 0, 0, 0.4);
     backface-visibility: visible;
 }
 
-/* Lid Strips forming the arch */
+/* Lid Strips forming the arch - 20% larger */
 .lid-strip {
-    /* 200px wide */
-    width: 200px;
-    height: 10px;
-    /* Slight overlap for radius 50 (circumference/20 = ~7.85) */
+    width: 240px;
+    height: 12px;
     position: absolute;
     left: 0;
-    top: -5px;
-    /* Centered on the Y=0 axis to rotate around the hinge point more easily */
+    top: -6px;
     transform-origin: center center;
 
     background: linear-gradient(to bottom, #5d4037, #4e342e);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-    /* Essential for 3D strips */
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
     transform-style: preserve-3d;
 }
 
 /* Arch Construction (180 degrees total) 
-   Radius 50px centered at Y=0, Z=0.
+   Radius 60px centered at Y=0, Z=0.
 */
 
 .s1 {
-    transform: rotateX(175.5deg) translateZ(50px);
+    transform: rotateX(175.5deg) translateZ(60px);
 }
 
 .s2 {
-    transform: rotateX(166.5deg) translateZ(50px);
+    transform: rotateX(166.5deg) translateZ(60px);
 }
 
 .s3 {
-    transform: rotateX(157.5deg) translateZ(50px);
+    transform: rotateX(157.5deg) translateZ(60px);
 }
 
 .s4 {
-    transform: rotateX(148.5deg) translateZ(50px);
+    transform: rotateX(148.5deg) translateZ(60px);
 }
 
 .s5 {
-    transform: rotateX(139.5deg) translateZ(50px);
+    transform: rotateX(139.5deg) translateZ(60px);
 }
 
 .s6 {
-    transform: rotateX(130.5deg) translateZ(50px);
+    transform: rotateX(130.5deg) translateZ(60px);
 }
 
 .s7 {
-    transform: rotateX(121.5deg) translateZ(50px);
+    transform: rotateX(121.5deg) translateZ(60px);
 }
 
 .s8 {
-    transform: rotateX(112.5deg) translateZ(50px);
+    transform: rotateX(112.5deg) translateZ(60px);
 }
 
 .s9 {
-    transform: rotateX(103.5deg) translateZ(50px);
+    transform: rotateX(103.5deg) translateZ(60px);
 }
 
 .s10 {
-    transform: rotateX(94.5deg) translateZ(50px);
+    transform: rotateX(94.5deg) translateZ(60px);
 }
 
 .s11 {
-    transform: rotateX(85.5deg) translateZ(50px);
+    transform: rotateX(85.5deg) translateZ(60px);
 }
 
 .s12 {
-    transform: rotateX(76.5deg) translateZ(50px);
+    transform: rotateX(76.5deg) translateZ(60px);
 }
 
 .s13 {
-    transform: rotateX(67.5deg) translateZ(50px);
+    transform: rotateX(67.5deg) translateZ(60px);
 }
 
 .s14 {
-    transform: rotateX(58.5deg) translateZ(50px);
+    transform: rotateX(58.5deg) translateZ(60px);
 }
 
 .s15 {
-    transform: rotateX(49.5deg) translateZ(50px);
+    transform: rotateX(49.5deg) translateZ(60px);
 }
 
 .s16 {
-    transform: rotateX(40.5deg) translateZ(50px);
+    transform: rotateX(40.5deg) translateZ(60px);
 }
 
 .s17 {
-    transform: rotateX(31.5deg) translateZ(50px);
+    transform: rotateX(31.5deg) translateZ(60px);
 }
 
 .s18 {
-    transform: rotateX(22.5deg) translateZ(50px);
+    transform: rotateX(22.5deg) translateZ(60px);
 }
 
 .s19 {
-    transform: rotateX(13.5deg) translateZ(50px);
+    transform: rotateX(13.5deg) translateZ(60px);
 }
 
 .s20 {
-    transform: rotateX(4.5deg) translateZ(50px);
+    transform: rotateX(4.5deg) translateZ(60px);
 }
 
 
-/* Metal Straps */
+/* Metal Straps - 20% larger */
 .lid-strip::after {
     content: '';
     position: absolute;
-    left: 20px;
-    width: 8px;
+    left: 24px;
+    width: 10px;
     height: 100%;
     background: linear-gradient(90deg, #b8860b, #ffd700, #b8860b);
+    box-shadow: 0 0 3px rgba(255, 215, 0, 0.5);
     z-index: 2;
 }
 
 .lid-strip::before {
     content: '';
     position: absolute;
-    right: 20px;
-    width: 8px;
+    right: 24px;
+    width: 10px;
     height: 100%;
     background: linear-gradient(90deg, #b8860b, #ffd700, #b8860b);
+    box-shadow: 0 0 3px rgba(255, 215, 0, 0.5);
     z-index: 2;
 }
 
-/* Semicircle Caps */
+/* Semicircle Caps - 20% larger */
 .lid-left,
 .lid-right {
-    width: 100px;
-    height: 50px;
+    width: 120px;
+    height: 60px;
     position: absolute;
-    top: -50px;
-    /* Fully sits above Y=0 */
+    top: -60px;
     left: 50%;
-    margin-left: -50px;
+    margin-left: -60px;
 
     background: radial-gradient(circle at bottom center, #5d4037 0%, #3e2723 70%);
-    border: 4px solid #ffd700;
+    border: 5px solid #ffd700;
     border-bottom: none;
-    border-radius: 50px 50px 0 0;
+    border-radius: 60px 60px 0 0;
     transform-style: preserve-3d;
+    box-shadow: inset 0 -5px 15px rgba(0, 0, 0, 0.5);
 }
 
 .lid-left {
-    transform: rotateY(-90deg) translateZ(100px);
+    transform: rotateY(-90deg) translateZ(120px);
 }
 
 .lid-right {
-    transform: rotateY(90deg) translateZ(100px);
+    transform: rotateY(90deg) translateZ(120px);
 }
 
-/* Front/Back rim (minimal for transition) */
+/* Front/Back rim (minimal for transition) - 20% larger */
 .lid-front {
-    height: 10px;
-    transform: translateZ(50px) translateY(-5px);
+    height: 12px;
+    transform: translateZ(60px) translateY(-6px);
 }
 
 .lid-back {
-    height: 10px;
-    transform: rotateY(180deg) translateZ(50px) translateY(-5px);
+    height: 12px;
+    transform: rotateY(180deg) translateZ(60px) translateY(-6px);
 }
 
 /* Ensure Side Straps/Borders are visible */
@@ -726,19 +759,20 @@ h1 {
     display: none;
 }
 
-/* Main Latch (Clasp) */
+/* Main Latch (Clasp) - 20% larger */
 .chest-latch {
     position: absolute;
-    top: 5px;
-    /* Alignment with lid rim */
+    top: 6px;
     left: 50%;
     transform: translateX(-50%);
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     background: linear-gradient(to bottom, #ffd700, #b8860b);
-    border: 2px solid #8b6508;
-    border-radius: 6px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    border: 3px solid #8b6508;
+    border-radius: 8px;
+    box-shadow:
+        0 5px 10px rgba(0, 0, 0, 0.5),
+        inset 0 2px 4px rgba(255, 255, 255, 0.3);
     z-index: 10;
     display: flex;
     justify-content: center;
@@ -761,16 +795,15 @@ h1 {
 }
 
 .lid-front {
-    width: 200px;
-    height: 10px;
-    /* Minimal rim */
-    transform: translateZ(50px) translateY(-5px);
+    width: 240px;
+    height: 12px;
+    transform: translateZ(60px) translateY(-6px);
 }
 
 .lid-back {
-    width: 200px;
-    height: 10px;
-    transform: rotateY(180deg) translateZ(50px) translateY(-5px);
+    width: 240px;
+    height: 12px;
+    transform: rotateY(180deg) translateZ(60px) translateY(-6px);
 }
 
 /* Legacy lid styles removed */
