@@ -35,15 +35,16 @@ function init3DHeart() {
 
         const aspect = width / height;
         camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 1000);
-        camera.position.set(0, 0, 18);
-
         renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
         renderer.setSize(width, height);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
         // High quality settings
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.2;
         container.appendChild(renderer.domElement);
+
+        camera.position.set(0, 0, 22); // Pulled back slightly more for safe mobile view
 
         // Lighting System
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
@@ -70,6 +71,12 @@ function init3DHeart() {
             camera.aspect = w / h;
             camera.updateProjectionMatrix();
             renderer.setSize(w, h);
+
+            // Dynamically adjust heart scale on resize
+            if (heartGroup) {
+                const newScale = window.innerWidth < 768 ? 1.0 : 1.3;
+                heartGroup.scale.set(newScale, newScale, newScale);
+            }
         });
 
     } catch (e) {
@@ -176,7 +183,12 @@ function buildHeart() {
     crackGlow.position.set(0, 0, 1.5);
     crackLine.add(crackGlow);
 
-    heartGroup.scale.set(1.3, 1.3, 1.3);
+    crackLine.add(crackGlow);
+
+    // Initial scale adjustment based on screen width
+    const isMobile = window.innerWidth < 768;
+    const baseScale = isMobile ? 1.0 : 1.3;
+    heartGroup.scale.set(baseScale, baseScale, baseScale);
     heartGroup.rotation.y = -0.2;
 }
 
