@@ -298,12 +298,19 @@ h1 {
 /* 3D Chest Scene */
 /* 3D Chest Scene */
 .chest-container {
-    margin: 5rem 0;
+    margin: 2rem 0;
     display: none;
+    /* Toggled by JS */
+    position: relative;
+    /* Anchor for absolute children */
     perspective: 1200px;
     overflow: visible;
-    padding-top: 50px;
-    margin-bottom: 50px;
+    width: 100%;
+    min-height: 400px;
+    /* Ensure space is reserved */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Chest 3D Styles Removed - Replaced by Three.js Canvas */
