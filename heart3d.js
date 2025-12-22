@@ -198,7 +198,7 @@ function startHeartBreak(callback) {
 
     // Phase 1: Heavy Jitter + Crack Appearance (Slower for appreciation)
     const startTime = Date.now();
-    const phase1Duration = 2000; // Increased from 1000ms
+    const phase1Duration = 1500; // Adjusted for a better balance between look and speed
 
     function phase1() {
         const elapsed = Date.now() - startTime;
@@ -239,10 +239,11 @@ function startHeartBreak(callback) {
 
 function breakHeart(callback) {
     isBroken = true;
-    const duration = 1800;
+    const duration = 1000; // Reduced from 1800 to show results faster
     const startTime = Date.now();
     let exploded = false;
     let fragmentsCreated = false;
+    let callbackCalled = false;
 
     // Hide crack light, it's about to explode
     crackLine.children[0].intensity = 50;
@@ -288,10 +289,13 @@ function breakHeart(callback) {
             exploded = true;
         }
 
+        if (progress > 0.7 && !callbackCalled) {
+            if (callback) callback();
+            callbackCalled = true;
+        }
+
         if (progress < 1) {
             requestAnimationFrame(breakLoop);
-        } else {
-            if (callback) callback();
         }
     }
     breakLoop();
