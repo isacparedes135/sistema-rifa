@@ -33,17 +33,7 @@ function init3DChest() {
 
         container.innerHTML = '';
 
-        // Instruction text
-        const instruction = document.createElement('p');
-        instruction.className = 'chest-instruction';
-        instruction.innerText = 'Haz clic para abrir';
-        instruction.style.position = 'absolute';
-        instruction.style.bottom = '20px';
-        instruction.style.color = '#ffd700';
-        instruction.style.textShadow = '0 0 5px #000';
-        instruction.style.zIndex = '10';
-        instruction.style.pointerEvents = 'none';
-        container.appendChild(instruction);
+        container.innerHTML = '';
 
         scene = new THREE.Scene();
 
@@ -65,11 +55,11 @@ function init3DChest() {
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Softer shadows
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.3; // Increased exposure significantly
+        renderer.toneMappingExposure = 1.8; // Brightened significantly
         container.appendChild(renderer.domElement);
 
         // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 2.5); // Much brighter ambient
         ambientLight.name = "ambient";
         scene.add(ambientLight);
 
@@ -359,33 +349,37 @@ function buildChest() {
 }
 
 function buildTicketPile() {
-    // 1. Base mass (Bottom filling)
-    const baseGeo = new THREE.BoxGeometry(9, 1.8, 5);
+    // 1. Base mass (Bottom filling - raised)
+    const baseGeo = new THREE.BoxGeometry(9, 3.5, 5); // Thicker mass
     const goldMat = new THREE.MeshStandardMaterial({
         color: 0xffd700,
-        metalness: 0.8,
-        roughness: 0.2,
+        metalness: 0.9,
+        roughness: 0.1,
         emissive: 0xffaa00,
-        emissiveIntensity: 0.1
+        emissiveIntensity: 0.15
     });
     const baseMass = new THREE.Mesh(baseGeo, goldMat);
-    baseMass.position.y = -1.2;
+    baseMass.position.y = -0.5; // Raised so it's clearly visible
     chestBase.add(baseMass);
 
-    // 2. Individual tickets (Messy top layer)
-    // Add 30 randomized small tickets for a 3D look
+    // Interior focus light
+    const interiorLight = new THREE.PointLight(0xffd700, 2, 8);
+    interiorLight.position.set(0, 1, 0);
+    chestBase.add(interiorLight);
+
+    // 2. Individual tickets (Messy top layer - more count)
     const ticketGeo = new THREE.PlaneGeometry(0.8, 0.4);
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 40; i++) {
         const t = new THREE.Mesh(ticketGeo, goldMat);
         t.position.set(
             (Math.random() - 0.5) * 8.5,
-            -0.3 + (Math.random() * 0.4), // Sitting on top of mass
+            1.2 + (Math.random() * 0.5), // High enough to be seen
             (Math.random() - 0.5) * 4.5
         );
         t.rotation.set(
-            Math.PI / 2 + (Math.random() - 0.5) * 0.3,
+            Math.PI / 2 + (Math.random() - 0.5) * 0.5,
             (Math.random() * Math.PI),
-            (Math.random() - 0.5) * 0.3
+            (Math.random() - 0.5) * 0.5
         );
         chestBase.add(t);
     }
@@ -418,9 +412,12 @@ function start3DSpin(callback) {
 
 function open3DChest(callback) {
     isOpen = true;
-    const duration = 1200;
+    const duration = 1500;
     const startTime = Date.now();
-    let explosionTriggered = false;
+
+    // Wave triggers
+    const waves = [0.15, 0.3, 0.5, 0.7];
+    let waveIdx = 0;
 
     function openLoop() {
         const now = Date.now();
@@ -428,23 +425,53 @@ function open3DChest(callback) {
         const ease = 1 - Math.pow(1 - progress, 3);
         lidGroup.rotation.x = -2.2 * ease;
 
-        // Trigger explosion when slightly open
-        if (progress > 0.2 && !explosionTriggered) {
-            explosionTriggered = true;
-            createTicketExplosion();
+        // Continuous waves
+        if (waveIdx < waves.length && progress > waves[waveIdx]) {
+            createTicketExplosion(40); // 40 tickets per wave
+            waveIdx++;
         }
 
         if (progress < 1) {
             requestAnimationFrame(openLoop);
         } else {
+            showResetButton();
             if (callback) callback();
         }
     }
     openLoop();
 }
 
-function createTicketExplosion() {
-    const ticketCount = 150; // MASSIVE count
+function showResetButton() {
+    const container = document.getElementById('chest-container');
+    if (!container) return;
+
+    // Check if button exists already
+    if (document.getElementById('btn-reopen-chest')) return;
+
+    const btn = document.createElement('button');
+    btn.id = 'btn-reopen-chest';
+    btn.innerText = 'Re-abrir Cofre';
+    btn.style.position = 'absolute';
+    btn.style.bottom = '-40px';
+    btn.style.padding = '10px 20px';
+    btn.style.background = '#ffd700';
+    btn.style.color = '#000';
+    btn.style.border = 'none';
+    btn.style.borderRadius = '5px';
+    btn.style.fontWeight = 'bold';
+    btn.style.cursor = 'pointer';
+    btn.style.zIndex = '100';
+
+    btn.onclick = () => {
+        init3DChest();
+        // Since we are in a modal, we might need to reset the global state in main.js
+        // but init3DChest resets internal state well enough.
+    };
+
+    container.appendChild(btn);
+}
+
+function createTicketExplosion(count = 150) {
     const ticketGeo = new THREE.PlaneGeometry(0.8, 0.4);
     const ticketMat = new THREE.MeshStandardMaterial({
         color: 0xffd700,
@@ -453,25 +480,24 @@ function createTicketExplosion() {
         side: THREE.DoubleSide
     });
 
-    for (let i = 0; i < ticketCount; i++) {
+    for (let i = 0; i < count; i++) {
         const ticket = new THREE.Mesh(ticketGeo, ticketMat);
-        // Start inside chest center
         ticket.position.set(0, 0, 0);
         scene.add(ticket);
 
         flyingTickets.push({
             mesh: ticket,
             velocity: new THREE.Vector3(
-                (Math.random() - 0.5) * 1.5, // Wider spread X
-                Math.random() * 0.8 + 0.4,   // Higher Y burst
-                (Math.random() - 0.5) * 1.0 + 0.4 // Z burst towards camera
+                (Math.random() - 0.5) * 1.1, // Slower (1.5 -> 1.1)
+                Math.random() * 0.6 + 0.3,   // Slower
+                (Math.random() - 0.5) * 0.8 + 0.3 // Slower
             ),
             rotationSpeed: new THREE.Vector3(
-                Math.random() * 0.4 - 0.2,
-                Math.random() * 0.4 - 0.2,
-                Math.random() * 0.4 - 0.2
+                Math.random() * 0.3 - 0.15,
+                Math.random() * 0.3 - 0.15,
+                Math.random() * 0.3 - 0.15
             ),
-            gravity: -0.012 - (Math.random() * 0.005) // Slight variance in gravity
+            gravity: -0.01 - (Math.random() * 0.004)
         });
     }
 }
