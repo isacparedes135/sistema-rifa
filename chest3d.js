@@ -44,7 +44,7 @@ function init3DChest() {
 
         const aspect = width / height;
         camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 1000);
-        camera.position.set(0, 8, 32); // Closer camera
+        camera.position.set(0, 8, 30); // Closer but adjusted for 1.0x scale
         camera.lookAt(0, -2, 0);
 
         renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
@@ -53,7 +53,7 @@ function init3DChest() {
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 2.5; // Even brighter (was 2.2)
+        renderer.toneMappingExposure = 3.0; // MAXIMUM BRIGHTNESS (was 2.5)
         container.appendChild(renderer.domElement);
 
         // Lighting
@@ -61,25 +61,29 @@ function init3DChest() {
         ambientLight.name = "ambient";
         scene.add(ambientLight);
 
-        const frontLight = new THREE.DirectionalLight(0xfffaed, 2.0); // Boosted
+        const frontLight = new THREE.DirectionalLight(0xfffaed, 2.5); // Boosted
         frontLight.position.set(5, 10, 20);
         frontLight.castShadow = true;
         scene.add(frontLight);
 
-        // EXTRA FRONT LIGHTS for brightness
-        const sideLight = new THREE.PointLight(0xffffff, 2.0, 50);
-        sideLight.position.set(20, 5, 20);
-        scene.add(sideLight);
+        // EXTRA FRONT LIGHTS for maximum pop
+        const leftFill = new THREE.PointLight(0xffffff, 2.0, 60);
+        leftFill.position.set(20, 10, 20);
+        scene.add(leftFill);
 
-        const sideLight2 = new THREE.PointLight(0xffffff, 2.0, 50);
-        sideLight2.position.set(-20, 5, 20);
-        scene.add(sideLight2);
+        const rightFill = new THREE.PointLight(0xffffff, 2.0, 60);
+        rightFill.position.set(-20, 10, 20);
+        scene.add(rightFill);
 
-        const fillLight = new THREE.PointLight(0xffd700, 1.5, 50); // Boosted
+        const topHighlight = new THREE.PointLight(0xffffff, 2.0, 50);
+        topHighlight.position.set(0, 30, 10);
+        scene.add(topHighlight);
+
+        const fillLight = new THREE.PointLight(0xffd700, 2.0, 50); // Boosted
         fillLight.position.set(-15, 5, 10);
         scene.add(fillLight);
 
-        const rimLight = new THREE.SpotLight(0x4a90e2, 2.5);
+        const rimLight = new THREE.SpotLight(0x4a90e2, 3.0);
         rimLight.position.set(0, 15, -20);
         rimLight.lookAt(0, 0, 0);
         scene.add(rimLight);
@@ -151,24 +155,26 @@ function buildChest() {
 
     const agedWoodMat = new THREE.MeshStandardMaterial({
         map: woodMap,
-        color: 0x5d4037,
-        roughness: 0.8,
-        metalness: 0.1,
-        side: THREE.DoubleSide // Fix transparency
-    });
-
-    // Worn Iron/Bronze
-    const wornMetalMat = new THREE.MeshStandardMaterial({
-        color: 0x6d5635, // Dull Bronze
-        roughness: 0.4,
-        metalness: 0.6,
-    });
-
-    // Black Iron (for structural bands)
-    const ironMat = new THREE.MeshStandardMaterial({
-        color: 0x222222,
+        color: 0x8d6e63, // Lighter wood
         roughness: 0.7,
-        metalness: 0.5
+        metalness: 0.1,
+        side: THREE.DoubleSide
+    });
+
+    // Worn Gold/Bronze
+    const wornMetalMat = new THREE.MeshStandardMaterial({
+        color: 0xffd700, // Gold
+        roughness: 0.2,
+        metalness: 0.9,
+    });
+
+    // Metallic trim
+    const ironMat = new THREE.MeshStandardMaterial({
+        color: 0xdaa520, // Goldenrod / Bronze
+        roughness: 0.3,
+        metalness: 0.8,
+        emissive: 0xdaa520,
+        emissiveIntensity: 0.1
     });
 
     // --- GEOMETRY ---
@@ -349,7 +355,7 @@ function buildChest() {
 
     buildTicketPile();
 
-    chestGroup.scale.set(1.1, 1.1, 1.1); // Reduced scale (1.3 -> 1.1)
+    chestGroup.scale.set(1.0, 1.0, 1.0); // 1.0x (10% smaller than v12's 1.1x)
     chestGroup.rotation.y = -0.5;
     chestGroup.rotation.x = 0.1;
 }
@@ -523,6 +529,20 @@ function shakeChest(intensity = 0.5) {
     shakeLoop();
 }
 
+function updateChestInstruction(text) {
+    const container = document.getElementById('chest-container');
+    if (!container) return;
+
+    let instruction = document.getElementById('chest-tap-instruction');
+    if (!instruction) {
+        instruction = document.createElement('p');
+        instruction.id = 'chest-tap-instruction';
+        container.appendChild(instruction);
+    }
+    instruction.innerText = text;
+}
+
 window.init3DChest = init3DChest;
 window.start3DSpin = start3DSpin;
 window.shakeChest = shakeChest;
+window.updateChestInstruction = updateChestInstruction;

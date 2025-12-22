@@ -588,40 +588,30 @@ document.addEventListener('DOMContentLoaded', () => {
         // Interaction Handler
         let clickCount = 0;
 
-        // Remove previous instruction if any
-        let instruction = document.getElementById('chest-tap-instruction');
-        if (!instruction) {
-            instruction = document.createElement('p');
-            instruction.id = 'chest-tap-instruction';
-            instruction.style.cssText = `
-                position: absolute;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                color: #ffd700;
-                font-weight: bold;
-                text-shadow: 0 0 10px #000;
-                z-index: 100;
-                pointer-events: none;
-                font-size: 1.1rem;
-            `;
-            chestContainer.appendChild(instruction);
+        // Use the managed instruction system from chest3d.js
+        if (window.updateChestInstruction) {
+            window.updateChestInstruction('Toca el cofre para abrirlo');
         }
-        instruction.innerText = 'Toca el cofre para abrirlo';
+
+        // Cleanup previous listener to avoid stacking
+        if (chestContainer._onChestClick) {
+            chestContainer.removeEventListener('click', chestContainer._onChestClick);
+        }
 
         const onChestClick = () => {
             clickCount++;
 
             if (clickCount === 1) {
-                if (window.shakeChest) window.shakeChest(0.8); // Much stronger
-                instruction.innerText = '¡Dale de nuevo!';
+                if (window.shakeChest) window.shakeChest(0.8);
+                if (window.updateChestInstruction) window.updateChestInstruction('¡Dale de nuevo!');
             } else if (clickCount === 2) {
-                if (window.shakeChest) window.shakeChest(1.5); // Very strong
-                instruction.innerText = '¡Casi listo, una más!';
+                if (window.shakeChest) window.shakeChest(1.5);
+                if (window.updateChestInstruction) window.updateChestInstruction('¡Casi listo, una más!');
             } else if (clickCount === 3) {
                 chestContainer.removeEventListener('click', onChestClick);
-                if (window.shakeChest) window.shakeChest(3.0); // MASSIVE
-                instruction.innerText = '';
+                chestContainer._onChestClick = null;
+                if (window.shakeChest) window.shakeChest(3.0);
+                if (window.updateChestInstruction) window.updateChestInstruction('');
 
                 if (window.start3DSpin) {
                     window.start3DSpin(() => {
@@ -632,6 +622,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
+        chestContainer._onChestClick = onChestClick;
         chestContainer.addEventListener('click', onChestClick);
     }
 
@@ -790,7 +781,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tryAgainBtn.id = 'btn-reopen-chest-summary';
         tryAgainBtn.innerText = '¿No te gustaron? Inténtalo de nuevo';
         tryAgainBtn.onclick = () => {
-            closeModal(manualModal);
+            manualModal.classList.remove('active'); // Fixed: Use correct modal closing logic
             startLuckyChestSequence();
         };
         manualSelectedList.appendChild(tryAgainBtn);
