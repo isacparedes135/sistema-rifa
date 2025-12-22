@@ -588,37 +588,27 @@ document.addEventListener('DOMContentLoaded', () => {
         // Interaction Handler
         let clickCount = 0;
 
-        // Use the managed instruction system from chest3d.js
+        // Interaction Handler
         if (window.updateChestInstruction) {
-            window.updateChestInstruction('Toca el cofre para abrirlo');
+            window.updateChestInstruction('Toca el cofre para descubrir tus números');
         }
 
-        // Cleanup previous listener to avoid stacking
+        // Cleanup previous listener
         if (chestContainer._onChestClick) {
             chestContainer.removeEventListener('click', chestContainer._onChestClick);
         }
 
         const onChestClick = () => {
-            clickCount++;
+            chestContainer.removeEventListener('click', onChestClick);
+            chestContainer._onChestClick = null;
 
-            if (clickCount === 1) {
-                if (window.shakeChest) window.shakeChest(0.8);
-                if (window.updateChestInstruction) window.updateChestInstruction('¡Dale de nuevo!');
-            } else if (clickCount === 2) {
-                if (window.shakeChest) window.shakeChest(1.5);
-                if (window.updateChestInstruction) window.updateChestInstruction('¡Casi listo, una más!');
-            } else if (clickCount === 3) {
-                chestContainer.removeEventListener('click', onChestClick);
-                chestContainer._onChestClick = null;
-                if (window.shakeChest) window.shakeChest(3.0);
-                if (window.updateChestInstruction) window.updateChestInstruction('');
+            if (window.updateChestInstruction) window.updateChestInstruction('');
 
-                if (window.start3DSpin) {
-                    window.start3DSpin(() => {
-                        generateLuckyNumbers();
-                        createAdvancedParticles();
-                    });
-                }
+            if (window.start3DSpin) {
+                window.start3DSpin(() => {
+                    generateLuckyNumbers();
+                    createAdvancedParticles();
+                });
             }
         };
 

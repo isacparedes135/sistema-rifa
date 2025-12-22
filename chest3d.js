@@ -353,7 +353,7 @@ function buildChest() {
 
     buildTicketPile();
 
-    chestGroup.scale.set(1.0, 1.0, 1.0); // 1.0x (10% smaller than v12's 1.1x)
+    chestGroup.scale.set(1.1, 1.1, 1.1); // Back to original size
     chestGroup.rotation.y = -0.5;
     chestGroup.rotation.x = 0.1;
 }
