@@ -60,21 +60,24 @@ function init3DChest() {
         container.appendChild(renderer.domElement);
 
         // Lighting - Dramatic Pirate Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.2); // Darker ambient
+        // Lighting - Brighter "Studio" Lighting for visibility
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.2); // Much brighter base
         scene.add(ambientLight);
 
-        const keyLight = new THREE.SpotLight(0xffeeb1, 2);
-        keyLight.position.set(15, 25, 20);
-        keyLight.castShadow = true;
-        keyLight.penumbra = 0.5;
-        scene.add(keyLight);
+        // Strong Front Key Light
+        const frontLight = new THREE.DirectionalLight(0xfffaed, 1.5);
+        frontLight.position.set(5, 10, 20); // Front-Right-Top
+        frontLight.castShadow = true;
+        scene.add(frontLight);
 
-        const fillLight = new THREE.PointLight(0xc49a6c, 1, 50); // Warm fill
-        fillLight.position.set(-10, 5, 10);
+        // Fill Light from left
+        const fillLight = new THREE.PointLight(0xffd700, 0.8, 50);
+        fillLight.position.set(-15, 5, 10);
         scene.add(fillLight);
 
-        const rimLight = new THREE.SpotLight(0x4a90e2, 3); // Cool rim light (moonlight vibe)
-        rimLight.position.set(0, 10, -20);
+        // Rim Light for edge definition (Back)
+        const rimLight = new THREE.SpotLight(0x4a90e2, 2);
+        rimLight.position.set(0, 15, -20);
         rimLight.lookAt(0, 0, 0);
         scene.add(rimLight);
 
