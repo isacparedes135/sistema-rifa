@@ -320,14 +320,8 @@ h1 {
 }
 
 /* Chest Modal Specific Refinements */
-#chest-modal {
-    background-color: #000 !important;
-    /* Fully opaque overlay */
-    backdrop-filter: none !important;
-}
-
 #chest-modal .modal-content {
-    background: var(--background) !important;
+    /* No override here, handled in HTML/Variables */
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
     border: 2px solid var(--primary);
 }

@@ -183,9 +183,9 @@ function startHeartBreak(callback) {
     if (isAnimating || isBroken) return;
     isAnimating = true;
 
-    // Phase 1: Heavy Jitter + Crack Appearance
+    // Phase 1: Heavy Jitter + Crack Appearance (Slower for appreciation)
     const startTime = Date.now();
-    const phase1Duration = 1000;
+    const phase1Duration = 2000; // Increased from 1000ms
 
     function phase1() {
         const elapsed = Date.now() - startTime;
@@ -209,9 +209,9 @@ function startHeartBreak(callback) {
         crackLine.material.opacity = progress;
         crackLine.children[0].intensity = progress * 60;
 
-        // Spawn occasional small fragments during the shake
-        if (Math.random() < 0.2 && progress > 0.3) {
-            createFragment(0.1 + (progress * 0.2));
+        // Spawn occasional small fragments during the shake (higher frequency for slower duration)
+        if (Math.random() < 0.4 && progress > 0.2) {
+            createFragment(0.1 + (progress * 0.3));
         }
 
         if (progress < 1) {
@@ -269,7 +269,7 @@ function breakHeart(callback) {
         rightHalf.material.transparent = true;
 
         if (progress > 0.05 && !this.exploded) {
-            createTicketExplosion(150);
+            createTicketExplosion(300); // Increased from 150
             this.exploded = true;
         }
 
