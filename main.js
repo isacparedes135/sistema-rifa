@@ -390,17 +390,22 @@ document.addEventListener('DOMContentLoaded', () => {
         manualModal.classList.add('active');
 
         // Ensure UI elements are visible (in case they were hidden by Lucky Summary)
-        document.querySelector('.manual-tracker').style.display = 'block';
-        document.querySelector('.search-box').style.display = 'block';
+        document.querySelector('.manual-tracker').style.display = 'flex';
+        document.querySelector('.search-box').style.display = 'flex';
         if (mosaicContainer) mosaicContainer.style.display = 'block';
 
         manualModal.querySelector('h3').textContent = 'Selecciona tus boletos'; // Reset title
 
+        // Reset State FIRST
+        selectedTickets = [];
         updateManualTracker();
+
         manualSearchInput.value = '';
         manualSearchInput.focus();
         manualSelectedList.innerHTML = '';
-        selectedTickets = [];
+
+        // Re-attach standard finish listener
+        btnFinishManual.onclick = () => proceedToPayment();
 
         // Update Button Text for Direct Checkout
         btnFinishManual.textContent = "Apartar y Pagar";
@@ -660,22 +665,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function generateLuckyNumbers() {
-        selectedTickets = [];
+        let results = [];
         let attempts = 0;
-        const maxAttempts = 300; // Más intentos para mayor densidad de ventas
+        const maxAttempts = 300;
         const target = parseInt(targetQuantity);
         console.log(`[LUCKY] Iniciando generación de ${target} boletos...`);
 
-        while (selectedTickets.length < target && attempts < maxAttempts) {
+        while (results.length < target && attempts < maxAttempts) {
             attempts++;
-            let stillNeeded = target - selectedTickets.length;
+            let stillNeeded = target - results.length;
 
-            // Generar una lista de candidatos locales
             let candidates = new Set();
             let localAttempts = 0;
             while (candidates.size < stillNeeded && localAttempts < 1000) {
                 let candidate = Math.floor(Math.random() * 100000).toString().padStart(5, '0');
-                if (!selectedTickets.includes(candidate)) {
+                if (!results.includes(candidate)) {
                     candidates.add(candidate);
                 }
                 localAttempts++;
@@ -693,43 +697,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!error) {
                         const takenSet = new Set((taken || []).map(t => t.ticket_number));
                         const available = candidateArray.filter(t => !takenSet.has(t));
-                        if (available.length > 0) selectedTickets.push(...available);
+                        if (available.length > 0) results.push(...available);
                     } else {
-                        selectedTickets.push(...candidateArray);
+                        results.push(...candidateArray);
                     }
                 } catch (err) {
-                    selectedTickets.push(...candidateArray);
+                    results.push(...candidateArray);
                 }
             } else {
-                selectedTickets.push(...candidateArray);
+                results.push(...candidateArray);
             }
-            console.log(`[LUCKY] Intento ${attempts}: ${selectedTickets.length}/${target}`);
         }
 
-        // --- SEGURO TOTAL: Si después de los intentos sigue faltando alguno (extrema mala suerte/red lenta) ---
-        if (selectedTickets.length < target) {
-            console.warn(`[LUCKY] Generación incompleta tras DB (${selectedTickets.length}/${target}). Forzando completado local.`);
-            while (selectedTickets.length < target) {
+        if (results.length < target) {
+            while (results.length < target) {
                 let candidate = Math.floor(Math.random() * 100000).toString().padStart(5, '0');
-                if (!selectedTickets.includes(candidate)) {
-                    selectedTickets.push(candidate);
+                if (!results.includes(candidate)) {
+                    results.push(candidate);
                 }
             }
         }
 
-        // --- Uniqueness & Clip ---
-        selectedTickets = [...new Set(selectedTickets)];
-        if (selectedTickets.length > target) {
-            selectedTickets = selectedTickets.slice(0, target);
-        }
+        results = [...new Set(results)].slice(0, target);
 
-        console.log(`Generación terminada: ${selectedTickets.length} boletos.`);
-
-        // Animate based on quantity
         if (target <= 5) {
-            animateSingleTickets(selectedTickets);
+            animateSingleTickets(results);
         } else {
-            animateBatchTickets(selectedTickets);
+            animateBatchTickets(results);
         }
     }
 
@@ -764,6 +758,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         btnFinishManual.textContent = "Apartar y Pagar";
         btnFinishManual.disabled = false;
+
+        // COMMIT logic: only update global state when user confirms
+        btnFinishManual.onclick = () => {
+            selectedTickets = tickets;
+            proceedToPayment();
+        };
+
         searchMessage.textContent = `Se han generado ${tickets.length} boletos disponibles.`;
         searchMessage.className = 'status-message status-success';
 
