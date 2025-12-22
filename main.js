@@ -202,6 +202,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.close-modal').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+            // Clear inputs when closing any modal
+            if (manualSearchInput) manualSearchInput.value = '';
+            if (lookupPhoneInput) lookupPhoneInput.value = '';
         });
     });
 
@@ -210,6 +213,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.target.classList.contains('modal')) {
             event.target.classList.remove('active');
             toggleBodyScroll(false);
+            // Clear inputs
+            if (manualSearchInput) manualSearchInput.value = '';
+            if (lookupPhoneInput) lookupPhoneInput.value = '';
         }
     };
 
@@ -390,8 +396,9 @@ document.addEventListener('DOMContentLoaded', () => {
         manualModal.classList.add('active');
 
         // Ensure UI elements are visible (in case they were hidden by Lucky Summary)
-        document.querySelector('.manual-tracker').style.display = 'flex';
-        document.querySelector('.search-box').style.display = 'flex';
+        // Set to empty string to use CSS defaults (display: block for tracker, display: flex for search-box)
+        document.querySelector('.manual-tracker').style.display = '';
+        document.querySelector('.search-box').style.display = '';
         if (mosaicContainer) mosaicContainer.style.display = 'block';
 
         manualModal.querySelector('h3').textContent = 'Selecciona tus boletos'; // Reset title
