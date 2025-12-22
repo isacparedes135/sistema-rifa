@@ -1,5 +1,5 @@
-// Heart 3D Logic using Three.js
-let scene, camera, renderer, heartGroup, leftHalf, rightHalf;
+// Heart 3D Logic using Three.js - Premium Version
+let scene, camera, renderer, heartGroup, leftHalf, rightHalf, crackLine;
 let isAnimating = false;
 let isBroken = false;
 let floatFrame = 0;
@@ -32,21 +32,32 @@ function init3DHeart() {
         let height = container.clientHeight || 450;
 
         const aspect = width / height;
-        camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
-        camera.position.set(0, 0, 15);
+        camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 1000);
+        camera.position.set(0, 0, 18);
 
         renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
         renderer.setSize(width, height);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        // High quality settings
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
         container.appendChild(renderer.domElement);
 
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+        // Lighting System
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
         scene.add(ambientLight);
 
-        const pointLight = new THREE.PointLight(0xffffff, 2);
-        pointLight.position.set(5, 5, 10);
-        scene.add(pointLight);
+        const mainLight = new THREE.DirectionalLight(0xffffff, 3);
+        mainLight.position.set(5, 10, 7.5);
+        scene.add(mainLight);
+
+        const rimLight = new THREE.PointLight(0xffb6c1, 10, 50);
+        rimLight.position.set(-10, 5, -5);
+        scene.add(rimLight);
+
+        const frontFill = new THREE.PointLight(0xffffff, 5, 30);
+        frontFill.position.set(0, 0, 10);
+        scene.add(frontFill);
 
         buildHeart();
         animate();
@@ -69,23 +80,37 @@ function buildHeart() {
     scene.add(heartGroup);
 
     const extrudeSettings = {
-        depth: 0.8,
+        depth: 1.2,
         bevelEnabled: true,
-        bevelSegments: 10,
+        bevelSegments: 15,
         steps: 2,
-        bevelSize: 0.3,
-        bevelThickness: 0.3
+        bevelSize: 0.4,
+        bevelThickness: 0.4
     };
 
-    const heartMat = new THREE.MeshStandardMaterial({
-        color: 0xff4d6d, // Vibrant Pastel Red/Pink
-        roughness: 0.3,
-        metalness: 0.6,
+    // Premium Material: Glass/Gem Look
+    const heartMat = new THREE.MeshPhysicalMaterial({
+        color: 0xff0044,
+        metalness: 0.1,
+        roughness: 0.1,
+        transmission: 0.5, // See-through jewel effect
+        thickness: 2.0,
+        ior: 1.5,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.05,
         emissive: 0xff0044,
+        emissiveIntensity: 0.1
+    });
+
+    const goldMat = new THREE.MeshStandardMaterial({
+        color: 0xffd700,
+        metalness: 1.0,
+        roughness: 0.2,
+        emissive: 0xd4af37,
         emissiveIntensity: 0.2
     });
 
-    // Left Half
+    // --- Left Half ---
     const leftShape = new THREE.Shape();
     leftShape.moveTo(0, 1.2);
     leftShape.bezierCurveTo(0, 1.2, -0.2, 2.5, -1.5, 2.5);
@@ -97,7 +122,13 @@ function buildHeart() {
     leftHalf = new THREE.Mesh(leftGeo, heartMat);
     heartGroup.add(leftHalf);
 
-    // Right Half
+    // Ornament: Gold Trim for Left
+    const leftTrim = new THREE.Mesh(leftGeo, goldMat);
+    leftTrim.scale.set(1.05, 1.05, 1.05);
+    leftTrim.position.z = -0.1;
+    leftHalf.add(leftTrim);
+
+    // --- Right Half ---
     const rightShape = new THREE.Shape();
     rightShape.moveTo(0, 1.2);
     rightShape.bezierCurveTo(0, 1.2, 0.2, 2.5, 1.5, 2.5);
@@ -109,7 +140,38 @@ function buildHeart() {
     rightHalf = new THREE.Mesh(rightGeo, heartMat);
     heartGroup.add(rightHalf);
 
-    heartGroup.scale.set(1.5, 1.5, 1.5);
+    // Ornament: Gold Trim for Right
+    const rightTrim = new THREE.Mesh(rightGeo, goldMat);
+    rightTrim.scale.set(1.05, 1.05, 1.05);
+    rightTrim.position.z = -0.1;
+    rightHalf.add(rightTrim);
+
+    // --- Rupture Line (The Crack) ---
+    // A jagged glowing line in the center
+    const crackPoints = [
+        new THREE.Vector3(0, 1.4, 1.5),
+        new THREE.Vector3(-0.2, 0.8, 1.5),
+        new THREE.Vector3(0.3, 0.2, 1.5),
+        new THREE.Vector3(-0.1, -0.5, 1.5),
+        new THREE.Vector3(0.2, -1.2, 1.5),
+        new THREE.Vector3(-0.3, -2.0, 1.5),
+        new THREE.Vector3(0, -3.4, 1.5)
+    ];
+    const crackGeo = new THREE.BufferGeometry().setFromPoints(crackPoints);
+    const crackMat = new THREE.LineBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0
+    });
+    crackLine = new THREE.Line(crackGeo, crackMat);
+    heartGroup.add(crackLine);
+
+    // Add a glowing core to the crack
+    const crackGlow = new THREE.PointLight(0xffffff, 0, 10);
+    crackGlow.position.set(0, 0, 1.5);
+    crackLine.add(crackGlow);
+
+    heartGroup.scale.set(1.3, 1.3, 1.3);
     heartGroup.rotation.y = -0.2;
 }
 
@@ -117,60 +179,73 @@ function startHeartBreak(callback) {
     if (isAnimating || isBroken) return;
     isAnimating = true;
 
-    // Shake first
+    // Phase 1: Heavy Jitter + Crack Appearance
     const startTime = Date.now();
-    const shakeDuration = 600;
+    const phase1Duration = 1000;
 
-    function shake() {
+    function phase1() {
         const elapsed = Date.now() - startTime;
-        const progress = elapsed / shakeDuration;
+        const progress = Math.min(elapsed / phase1Duration, 1);
+
+        // Shake Intensity increases
+        const shake = progress * 0.8;
+        heartGroup.position.x = (Math.random() - 0.5) * shake;
+        heartGroup.position.y = (Math.random() - 0.5) * shake;
+
+        // Form the crack
+        crackLine.material.opacity = progress;
+        crackLine.children[0].intensity = progress * 20;
 
         if (progress < 1) {
-            heartGroup.position.x = (Math.random() - 0.5) * 0.5;
-            heartGroup.position.y = (Math.random() - 0.5) * 0.5;
-            requestAnimationFrame(shake);
+            requestAnimationFrame(phase1);
         } else {
-            heartGroup.position.set(0, 0, 0);
+            // Phase 2: The actual break
             breakHeart(callback);
         }
     }
-    shake();
+    phase1();
 }
 
 function breakHeart(callback) {
     isBroken = true;
-    const duration = 1500;
+    const duration = 1800;
     const startTime = Date.now();
+
+    // Hide crack light, it's about to explode
+    crackLine.children[0].intensity = 50;
 
     function breakLoop() {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        const ease = 1 - Math.pow(1 - progress, 3);
+        const ease = 1 - Math.pow(1 - progress, 4);
 
-        // Move halves apart and rotate
-        leftHalf.position.x = -8 * ease;
-        leftHalf.position.y = 2 * ease;
-        leftHalf.rotation.z = -1.2 * ease;
-        leftHalf.rotation.y = -0.8 * ease;
+        // Explode halves
+        leftHalf.position.x = -12 * ease;
+        leftHalf.position.y = 4 * ease;
+        leftHalf.rotation.z = -1.5 * ease;
+        leftHalf.rotation.y = -1.2 * ease;
 
-        rightHalf.position.x = 8 * ease;
-        rightHalf.position.y = 2 * ease;
-        rightHalf.rotation.z = 1.2 * ease;
-        rightHalf.rotation.y = 0.8 * ease;
+        rightHalf.position.x = 12 * ease;
+        rightHalf.position.y = 4 * ease;
+        rightHalf.rotation.z = 1.5 * ease;
+        rightHalf.rotation.y = 1.2 * ease;
 
-        // Increase emission for a "glow" effect as it breaks
-        const glow = 0.2 + (progress * 2);
+        crackLine.visible = false;
+
+        // Glow peak
+        const glow = 0.2 + (Math.sin(progress * Math.PI) * 5);
         leftHalf.material.emissiveIntensity = glow;
         rightHalf.material.emissiveIntensity = glow;
 
-        // Fade out heart
-        leftHalf.material.opacity = Math.max(0, 1 - progress * 1.5);
-        rightHalf.material.opacity = Math.max(0, 1 - progress * 1.5);
+        // Fade out
+        const op = Math.max(0, 1 - progress * 1.5);
+        leftHalf.material.opacity = op;
+        rightHalf.material.opacity = op;
         leftHalf.material.transparent = true;
         rightHalf.material.transparent = true;
 
-        if (progress < 0.2 && !this.exploded) {
-            createTicketExplosion(100);
+        if (progress > 0.05 && !this.exploded) {
+            createTicketExplosion(150);
             this.exploded = true;
         }
 
@@ -184,12 +259,15 @@ function breakHeart(callback) {
 }
 
 function createTicketExplosion(count) {
-    const ticketGeo = new THREE.PlaneGeometry(0.6, 0.3);
+    // Ticket Mass
+    const ticketGeo = new THREE.PlaneGeometry(0.7, 0.35);
     const ticketMat = new THREE.MeshStandardMaterial({
         color: 0xffd700,
-        metalness: 0.7,
-        roughness: 0.2,
-        side: THREE.DoubleSide
+        metalness: 0.9,
+        roughness: 0.1,
+        side: THREE.DoubleSide,
+        emissive: 0xffd700,
+        emissiveIntensity: 0.5
     });
 
     for (let i = 0; i < count; i++) {
@@ -200,16 +278,16 @@ function createTicketExplosion(count) {
         flyingTickets.push({
             mesh: ticket,
             velocity: new THREE.Vector3(
-                (Math.random() - 0.5) * 0.8,
-                (Math.random()) * 0.6,
-                (Math.random() - 0.5) * 0.8
+                (Math.random() - 0.5) * 1.2,
+                (Math.random()) * 0.8 + 0.2,
+                (Math.random() - 0.5) * 1.2
             ),
             rotationSpeed: new THREE.Vector3(
-                Math.random() * 0.2,
-                Math.random() * 0.2,
-                Math.random() * 0.2
+                Math.random() * 0.3,
+                Math.random() * 0.3,
+                Math.random() * 0.3
             ),
-            gravity: -0.01
+            gravity: -0.008
         });
     }
 }
@@ -218,9 +296,9 @@ function animate() {
     animationId = requestAnimationFrame(animate);
 
     if (!isAnimating && !isBroken) {
-        floatFrame += 0.02;
-        heartGroup.position.y = Math.sin(floatFrame) * 0.5;
-        heartGroup.rotation.y += 0.01;
+        floatFrame += 0.025;
+        heartGroup.position.y = Math.sin(floatFrame) * 0.6;
+        heartGroup.rotation.y += 0.015;
     }
 
     flyingTickets.forEach((t, index) => {
@@ -230,7 +308,7 @@ function animate() {
         t.mesh.rotation.z += t.rotationSpeed.z;
         t.velocity.y += t.gravity;
 
-        if (t.mesh.position.y < -20) {
+        if (t.mesh.position.y < -30) {
             scene.remove(t.mesh);
             flyingTickets.splice(index, 1);
         }
@@ -244,11 +322,8 @@ function updateChestInstruction(text) {
     if (instruction) instruction.innerText = text;
 }
 
-// Map to window for global access (keeping same names as chest for easier integration)
 window.init3DHeart = init3DHeart;
 window.startHeartBreak = startHeartBreak;
 window.updateChestInstruction = updateChestInstruction;
-
-// Compatibility aliases if needed
 window.init3DChest = init3DHeart;
 window.start3DSpin = startHeartBreak;
