@@ -205,20 +205,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Mobile Menu Toggle
-    if (mobileMenuBtn && navMenu) {
-        mobileMenuBtn.addEventListener('click', () => {
-            navMenu.classList.add('active');
-            document.body.classList.add('menu-open');
-        });
-    }
-
-    if (closeMenuBtn && navMenu) {
-        closeMenuBtn.addEventListener('click', () => {
-            navMenu.classList.remove('active');
-            document.body.classList.remove('menu-open');
-        });
-    }
 
     window.onclick = (event) => {
         if (event.target.classList.contains('modal')) {
