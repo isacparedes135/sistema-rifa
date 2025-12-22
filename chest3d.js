@@ -33,15 +33,29 @@ function init3DChest() {
     // 1. Scene & Camera
     scene = new THREE.Scene();
 
+    // Debug: Check dimensions
+    let width = container.clientWidth;
+    let height = container.clientHeight;
+
+    if (width === 0 || height === 0) {
+        console.warn('Chest3D: Container has 0 dimensions. Using fallback 300x400.');
+        width = 300;
+        height = 400;
+        // Verify style
+        container.style.width = '100%';
+        container.style.height = '400px';
+    }
+    console.log(`Chest3D: Initializing with ${width}x${height}`);
+
     // Perspective Camera: FOV, Aspect, Near, Far
-    const aspect = container.clientWidth / container.clientHeight;
+    const aspect = width / height;
     camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
     camera.position.set(0, 10, 30);
     camera.lookAt(0, 0, 0);
 
     // 2. Renderer
     renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setSize(width, height);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.shadowMap.enabled = true;
     container.appendChild(renderer.domElement);
