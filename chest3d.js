@@ -359,18 +359,36 @@ function buildChest() {
 }
 
 function buildTicketPile() {
-    // A golden mass inside to look like a lot of tickets
-    const ticketGeo = new THREE.BoxGeometry(9, 2, 5);
-    const ticketMat = new THREE.MeshStandardMaterial({
+    // 1. Base mass (Bottom filling)
+    const baseGeo = new THREE.BoxGeometry(9, 1.8, 5);
+    const goldMat = new THREE.MeshStandardMaterial({
         color: 0xffd700,
         metalness: 0.8,
         roughness: 0.2,
         emissive: 0xffaa00,
-        emissiveIntensity: 0.2
+        emissiveIntensity: 0.1
     });
-    ticketPile = new THREE.Mesh(ticketGeo, ticketMat);
-    ticketPile.position.y = -1; // Bottom of chest
-    chestBase.add(ticketPile);
+    const baseMass = new THREE.Mesh(baseGeo, goldMat);
+    baseMass.position.y = -1.2;
+    chestBase.add(baseMass);
+
+    // 2. Individual tickets (Messy top layer)
+    // Add 30 randomized small tickets for a 3D look
+    const ticketGeo = new THREE.PlaneGeometry(0.8, 0.4);
+    for (let i = 0; i < 30; i++) {
+        const t = new THREE.Mesh(ticketGeo, goldMat);
+        t.position.set(
+            (Math.random() - 0.5) * 8.5,
+            -0.3 + (Math.random() * 0.4), // Sitting on top of mass
+            (Math.random() - 0.5) * 4.5
+        );
+        t.rotation.set(
+            Math.PI / 2 + (Math.random() - 0.5) * 0.3,
+            (Math.random() * Math.PI),
+            (Math.random() - 0.5) * 0.3
+        );
+        chestBase.add(t);
+    }
 }
 
 function start3DSpin(callback) {
@@ -426,34 +444,34 @@ function open3DChest(callback) {
 }
 
 function createTicketExplosion() {
-    const ticketCount = 40;
+    const ticketCount = 150; // MASSIVE count
     const ticketGeo = new THREE.PlaneGeometry(0.8, 0.4);
     const ticketMat = new THREE.MeshStandardMaterial({
         color: 0xffd700,
-        metalness: 0.5,
+        metalness: 0.6,
         roughness: 0.3,
         side: THREE.DoubleSide
     });
 
     for (let i = 0; i < ticketCount; i++) {
         const ticket = new THREE.Mesh(ticketGeo, ticketMat);
-        // Start inside chest
+        // Start inside chest center
         ticket.position.set(0, 0, 0);
         scene.add(ticket);
 
         flyingTickets.push({
             mesh: ticket,
             velocity: new THREE.Vector3(
-                (Math.random() - 0.5) * 0.8,
-                Math.random() * 0.6 + 0.3,
-                Math.random() * 0.4 + 0.2
+                (Math.random() - 0.5) * 1.5, // Wider spread X
+                Math.random() * 0.8 + 0.4,   // Higher Y burst
+                (Math.random() - 0.5) * 1.0 + 0.4 // Z burst towards camera
             ),
             rotationSpeed: new THREE.Vector3(
-                Math.random() * 0.2,
-                Math.random() * 0.2,
-                Math.random() * 0.2
+                Math.random() * 0.4 - 0.2,
+                Math.random() * 0.4 - 0.2,
+                Math.random() * 0.4 - 0.2
             ),
-            gravity: -0.015
+            gravity: -0.012 - (Math.random() * 0.005) // Slight variance in gravity
         });
     }
 }
