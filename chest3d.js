@@ -1,6 +1,6 @@
 // Chest 3D Logic using Three.js
 
-let scene, camera, renderer, chestGroup, lidGroup, chestBase, glowLight, glowSphere;
+let scene, camera, renderer, chestGroup, lidGroup, chestBase, glowLight;
 let isSpinning = false;
 let isOpen = false;
 let floatFrame = 0;
@@ -80,12 +80,6 @@ function init3DChest() {
         glowLight = new THREE.PointLight(0xffffff, 0, 100);
         glowLight.position.set(0, 0, 5);
         scene.add(glowLight);
-
-        // Sun Glow (Physical Sphere for blinding effect)
-        const glowSphereGeo = new THREE.SphereGeometry(1, 32, 32);
-        const glowSphereMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 });
-        glowSphere = new THREE.Mesh(glowSphereGeo, glowSphereMat);
-        scene.add(glowSphere);
 
         const fillLight = new THREE.PointLight(0xffd700, 0.8, 50);
         fillLight.position.set(-15, 5, 10);
@@ -381,21 +375,18 @@ function start3DSpin(callback) {
         const now = Date.now();
         const progress = Math.min((now - startTime) / duration, 1);
 
-        // Acceleration: t^3 means slow start, very fast end
         const speedFactor = Math.pow(progress, 3);
-        const totalRotations = Math.PI * 16; // Even faster
+        const totalRotations = Math.PI * 16;
         chestGroup.rotation.y = startRot + (totalRotations * speedFactor);
 
-        // Sun Glow Intensity
-        if (ambient) ambient.intensity = 1.5 + (8.5 * progress);
-        if (renderer) renderer.toneMappingExposure = 1.3 + (3.7 * progress); // Max blinding exposure
+        // Localized Sun Glow
+        if (ambient) ambient.intensity = 1.5 + (4.5 * progress);
+        if (renderer) renderer.toneMappingExposure = 1.3 + (0.9 * progress); // Cap at 2.2
 
-        if (glowLight) glowLight.intensity = progress * 100;
-        if (glowSphere) {
-            glowSphere.material.opacity = progress * 1.5;
-            // Scale up to hide chest at the end
-            const s = 1 + progress * 40;
-            glowSphere.scale.set(s, s, s);
+        if (glowLight) {
+            // High intensity PointLight creates focal glow
+            const flicker = 1 + (Math.random() - 0.5) * 0.2; // 20% flicker
+            glowLight.intensity = progress * 300 * flicker;
         }
 
         if (progress < 1) {
@@ -403,14 +394,10 @@ function start3DSpin(callback) {
         } else {
             isSpinning = false;
             open3DChest(() => {
-                // Return lights and sphere to normal
+                // Reset to normal
                 if (ambient) ambient.intensity = 1.5;
                 if (renderer) renderer.toneMappingExposure = 1.3;
                 if (glowLight) glowLight.intensity = 0;
-                if (glowSphere) {
-                    glowSphere.material.opacity = 0;
-                    glowSphere.scale.set(1, 1, 1);
-                }
                 if (callback) callback();
             });
         }
