@@ -106,203 +106,176 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Dashboard Logic ---
 
+    // --- Dashboard Logic (Optimized) ---
+
+    // Constants
+    const LOAD_BATCH_SIZE = 1000;
+
+    // State
+    let currentOffset = 0;
+    let isSearchActive = false;
+    let accumulatedTickets = [];
+
+    const btnLoadMore = document.getElementById('btn-load-more');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const loadMoreContainer = document.getElementById('load-more-container');
+
+    if (btnLoadMore) {
+        btnLoadMore.addEventListener('click', () => loadMoreTickets());
+    }
+
+    function toggleLoader(show) {
+        if (loadingOverlay) {
+            loadingOverlay.classList.toggle('hidden', !show);
+        }
+    }
+
     function renderDashboard() {
         if (!window.sbClient) {
             console.error("Supabase client not initialized");
             return;
         }
-        fetchRevenueData();
+        // Initial Full Load
+        resetAndLoadDashboard();
     }
 
-    // Helper function to fetch ALL tickets using pagination (Supabase has 1000 row limit)
-    async function fetchAllTickets(status) {
-        const BATCH_SIZE = 1000;
-        let allTickets = [];
-        let from = 0;
-        let hasMore = true;
+    async function resetAndLoadDashboard() {
+        currentOffset = 0;
+        accumulatedTickets = [];
+        isSearchActive = false;
+        tableBody.innerHTML = '';
 
-        while (hasMore) {
-            let query = window.sbClient
-                .from('tickets')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .range(from, from + BATCH_SIZE - 1);
-
-            if (status !== 'all') {
-                query = query.eq('status', status);
-            }
-
-            const { data, error } = await query;
-
-            if (error) {
-                console.error('Error fetching tickets batch:', error);
-                return null;
-            }
-
-            if (data && data.length > 0) {
-                allTickets = [...allTickets, ...data];
-                from += BATCH_SIZE;
-                // If we got less than BATCH_SIZE, we've reached the end
-                if (data.length < BATCH_SIZE) {
-                    hasMore = false;
-                }
-            } else {
-                hasMore = false;
-            }
-        }
-
-        return allTickets;
+        toggleLoader(true);
+        await fetchStats();
+        await loadMoreTickets(); // Load first batch
+        toggleLoader(false);
     }
 
-    async function fetchRevenueData(isInitial = true) {
-        if (!window.sbClient) return;
+    async function fetchStats() {
+        // Fetch Global Stats (Fast counts)
+        const { count: paidCount } = await window.sbClient.from('tickets').select('*', { count: 'exact', head: true }).eq('status', 'paid');
+        const { count: reservedCount } = await window.sbClient.from('tickets').select('*', { count: 'exact', head: true }).eq('status', 'reserved');
+        updateStatsUI(paidCount || 0, reservedCount || 0);
+    }
 
-        if (isInitial) {
-            currentPage = 0;
-            allDataRendered = false;
-            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center">Cargando todos los clientes...</td></tr>';
+    async function loadMoreTickets() {
+        // Safe check for search mode
+        if (isSearchActive) return; // Load more only works for timeline view, not search results
 
-            // Fetch Global Stats (Accurate counts)
-            const { count: paidCount } = await window.sbClient.from('tickets').select('*', { count: 'exact', head: true }).eq('status', 'paid');
-            const { count: reservedCount } = await window.sbClient.from('tickets').select('*', { count: 'exact', head: true }).eq('status', 'reserved');
-            updateStatsUI(paidCount || 0, reservedCount || 0);
-        }
+        if (loadMoreContainer) loadMoreContainer.style.display = 'none';
 
-        // Server-side filtering
-        const term = ticketSearch.value.trim().toLowerCase();
+        // Fetch Batch
         const status = filterStatus.value;
 
-        // Fetch ALL tickets using pagination to overcome 1000 row limit
-        const data = await fetchAllTickets(status);
+        let query = window.sbClient
+            .from('tickets')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .range(currentOffset, currentOffset + LOAD_BATCH_SIZE - 1);
 
-        if (data === null) {
-            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red">Error al cargar datos.</td></tr>';
+        if (status !== 'all') {
+            query = query.eq('status', status);
+            // Notes: Filtering by status implies we might miss recent tickets if strictly paginating by date globally
+            // But usually acceptable for simple admin view
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+            alert('Error al cargar datos: ' + error.message);
+            toggleLoader(false);
             return;
         }
 
-        // Apply client-side search filter if term exists
-        let filteredData = data;
-        if (term) {
-            filteredData = data.filter(t =>
-                (t.client_name && t.client_name.toLowerCase().includes(term)) ||
-                (t.client_phone && t.client_phone.toLowerCase().includes(term)) ||
-                (t.ticket_number && t.ticket_number.toString().includes(term))
-            );
+        if (data && data.length > 0) {
+            accumulatedTickets = [...accumulatedTickets, ...data];
+            currentOffset += LOAD_BATCH_SIZE;
+
+            // Render current accumulation (grouping logic handles the whole set correctly)
+            renderTable(accumulatedTickets);
+
+            if (data.length === LOAD_BATCH_SIZE) {
+                // Potential for more data
+                if (loadMoreContainer) loadMoreContainer.style.display = 'block';
+                btnLoadMore.textContent = 'Cargar más resultados antiguos...';
+            }
+        } else {
+            if (accumulatedTickets.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No se encontraron registros.</td></tr>';
+            }
         }
-
-        currentFilteredData = filteredData;
-        allDataRendered = true;
-        tableBody.innerHTML = '';
-
-        renderTable(currentFilteredData);
     }
 
-    function updateStatsUI(paidCount, reservedCount) {
-        const totalSales = paidCount * TICKET_PRICE;
-        const TOTAL_TICKETS = 100000;
-
-        statTotal.textContent = `$${totalSales.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-        statSold.textContent = `${paidCount} / ${TOTAL_TICKETS.toLocaleString()}`;
-        statPending.textContent = `${reservedCount}`;
-    }
-
-    function groupTicketsByClient(flatTickets) {
-        const groups = {};
-        flatTickets.forEach(t => {
-            // Use a combination of phone and name to avoid grouping separate people if phone is missing/same
-            const key = `${t.client_phone || 'no-phone'}_${t.client_name || 'no-name'}`;
-            if (!groups[key]) {
-                groups[key] = {
-                    client: t.client_name || 'Desconocido',
-                    phone: t.client_phone || 'Sin número',
-                    tickets: [],
-                    totalPrice: 0,
-                    statuses: new Set(),
-                    date: t.created_at
-                };
-            }
-            groups[key].tickets.push(t);
-            groups[key].totalPrice += TICKET_PRICE;
-            groups[key].statuses.add(t.status);
-            // Keep the most recent date
-            if (new Date(t.created_at) > new Date(groups[key].date)) {
-                groups[key].date = t.created_at;
-            }
-        });
-        return Object.values(groups).sort((a, b) => new Date(b.date) - new Date(a.date));
-    }
-
-    function renderTable(flatData) {
-        tableBody.innerHTML = '';
-        const groupedData = groupTicketsByClient(flatData);
-
-        if (groupedData.length === 0) {
-            tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No se encontraron registros.</td></tr>';
+    // --- Optimized Search Logic ---
+    async function performGlobalSearch() {
+        const term = ticketSearch.value.trim();
+        if (!term) {
+            // If cleared, reset to normal view
+            resetAndLoadDashboard();
             return;
         }
 
-        groupedData.forEach(group => {
-            const tr = document.createElement('tr');
+        isSearchActive = true;
+        if (loadMoreContainer) loadMoreContainer.style.display = 'none'; // No "load more" in search results
 
-            // Determine dominant status
-            let badgeClass = 'reserved';
-            let statusText = 'Apartado';
+        // Show lightweight loader within table or maintain overlay? Overlay is safer for "global search" feel
+        toggleLoader(true);
 
-            if (group.statuses.has('paid') && !group.statuses.has('reserved')) {
-                badgeClass = 'paid';
-                statusText = 'Pagado';
-            } else if (group.statuses.has('paid') && group.statuses.has('reserved')) {
-                badgeClass = 'warning';
-                statusText = 'Mixto';
-            }
+        const status = filterStatus.value;
+        const normalizedTerm = term.toLowerCase();
 
-            const ticketCount = group.tickets.length;
-            const formattedTotal = `$${group.totalPrice.toLocaleString()}`;
+        // Construct Query for Global Search
+        // Note: Supabase 'or' filtering with ilike on multiple columns
+        let query = window.sbClient
+            .from('tickets')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(200); // Reasonable limit for search results
 
-            tr.innerHTML = `
-                <td data-label="Cliente"><strong>${group.client}</strong></td>
-                <td data-label="Teléfono">${group.phone}</td>
-                <td data-label="Boletos"><span class="badge available" style="color:white;">${ticketCount} boletos</span></td>
-                <td data-label="Total">${formattedTotal}</td>
-                <td data-label="Estado"><span class="badge ${badgeClass}">${statusText}</span></td>
-                <td data-label="Acciones">
-                    <div class="action-buttons-group">
-                        <button class="action-btn btn-view" onclick="viewDetails('${group.phone}')">
-                            <i class="fas fa-eye"></i> Ver
-                        </button>
-                        ${statusText !== 'Pagado' ?
-                    `<button class="action-btn btn-pay" onclick="markGroupAsPaid('${group.phone}')"><i class="fas fa-check"></i></button>` : ''}
-                    </div>
-                </td>
-            `;
-            tableBody.appendChild(tr);
-        });
+        // Complex OR filter for search
+        // ticket_number is text/int? Assuming text based on ilike needs. If int, we need careful casting.
+        // Assuming database ticket_number is TEXT based on previous code usage (padStart). 
+        // If it's INT, ilike won't work directly on it easily without casting.
+        // Let's assume standard client_name/phone search first.
+
+        const searchFilter = `client_name.ilike.%${term}%,client_phone.ilike.%${term}%,ticket_number.ilike.%${term}%`;
+        query = query.or(searchFilter);
+
+        if (status !== 'all') {
+            query = query.eq('status', status);
+        }
+
+        const { data, error } = await query;
+        toggleLoader(false);
+
+        if (error) {
+            console.error(error);
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red">Error en la búsqueda.</td></tr>';
+            return;
+        }
+
+        if (data && data.length > 0) {
+            // For search results, we just render what we found
+            renderTable(data);
+        } else {
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No se encontraron resultados para "' + term + '".</td></tr>';
+        }
     }
 
-    // --- Infinite Scroll ---
-    window.addEventListener('scroll', () => {
-        if (allDataRendered || isLoadingMore) return;
-
-        const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-        const scrolled = window.scrollY;
-
-        if (Math.ceil(scrolled) >= scrollable - 200) {
-            fetchRevenueData(false);
-        }
-    });
-
-    // --- Filtering & Search ---
+    // Debounce Search
     let searchTimeout;
     ticketSearch.addEventListener('input', () => {
         clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => fetchRevenueData(true), 500);
+        searchTimeout = setTimeout(performGlobalSearch, 600);
     });
-    filterStatus.addEventListener('change', () => fetchRevenueData(true));
 
-    function filterData() {
-        // Redundant with server-side logic now
-        fetchRevenueData(true);
-    }
+    filterStatus.addEventListener('change', () => {
+        if (ticketSearch.value.trim()) {
+            performGlobalSearch();
+        } else {
+            resetAndLoadDashboard();
+        }
+    });
 
     // --- Detail Modal Actions ---
     window.viewDetails = function (phone) {

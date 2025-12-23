@@ -432,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            console.log(`[TAKEN] Fetched ${allTaken.length} valid taken tickets (paid + reserved within 5h)`);
+            // console.log(`[TAKEN] Fetched ${allTaken.length} valid taken tickets`);
             return new Set(allTaken);
         } catch (err) {
             console.error('Error in fetchTakenTickets:', err);
@@ -965,6 +965,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // If any tickets are now taken, alert user and remove them
                 if (nowTaken && nowTaken.length > 0) {
                     const takenNums = nowTaken.map(t => t.ticket_number);
+                    // Alert user about specific taken tickets
                     const takenList = takenNums.slice(0, 10).join(', ');
                     const moreText = takenNums.length > 10 ? ` y ${takenNums.length - 10} más` : '';
 
