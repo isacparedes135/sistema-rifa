@@ -327,16 +327,28 @@ h1 {
 }
 
 /* Desktop Adjustment for Larger Heart */
+/* Desktop Adjustment for Larger Heart */
 @media (min-width: 1024px) {
+
+    /* Make the MODAL larger, not just the container */
+    #chest-modal .modal-content {
+        max-width: 600px;
+        /* Much wider than standard 340px */
+        padding: 40px;
+        /* More breathing room */
+    }
+
     .chest-container {
         height: 500px;
-        /* Increased height */
         min-height: 450px;
+        /* Ensure container fills the new larger modal */
+        width: 100%;
     }
 
     #lucky-heart-wrapper {
-        transform: scale(1.5) !important;
-        /* Force larger scale */
+        /* Revert scale to avoid overflow, or keep it slight if container is big enough */
+        transform: scale(1.2) !important;
+        /* Slight boost, but fits in 600px */
     }
 }
 
