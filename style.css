@@ -346,9 +346,8 @@ h1 {
     }
 
     #lucky-heart-wrapper {
-        /* Revert scale to avoid overflow, or keep it slight if container is big enough */
-        transform: scale(1.2) !important;
-        /* Slight boost, but fits in 600px */
+        /* Adjusted scale to be "just right" - slightly larger than mobile but contained */
+        transform: scale(1.1) !important;
     }
 }
 
