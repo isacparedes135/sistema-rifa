@@ -663,7 +663,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Lucky Chest Logic ---
 
-    function startLuckyChestSequence() {
+    function startLuckyChestSequence(prefillQty = null) {
         if (chestModal) openModal(chestModal);
         chestContainer.style.display = 'block';
         chestContainer.classList.remove('chest-open');
@@ -681,7 +681,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 chestContainer,
                 generateLuckyNumbers,
                 createAdvancedParticles,
-                (qty) => { targetQuantity = qty; }
+                (qty) => { targetQuantity = qty; },
+                prefillQty
             );
         }
 
@@ -906,7 +907,8 @@ document.addEventListener('DOMContentLoaded', () => {
         tryAgainBtn.innerText = '¿No te gustaron? Inténtalo de nuevo';
         tryAgainBtn.onclick = () => {
             manualModal.classList.remove('active'); // Fixed: Use correct modal closing logic
-            startLuckyChestSequence();
+            // Pass previous quantity to prefill
+            startLuckyChestSequence(tickets.length);
         };
         manualSelectedList.appendChild(tryAgainBtn);
     }

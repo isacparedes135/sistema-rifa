@@ -10,7 +10,7 @@
     });
 
     // Global function to be called from main.js
-    window.initLuckyEnhancement = function (chestModal, chestContainer, generateLuckyNumbersFn, createAdvancedParticlesFn, setQuantityFn) {
+    window.initLuckyEnhancement = function (chestModal, chestContainer, generateLuckyNumbersFn, createAdvancedParticlesFn, setQuantityFn, initialQty = null) {
         const modalContent = chestModal.querySelector('.modal-content');
 
         // 0. Inject Styles
@@ -203,7 +203,14 @@
             }
         };
 
-        luckyQtyInput.focus();
+        // PREFILL LOGIC
+        if (initialQty) {
+            luckyQtyInput.value = initialQty;
+            // Manually trigger visual update
+            luckyQtyInput.oninput.call(luckyQtyInput);
+        } else {
+            luckyQtyInput.focus();
+        }
 
         if (window.updateChestInstruction) window.updateChestInstruction('');
         const oldInstruction = document.getElementById('chest-tap-instruction');
