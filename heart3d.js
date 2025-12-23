@@ -74,7 +74,8 @@ function init3DHeart() {
 
             // Dynamically adjust heart scale on resize
             if (heartGroup) {
-                const newScale = window.innerWidth < 768 ? 1.0 : 1.3;
+                // Fixed: Kept 1.0 for desktop too, to avoid double-scaling with CSS
+                const newScale = window.innerWidth < 768 ? 1.0 : 1.0;
                 heartGroup.scale.set(newScale, newScale, newScale);
             }
         });
