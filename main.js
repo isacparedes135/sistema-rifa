@@ -694,7 +694,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Interaction Handler
         if (window.updateChestInstruction) {
-            window.updateChestInstruction('Toca el corazón para descubrir tus números');
+            // window.updateChestInstruction('Toca el corazón para descubrir tus números');
         }
 
         // Cleanup previous listener
