@@ -2,7 +2,7 @@
 // This file modifies the lucky heart flow to combine quantity selection with heart modal
 
 (function () {
-    // Wait for DOM and main.js
+    // Wait for DOM
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.startLuckyChestSequence === 'undefined') {
             console.log('Lucky enhancement: waiting for main.js...');
@@ -13,12 +13,12 @@
     window.initLuckyEnhancement = function (chestModal, chestContainer, generateLuckyNumbersFn, createAdvancedParticlesFn, setQuantityFn) {
         const modalContent = chestModal.querySelector('.modal-content');
 
-        // 0. Inject Custom Styles for Input Cleaning (Spinners) & Animations
+        // 0. Inject Styles (Updated)
         if (!document.getElementById('lucky-custom-styles')) {
             const style = document.createElement('style');
             style.id = 'lucky-custom-styles';
             style.innerHTML = `
-                /* Remove Arrows/Spinners */
+                /* Remove Spinners */
                 #lucky-quantity-input::-webkit-outer-spin-button,
                 #lucky-quantity-input::-webkit-inner-spin-button {
                     -webkit-appearance: none;
@@ -28,18 +28,11 @@
                     -moz-appearance: textfield;
                 }
                 
-                /* Premium Input Focus */
-                #lucky-quantity-input:focus {
-                    outline: none;
-                    box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
-                    border-color: #ff0055 !important;
-                }
-
-                /* Placeholder Animation */
+                /* Pulse Animation for Placeholder */
                 @keyframes pulse-text {
-                    0% { opacity: 0.7; }
+                    0% { opacity: 0.6; }
                     50% { opacity: 1; }
-                    100% { opacity: 0.7; }
+                    100% { opacity: 0.6; }
                 }
                 .pulse-anim { animation: pulse-text 2s infinite; }
             `;
@@ -51,87 +44,75 @@
         if (!layoutContainer) {
             layoutContainer = document.createElement('div');
             layoutContainer.id = 'lucky-layout-container';
-            layoutContainer.style.cssText = 'width: 100%; display: flex; flex-direction: column; gap: 8px; margin-top: 5px;';
+            layoutContainer.style.cssText = 'width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 5px;';
 
             const originalTitle = modalContent.querySelector('h3');
             if (originalTitle) originalTitle.style.display = 'none';
         }
 
-        // 2. Quantity Box (Styled & Premium)
+        // 2. Quantity Box (Horizontal Layout: Label Left | Input Right)
         let quantityBox = document.getElementById('lucky-quantity-box');
         if (!quantityBox) {
             quantityBox = document.createElement('div');
             quantityBox.id = 'lucky-quantity-box';
+            // Horizontal Layout
             quantityBox.style.cssText = `
-                background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+                background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
                 border: 1px solid rgba(255, 255, 255, 0.1);
                 border-radius: 12px;
-                padding: 12px;
-                text-align: center;
+                padding: 15px;
                 display: flex;
-                flex-direction: column;
+                flex-direction: row; /* Horizontal */
                 align-items: center;
-                justify-content: center;
-                gap: 8px;
-                box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+                justify-content: center; /* Center content */
+                gap: 20px; /* Space between label and input */
+                box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
             `;
 
-            // Custom Input Design
             quantityBox.innerHTML = `
                 <label style="
                     color: var(--primary); 
                     font-weight: 700; 
-                    font-size: 0.85rem; 
+                    font-size: 1rem; 
                     text-transform: uppercase; 
-                    letter-spacing: 1px;
-                    opacity: 0.9;
-                ">Elige cantidad de boletos</label>
+                    letter-spacing: 0.5px;
+                    margin: 0;
+                    text-align: right;
+                ">Elige cantidad<br>de boletos:</label>
                 
-                <div style="position: relative; display: inline-block;">
-                    <input type="number" id="lucky-quantity-input" min="1" max="500" placeholder="0" 
-                        style="
-                            width: 100px; 
-                            padding: 10px; 
-                            border: 2px solid rgba(255,255,255,0.2); 
-                            border-radius: 12px; 
-                            text-align: center; 
-                            font-size: 1.8rem; 
-                            font-weight: 800; 
-                            background: rgba(0,0,0,0.3); 
-                            color: #fff;
-                            transition: all 0.3s ease;
-                        ">
-                    <span style="
-                        position: absolute; 
-                        right: 10px; 
-                        top: 50%; 
-                        transform: translateY(-50%); 
-                        font-size: 0.8rem; 
-                        color: rgba(255,255,255,0.3); 
-                        pointer-events: none;
-                    ">boletos</span>
-                </div>
+                <input type="number" id="lucky-quantity-input" min="1" max="500" placeholder="0" 
+                    style="
+                        width: 90px; 
+                        padding: 10px; 
+                        border: 2px solid var(--primary); 
+                        border-radius: 10px; 
+                        text-align: center; 
+                        font-size: 1.5rem; 
+                        font-weight: bold; 
+                        background: rgba(0,0,0,0.4); 
+                        color: #fff;
+                        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+                        transition: all 0.2s ease;
+                    ">
             `;
             layoutContainer.appendChild(quantityBox);
         }
 
-        // 3. Heart Box (More Compact)
+        // 3. Heart Box (Larger)
         let heartBox = document.getElementById('lucky-heart-box');
         if (!heartBox) {
             heartBox = document.createElement('div');
             heartBox.id = 'lucky-heart-box';
             heartBox.style.cssText = `
                 background: transparent;
-                border-top: 1px solid rgba(255, 255, 255, 0.1);
-                border-radius: 0 0 15px 15px;
-                padding: 0;
+                border-radius: 15px;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                height: 180px; /* Reduced from 220px */
+                height: 300px; /* Increased Size */
                 position: relative;
-                overflow: hidden;
+                overflow: visible; /* Allow overflow if needed */
             `;
 
             // Placeholder Text
@@ -141,7 +122,7 @@
             placeholder.className = 'pulse-anim';
             placeholder.style.cssText = `
                 color: var(--text-muted);
-                font-size: 0.9rem;
+                font-size: 1.1rem;
                 font-style: italic;
                 position: absolute;
                 top: 50%;
@@ -151,10 +132,11 @@
                 text-align: center;
                 opacity: 1;
                 transition: opacity 0.3s ease;
+                z-index: 10; /* Ensure visible */
             `;
             heartBox.appendChild(placeholder);
 
-            // Wrapper
+            // Heart Wrapper
             const heartWrapper = document.createElement('div');
             heartWrapper.id = 'lucky-heart-wrapper';
             heartWrapper.style.cssText = `
@@ -162,23 +144,28 @@
                 height: 100%;
                 opacity: 0;
                 transform: scale(0.8) translateY(20px);
-                transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+                transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                 pointer-events: none;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                justify-content: center; /* Vertically center heart */
+                justify-content: center;
             `;
 
             if (chestContainer) {
-                // Ensure chest container fits well
+                // Resize container
                 chestContainer.style.width = '100%';
-                chestContainer.style.height = '140px'; // Explicit height for canvas container
+                chestContainer.style.height = '100%';
+
+                // Scale Canvas Logic (CSS Transform to make it bigger instantly)
+                chestContainer.style.transform = 'scale(1.3)'; // Make heart 30% bigger visually
+
                 heartWrapper.appendChild(chestContainer);
 
                 const tapLabel = document.createElement('p');
+                tapLabel.id = 'lucky-tap-label';
                 tapLabel.innerText = '¡Toca para girar!';
-                tapLabel.style.cssText = 'color: var(--primary); font-weight: bold; margin-top: -5px; text-align: center; font-size: 0.9rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);';
+                tapLabel.style.cssText = 'color: var(--primary); font-weight: bold; margin-top: -20px; text-align: center; font-size: 1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.8); z-index: 5; position: relative;';
                 heartWrapper.appendChild(tapLabel);
             }
             heartBox.appendChild(heartWrapper);
@@ -203,6 +190,7 @@
 
         // Initial Reset
         luckyQtyInput.value = '';
+        placeholder.style.display = 'block';
         placeholder.style.opacity = '1';
         heartWrapper.style.opacity = '0';
         heartWrapper.style.transform = 'scale(0.8) translateY(20px)';
@@ -212,12 +200,21 @@
         luckyQtyInput.oninput = function () {
             const val = parseInt(this.value);
             if (!isNaN(val) && val > 0) {
+                // Hide Placeholder COMPLETELY
                 placeholder.style.opacity = '0';
+                setTimeout(() => { if (placeholder.style.opacity === '0') placeholder.style.display = 'none'; }, 300);
+
+                // Show Heart
                 heartWrapper.style.opacity = '1';
                 heartWrapper.style.transform = 'scale(1) translateY(0)';
                 heartWrapper.style.pointerEvents = 'auto';
             } else {
-                placeholder.style.opacity = '1';
+                // Show Placeholder
+                placeholder.style.display = 'block';
+                // Small delay to allow display:block to apply before opacity transition
+                requestAnimationFrame(() => { placeholder.style.opacity = '1'; });
+
+                // Hide Heart
                 heartWrapper.style.opacity = '0';
                 heartWrapper.style.transform = 'scale(0.8) translateY(20px)';
                 heartWrapper.style.pointerEvents = 'none';
@@ -238,6 +235,9 @@
             }
             if (setQuantityFn) setQuantityFn(qty);
             else window.targetQuantity = qty;
+
+            const tapLabel = document.getElementById('lucky-tap-label');
+            if (tapLabel) tapLabel.style.display = 'none'; // Hide label on click
 
             chestContainer.removeEventListener('click', onChestClick);
             chestContainer._onChestClick = null;
