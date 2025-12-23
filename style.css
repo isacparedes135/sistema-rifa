@@ -326,6 +326,20 @@ h1 {
     }
 }
 
+/* Desktop Adjustment for Larger Heart */
+@media (min-width: 1024px) {
+    .chest-container {
+        height: 500px;
+        /* Increased height */
+        min-height: 450px;
+    }
+
+    #lucky-heart-wrapper {
+        transform: scale(1.5) !important;
+        /* Force larger scale */
+    }
+}
+
 /* Chest Modal Specific Refinements */
 #chest-modal .modal-content {
     /* No override here, handled in HTML/Variables */

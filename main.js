@@ -669,7 +669,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (particlesContainer) particlesContainer.innerHTML = '';
 
         // Use enhancement for combined modal
+        let enhancementActive = false;
         if (window.initLuckyEnhancement) {
+            enhancementActive = true;
             window.initLuckyEnhancement(
                 chestModal,
                 chestContainer,
@@ -689,35 +691,39 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Interaction Handler
-        let clickCount = 0;
+        // Only attach default listener if enhancement is NOT active
+        // The enhancement handles its own click logic with quantity validation
+        if (!enhancementActive) {
+            // Interaction Handler
+            let clickCount = 0;
 
-        // Interaction Handler
-        if (window.updateChestInstruction) {
-            // window.updateChestInstruction('Toca el corazón para descubrir tus números');
-        }
-
-        // Cleanup previous listener
-        if (chestContainer._onChestClick) {
-            chestContainer.removeEventListener('click', chestContainer._onChestClick);
-        }
-
-        const onChestClick = () => {
-            chestContainer.removeEventListener('click', onChestClick);
-            chestContainer._onChestClick = null;
-
-            if (window.updateChestInstruction) window.updateChestInstruction('');
-
-            if (window.startHeartBreak) {
-                window.startHeartBreak(() => {
-                    generateLuckyNumbers();
-                    createAdvancedParticles();
-                });
+            // Interaction Handler
+            if (window.updateChestInstruction) {
+                // window.updateChestInstruction('Toca el corazón para descubrir tus números');
             }
-        };
 
-        chestContainer._onChestClick = onChestClick;
-        chestContainer.addEventListener('click', onChestClick);
+            // Cleanup previous listener
+            if (chestContainer._onChestClick) {
+                chestContainer.removeEventListener('click', chestContainer._onChestClick);
+            }
+
+            const onChestClick = () => {
+                chestContainer.removeEventListener('click', onChestClick);
+                chestContainer._onChestClick = null;
+
+                if (window.updateChestInstruction) window.updateChestInstruction('');
+
+                if (window.startHeartBreak) {
+                    window.startHeartBreak(() => {
+                        generateLuckyNumbers();
+                        createAdvancedParticles();
+                    });
+                }
+            };
+
+            chestContainer._onChestClick = onChestClick;
+            chestContainer.addEventListener('click', onChestClick);
+        }
     }
 
     // Create orbiting sparkle particles during spin
