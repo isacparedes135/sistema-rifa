@@ -140,15 +140,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function resetAndLoadDashboard() {
-        currentOffset = 0;
-        accumulatedTickets = [];
-        isSearchActive = false;
-        tableBody.innerHTML = '';
+        try {
+            currentOffset = 0;
+            accumulatedTickets = [];
+            isSearchActive = false;
+            tableBody.innerHTML = '';
 
-        toggleLoader(true);
-        await fetchStats();
-        await loadMoreTickets(); // Load first batch
-        toggleLoader(false);
+            toggleLoader(true);
+            await fetchStats();
+            await loadMoreTickets(); // Load first batch
+        } catch (e) { console.error(e); } finally {
+            toggleLoader(false);
+        }
     }
 
     async function fetchStats() {
