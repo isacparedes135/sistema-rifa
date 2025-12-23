@@ -473,18 +473,17 @@ h1 {
     pointer-events: none;
 }
 
-/* Golden Tickets */
+/* Tickets del Corazón - Color Verde Menta */
 .gold-ticket {
     position: absolute;
     width: 20px;
     height: 10px;
-    background: linear-gradient(135deg, var(--primary), var(--accent), var(--accent-secondary));
+    background: linear-gradient(135deg, var(--accent), #7dd3a8, var(--accent));
     border: 1px solid white;
-    border-radius: 1px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(168, 230, 207, 0.4);
     z-index: 10;
     pointer-events: none;
-    /* Inicio en el centro */
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -646,24 +645,26 @@ h1 {
 
 .search-box {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 15px;
+    width: 100%;
 }
 
 .search-box input {
     flex: 1;
+    min-width: 0;
 }
 
 /* --- Payment & Lookup Styles --- */
 .lookup-results-container {
     margin-top: 20px;
-    max-height: 400px;
-    /* Increased height */
+    max-height: 350px;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 10px 5px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    /* 2 columns for better density */
     gap: 12px;
 }
 
@@ -756,18 +757,17 @@ h1 {
 }
 
 .lookup-results-container::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
 }
 
 .lookup-results-container::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #ffd700, #b8860b);
+    background: var(--gradient-primary);
     border-radius: 10px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 .lookup-results-container::-webkit-scrollbar-thumb:hover {
-    background: #ffd700;
+    background: var(--primary);
 }
 
 /* Tickets Mosaic (Manual Grid) */
@@ -799,8 +799,8 @@ h1 {
 
 .tickets-mosaic {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
 }
 
 .ticket-tile {
@@ -1101,6 +1101,25 @@ h1 {
         padding: 15px;
     }
 
+    /* Search box en móvil - vertical */
+    .search-box {
+        flex-direction: column;
+    }
+
+    .search-box button {
+        width: 100%;
+    }
+
+    /* Evitar scroll horizontal en móvil */
+    .modal-content {
+        overflow-x: hidden;
+    }
+
+    /* Grid de tickets más pequeño en móvil */
+    .tickets-mosaic {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
     /* Promotions Stack */
     .promotions {
         flex-direction: column;
@@ -1150,4 +1169,33 @@ h1 {
 .btn-reset-lucky:hover {
     background: var(--surface-light);
     transform: scale(1.02);
+}
+
+/* ================================= 
+   PC / Laptop - Modal Mis Boletos más ancho
+   ================================= */
+@media (min-width: 769px) {
+    #my-tickets-modal .modal-content {
+        max-width: 450px;
+        overflow-x: hidden;
+    }
+
+    #my-tickets-modal .search-box {
+        flex-direction: row;
+        flex-wrap: nowrap;
+    }
+
+    #my-tickets-modal .search-box input {
+        flex: 1;
+    }
+
+    #my-tickets-modal .search-box button {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+
+    /* Asegurar que lookup results no tenga scroll horizontal */
+    .lookup-results-container {
+        overflow-x: hidden;
+    }
 }
