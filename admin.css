@@ -1,15 +1,38 @@
 :root {
-    --gold: #ffb6c1;
-    /* Using Pink as primary gold replacement */
-    --dark-bg: #fdf0f1;
+    /* =================================
+       PALETA PASTEL ADMIN 
+       ================================= */
+
+    /* Colores Principales */
+    --gold: #f8a5c2;
+    --primary: #f8a5c2;
+    --primary-light: #ffd3e0;
+
+    /* Fondos */
+    --dark-bg: #fef6f9;
     --card-bg: #ffffff;
-    --text-primary: #4e342e;
-    --text-secondary: #8d6e63;
+    --surface-light: #fff0f5;
+
+    /* Textos */
+    --text-primary: #4a3640;
+    --text-secondary: #8b7082;
+
+    /* Estados Pastel */
     --success: #a8e6cf;
-    --warning: #ffec8b;
+    --warning: #ffeaa7;
     --danger: #ffb2b2;
+
+    /* Accents */
     --accent: #a8e6cf;
-    --lavender: #e0bbe4;
+    --lavender: #c3aed6;
+    --peach: #ffd3b6;
+    --sky: #a8d8ea;
+
+    /* Gradientes */
+    --gradient-primary: linear-gradient(135deg, #f8a5c2 0%, #c3aed6 100%);
+
+    /* Sombras */
+    --shadow-soft: 0 4px 15px rgba(248, 165, 194, 0.15);
 }
 
 * {
