@@ -149,7 +149,10 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleLoader(true);
             await fetchStats();
             await loadMoreTickets(); // Load first batch
-        } catch (e) { console.error(e); } finally {
+        } catch (e) {
+            console.error(e);
+            alert('Error en dashboard: ' + e.message);
+        } finally {
             toggleLoader(false);
         }
     }
