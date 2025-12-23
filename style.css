@@ -346,8 +346,8 @@ h1 {
     }
 
     #lucky-heart-wrapper {
-        /* Scale down further (~25% less) as requested */
-        transform: scale(0.75) !important;
+        /* Scale down further (~15% less than before) */
+        transform: scale(0.65) !important;
     }
 }
 
