@@ -236,7 +236,7 @@
             if (window.startHeartBreak) {
                 window.startHeartBreak(function () {
                     console.log('[LUCKY] Break finished. Generating numbers...');
-                    generateLuckyNumbersFn();
+                    generateLuckyNumbersFn(qty);
                     createAdvancedParticlesFn();
                 });
             }

@@ -756,12 +756,21 @@ document.addEventListener('DOMContentLoaded', () => {
         particles.forEach(p => p.remove());
     }
 
-    async function generateLuckyNumbers() {
+    async function generateLuckyNumbers(qtyOverride) {
         let results = [];
         let attempts = 0;
         const maxAttempts = 300;
-        const target = parseInt(targetQuantity);
-        console.log(`[LUCKY] Iniciando generación de ${target} boletos...`);
+        // Use override if provided (from lucky enhancement), otherwise use state
+        let target = 0;
+        if (typeof qtyOverride === 'number') {
+            target = qtyOverride;
+            // Also update global state to keep in sync
+            targetQuantity = target;
+        } else {
+            target = parseInt(targetQuantity);
+        }
+
+        console.log(`[LUCKY] Iniciando generación de ${target} boletos... (Source: ${typeof qtyOverride === 'number' ? 'Override' : 'State'})`);
 
         // Fetch fresh taken tickets set for Lucky mode
         const freshTakenSet = await fetchTakenTickets();
