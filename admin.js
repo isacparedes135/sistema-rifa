@@ -158,10 +158,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function fetchStats() {
-        // Fetch Global Stats (Fast counts)
-        const { count: paidCount } = await window.sbClient.from('tickets').select('*', { count: 'exact', head: true }).eq('status', 'paid');
-        const { count: reservedCount } = await window.sbClient.from('tickets').select('*', { count: 'exact', head: true }).eq('status', 'reserved');
-        updateStatsUI(paidCount || 0, reservedCount || 0);
+        try {
+            const { data: { session } } = await window.sbClient.auth.getSession();
+            const { count: paidCount, error: paidError } = await window.sbClient.from('tickets').select('*', { count: 'exact', head: true }).eq('status', 'paid');
+            const { count: reservedCount, error: reservedError } = await window.sbClient.from('tickets').select('*', { count: 'exact', head: true }).eq('status', 'reserved');
+
+            alert(`DEBUG: User: ${session?.user?.id || 'NONE'}\nPaid: ${paidCount}\nReserved: ${reservedCount}\nError: ${paidError?.message || 'Ninguno'}`);
+
+            updateStatsUI(paidCount || 0, reservedCount || 0);
+        } catch (e) {
+            alert('Error fetchStats: ' + e.message);
+        }
     }
 
     async function loadMoreTickets() {
