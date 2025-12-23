@@ -161,7 +161,7 @@
 
             const tapLabel = document.createElement('p');
             tapLabel.id = 'lucky-tap-label';
-            tapLabel.innerText = '¡Toca para girar!';
+            tapLabel.innerText = '¡Toca para abrir!';
             tapLabel.style.cssText = 'color: var(--primary); font-weight: bold; margin-top: -20px; text-align: center; font-size: 1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.8); z-index: 5; position: relative;';
             heartWrapper.appendChild(tapLabel);
         }
