@@ -165,6 +165,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const cartCount = document.getElementById('cart-count');
     const btnViewCart = document.getElementById('btn-view-cart');
 
+    // --- Init Loading Screen ---
+    const loadingOverlay = document.getElementById('loading-overlay');
+    if (loadingOverlay) {
+        window.addEventListener('load', () => {
+            // Short delay to ensure assets are painted
+            setTimeout(() => {
+                loadingOverlay.classList.add('hidden');
+            }, 800);
+        });
+    }
+
     // --- Event Listeners ---
 
     // 1. Initial Interactions -> Open User Data First
