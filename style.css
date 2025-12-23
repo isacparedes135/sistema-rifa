@@ -639,7 +639,7 @@ h1 {
 
 .progress-bar-small .progress-fill {
     height: 100%;
-    background: var(--primary);
+    background: var(--accent);
     transition: width 0.3s ease;
 }
 
@@ -721,8 +721,8 @@ h1 {
 }
 
 .ticket-pill {
-    background: var(--surface-light);
-    border: 2px solid var(--primary-light);
+    background: rgba(168, 230, 207, 0.25);
+    border: 2px solid var(--accent);
     color: var(--text);
     padding: 6px 8px;
     border-radius: 20px;
@@ -732,7 +732,7 @@ h1 {
     justify-content: center;
     gap: 4px;
     font-weight: 600;
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--shadow-accent);
     transition: var(--transition-fast);
     text-align: center;
 }
@@ -800,7 +800,7 @@ h1 {
 
 .tickets-mosaic {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 8px;
 }
 
@@ -1116,9 +1116,9 @@ h1 {
         overflow-x: hidden;
     }
 
-    /* Grid de tickets más pequeño en móvil */
+    /* Grid de tickets en móvil - 4 columnas */
     .tickets-mosaic {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
     }
 
     /* Lista de seleccionados - 4 columnas en móvil */
