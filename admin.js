@@ -35,6 +35,85 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnPayAll = document.getElementById('btn-pay-all');
     let currentSelectedPhone = null;
 
+    // --- Helper Functions (Hoisted) ---
+    function updateStatsUI(paidCount, reservedCount) {
+        const totalSales = paidCount * TICKET_PRICE;
+        const TOTAL_TICKETS = 100000;
+
+        statTotal.textContent = `$${totalSales.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+        statSold.textContent = `${paidCount} / ${TOTAL_TICKETS.toLocaleString()}`;
+        statPending.textContent = `${reservedCount}`;
+    }
+
+    function groupTicketsByClient(flatTickets) {
+        const groups = {};
+        flatTickets.forEach(t => {
+            const key = `${t.client_phone || 'no-phone'}_${t.client_name || 'no-name'}`;
+            if (!groups[key]) {
+                groups[key] = {
+                    client: t.client_name || 'Desconocido',
+                    phone: t.client_phone || 'Sin número',
+                    tickets: [],
+                    totalPrice: 0,
+                    statuses: new Set(),
+                    date: t.created_at
+                };
+            }
+            groups[key].tickets.push(t);
+            groups[key].totalPrice += TICKET_PRICE;
+            groups[key].statuses.add(t.status);
+            if (new Date(t.created_at) > new Date(groups[key].date)) {
+                groups[key].date = t.created_at;
+            }
+        });
+        return Object.values(groups).sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+
+    function renderTable(flatData) {
+        tableBody.innerHTML = '';
+        const groupedData = groupTicketsByClient(flatData);
+
+        if (groupedData.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No se encontraron registros.</td></tr>';
+            return;
+        }
+
+        groupedData.forEach(group => {
+            const tr = document.createElement('tr');
+            let badgeClass = 'reserved';
+            let statusText = 'Apartado';
+
+            if (group.statuses.has('paid') && !group.statuses.has('reserved')) {
+                badgeClass = 'paid';
+                statusText = 'Pagado';
+            } else if (group.statuses.has('paid') && group.statuses.has('reserved')) {
+                badgeClass = 'warning';
+                statusText = 'Mixto';
+            }
+
+            const ticketCount = group.tickets.length;
+            const formattedTotal = `$${group.totalPrice.toLocaleString()}`;
+
+            tr.innerHTML = `
+                <td data-label="Cliente"><strong>${group.client}</strong></td>
+                <td data-label="Teléfono">${group.phone}</td>
+                <td data-label="Boletos"><span class="badge available" style="color:white;">${ticketCount} boletos</span></td>
+                <td data-label="Total">${formattedTotal}</td>
+                <td data-label="Estado"><span class="badge ${badgeClass}">${statusText}</span></td>
+                <td data-label="Acciones">
+                    <div class="action-buttons-group">
+                        <button class="action-btn btn-view" onclick="viewDetails('${group.phone}')">
+                            <i class="fas fa-eye"></i> Ver
+                        </button>
+                        ${statusText !== 'Pagado' ?
+                    `<button class="action-btn btn-pay" onclick="markGroupAsPaid('${group.phone}')"><i class="fas fa-check"></i></button>` : ''}
+                    </div>
+                </td>
+            `;
+            tableBody.appendChild(tr);
+        });
+    }
+
     // --- Authentication Flow ---
 
     // Check session on load
@@ -150,8 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await fetchStats();
             await loadMoreTickets(); // Load first batch
         } catch (e) {
-            console.error(e);
-            alert('Error en dashboard: ' + e.message);
+            console.error('Dashboard Error:', e);
         } finally {
             toggleLoader(false);
         }
@@ -159,15 +237,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchStats() {
         try {
-            const { data: { session } } = await window.sbClient.auth.getSession();
             const { count: paidCount, error: paidError } = await window.sbClient.from('tickets').select('*', { count: 'exact', head: true }).eq('status', 'paid');
             const { count: reservedCount, error: reservedError } = await window.sbClient.from('tickets').select('*', { count: 'exact', head: true }).eq('status', 'reserved');
 
-            alert(`DEBUG: User: ${session?.user?.id || 'NONE'}\nPaid: ${paidCount}\nReserved: ${reservedCount}\nError: ${paidError?.message || 'Ninguno'}`);
+            if (paidError) throw paidError;
+            if (reservedError) throw reservedError;
 
             updateStatsUI(paidCount || 0, reservedCount || 0);
         } catch (e) {
-            alert('Error fetchStats: ' + e.message);
+            console.error('Error fetchStats:', e);
+            updateStatsUI(0, 0);
         }
     }
 
@@ -289,6 +368,8 @@ document.addEventListener('DOMContentLoaded', () => {
             resetAndLoadDashboard();
         }
     });
+
+
 
     // --- Detail Modal Actions ---
     window.viewDetails = function (phone) {
