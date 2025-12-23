@@ -943,6 +943,26 @@ document.addEventListener('DOMContentLoaded', () => {
         btnFinishManual.textContent = 'Validando disponibilidad...';
         btnFinishManual.disabled = true;
 
+        // 0. SECURITY CHECK: Debt Limit (Anti-Hoarding) - 2000 Tickets
+        if (window.sbClient) {
+            try {
+                const { count: currentDebt, error: debtError } = await window.sbClient
+                    .from('tickets')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('client_phone', currentUser.phone)
+                    .eq('status', 'reserved');
+
+                if (!debtError && currentDebt >= 2000) {
+                    alert(`⚠️ Límite de seguridad excedido.\n\nTu número ya tiene ${currentDebt} boletos apartados sin pagar.\n\nPor favor liquida tus apartados anteriores o espera a que expiren antes de solicitar más.`);
+                    btnFinishManual.textContent = 'Apartar y Pagar';
+                    btnFinishManual.disabled = false;
+                    return;
+                }
+            } catch (err) {
+                console.error('Debt warning:', err);
+            }
+        }
+
         // 1. FINAL AVAILABILITY CHECK before insert (with 5-hour expiration)
         if (window.sbClient) {
             try {

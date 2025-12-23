@@ -226,12 +226,38 @@ document.addEventListener('DOMContentLoaded', () => {
             tableBody.innerHTML = '';
 
             toggleLoader(true);
+
+            // Auto-Purge Expired Tickets (Silent Cleanup)
+            await autoPurgeExpiredTickets();
+
             await fetchStats();
             await loadMoreTickets(); // Load first batch
         } catch (e) {
             console.error('Dashboard Error:', e);
         } finally {
             toggleLoader(false);
+        }
+    }
+
+    // --- Auto-Purge Logic (New) ---
+    async function autoPurgeExpiredTickets() {
+        try {
+            const fiveHoursAgo = new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString();
+
+            // Delete tickets that are 'reserved' AND older than 5 hours
+            const { error, count } = await window.sbClient
+                .from('tickets')
+                .delete({ count: 'exact' })
+                .eq('status', 'reserved')
+                .lt('created_at', fiveHoursAgo);
+
+            if (error) {
+                console.error('Auto-Purge Warning:', error);
+            } else if (count > 0) {
+                console.log(`Auto-Purge: Cleaned ${count} expired tickets.`);
+            }
+        } catch (err) {
+            console.error('Auto-Purge Error:', err);
         }
     }
 
