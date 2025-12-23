@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentMode = ''; // 'manual' or 'lucky'
     let currentUser = null; // { name, lastname, phone, state }
     const TICKET_PRICE = 500; // Example price
+    let takenTicketsSet = new Set(); // Tracks tickets already reserved/paid in database
 
     // --- Elements ---
     const btnManual = document.getElementById('btn-manual');
@@ -391,8 +392,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- Fetch Taken Tickets from Database ---
+    // Only considers: 1) Paid tickets 2) Reserved tickets within 5 hours
+    async function fetchTakenTickets() {
+        if (!window.sbClient) return new Set();
+
+        try {
+            const allTaken = [];
+            const BATCH_SIZE = 1000;
+            let from = 0;
+            let hasMore = true;
+
+            // Calculate 5 hours ago timestamp
+            const fiveHoursAgo = new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString();
+
+            while (hasMore) {
+                // Fetch paid tickets OR reserved tickets created within last 5 hours
+                const { data, error } = await window.sbClient
+                    .from('tickets')
+                    .select('ticket_number, status, created_at')
+                    .or(`status.eq.paid,and(status.eq.reserved,created_at.gte.${fiveHoursAgo})`)
+                    .range(from, from + BATCH_SIZE - 1);
+
+                if (error) {
+                    console.error('Error fetching taken tickets:', error);
+                    break;
+                }
+
+                if (data && data.length > 0) {
+                    allTaken.push(...data.map(t => t.ticket_number));
+                    from += BATCH_SIZE;
+                    if (data.length < BATCH_SIZE) hasMore = false;
+                } else {
+                    hasMore = false;
+                }
+            }
+
+            console.log(`[TAKEN] Fetched ${allTaken.length} valid taken tickets (paid + reserved within 5h)`);
+            return new Set(allTaken);
+        } catch (err) {
+            console.error('Error in fetchTakenTickets:', err);
+            return new Set();
+        }
+    }
+
     // --- Manual Selection Logic ---
-    function openManualModal() {
+    async function openManualModal() {
         manualModal.classList.add('active');
 
         // Ensure UI elements are visible (in case they were hidden by Lucky Summary)
@@ -408,7 +453,6 @@ document.addEventListener('DOMContentLoaded', () => {
         updateManualTracker();
 
         manualSearchInput.value = '';
-        manualSearchInput.focus();
         manualSelectedList.innerHTML = '';
 
         // Re-attach standard finish listener
@@ -417,6 +461,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update Button Text for Direct Checkout
         btnFinishManual.textContent = "Apartar y Pagar";
         btnFinishManual.disabled = true;
+
+        // Show loading state
+        searchMessage.textContent = 'Cargando boletos disponibles...';
+        searchMessage.className = 'status-message';
+
+        // Fetch taken tickets BEFORE rendering mosaic
+        takenTicketsSet = await fetchTakenTickets();
+
+        searchMessage.textContent = '';
+        manualSearchInput.focus();
 
         renderMosaic();
     }
@@ -440,6 +494,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         for (let i = mosaicBatchIndex; i < end; i++) {
             const num = i.toString().padStart(5, '0');
+
+            // SKIP taken tickets entirely - don't show them at all
+            if (takenTicketsSet.has(num)) {
+                continue; // Don't create tile for taken tickets
+            }
+
             const tile = document.createElement('div');
             tile.className = 'ticket-tile';
             tile.textContent = num;
@@ -533,17 +593,28 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Check local cache first
+        if (takenTicketsSet.has(formattedTicket)) {
+            searchMessage.textContent = 'Este boleto ya está ocupado.';
+            searchMessage.className = 'status-message status-error';
+            return;
+        }
+
         searchMessage.textContent = 'Verificando...';
 
-        // Supabase Availability Check
+        // Supabase Availability Check (double-check against DB with 5-hour expiration)
         if (window.sbClient) {
+            const fiveHoursAgo = new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString();
             const { data } = await window.sbClient
                 .from('tickets')
-                .select('ticket_number')
+                .select('ticket_number, status, created_at')
                 .eq('ticket_number', formattedTicket)
+                .or(`status.eq.paid,and(status.eq.reserved,created_at.gte.${fiveHoursAgo})`)
                 .single();
 
             if (data) {
+                // Add to local cache (tile is already hidden since taken tickets aren't rendered)
+                takenTicketsSet.add(formattedTicket);
                 searchMessage.textContent = 'Este boleto ya está ocupado.';
                 searchMessage.className = 'status-message status-error';
                 return;
@@ -553,7 +624,10 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedTickets.push(formattedTicket);
         renderTicketPill(formattedTicket, true);
         updateManualTracker();
-        // updateCart(); // Removed for direct checkout
+
+        // Update mosaic tile
+        const tile = ticketsMosaic.querySelector(`.ticket-tile[data-number="${formattedTicket}"]`);
+        if (tile) tile.classList.add('selected');
 
         manualSearchInput.value = '';
         manualSearchInput.focus();
@@ -678,6 +752,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const target = parseInt(targetQuantity);
         console.log(`[LUCKY] Iniciando generación de ${target} boletos...`);
 
+        // Fetch fresh taken tickets set for Lucky mode
+        const freshTakenSet = await fetchTakenTickets();
+        takenTicketsSet = freshTakenSet; // Update global cache
+
         while (results.length < target && attempts < maxAttempts) {
             attempts++;
             let stillNeeded = target - results.length;
@@ -686,7 +764,8 @@ document.addEventListener('DOMContentLoaded', () => {
             let localAttempts = 0;
             while (candidates.size < stillNeeded && localAttempts < 1000) {
                 let candidate = Math.floor(Math.random() * 100000).toString().padStart(5, '0');
-                if (!results.includes(candidate)) {
+                // Check against cache AND already selected
+                if (!results.includes(candidate) && !takenTicketsSet.has(candidate)) {
                     candidates.add(candidate);
                 }
                 localAttempts++;
@@ -694,21 +773,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let candidateArray = Array.from(candidates);
 
+            // Double-check against DB for any race conditions
             if (window.sbClient && candidateArray.length > 0) {
                 try {
+                    const fiveHoursAgo = new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString();
                     const { data: taken, error } = await window.sbClient
                         .from('tickets')
                         .select('ticket_number')
-                        .in('ticket_number', candidateArray);
+                        .in('ticket_number', candidateArray)
+                        .or(`status.eq.paid,and(status.eq.reserved,created_at.gte.${fiveHoursAgo})`);
 
                     if (!error) {
-                        const takenSet = new Set((taken || []).map(t => t.ticket_number));
-                        const available = candidateArray.filter(t => !takenSet.has(t));
+                        const takenSetDB = new Set((taken || []).map(t => t.ticket_number));
+                        const available = candidateArray.filter(t => !takenSetDB.has(t));
+                        // Update cache with any newly found taken
+                        takenSetDB.forEach(t => takenTicketsSet.add(t));
                         if (available.length > 0) results.push(...available);
                     } else {
+                        // On error, only add candidates that passed cache check
                         results.push(...candidateArray);
                     }
                 } catch (err) {
+                    console.error('[LUCKY] DB check error:', err);
                     results.push(...candidateArray);
                 }
             } else {
@@ -716,17 +802,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // Fallback: if still not enough, generate more but only from non-taken
         if (results.length < target) {
-            while (results.length < target) {
+            let fallbackAttempts = 0;
+            while (results.length < target && fallbackAttempts < 10000) {
                 let candidate = Math.floor(Math.random() * 100000).toString().padStart(5, '0');
-                if (!results.includes(candidate)) {
+                if (!results.includes(candidate) && !takenTicketsSet.has(candidate)) {
                     results.push(candidate);
                 }
+                fallbackAttempts++;
             }
         }
 
         results = [...new Set(results)].slice(0, target);
-
+        console.log(`[LUCKY] Generated ${results.length} tickets successfully`);
         if (target <= 5) {
             animateSingleTickets(results);
         } else {
@@ -813,10 +902,59 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        btnFinishManual.textContent = 'Procesando...';
+        btnFinishManual.textContent = 'Validando disponibilidad...';
         btnFinishManual.disabled = true;
 
-        // 1. Insert into Supabase
+        // 1. FINAL AVAILABILITY CHECK before insert
+        if (window.sbClient) {
+            try {
+                // Check which of the selected tickets are already taken
+                const { data: nowTaken, error: checkError } = await window.sbClient
+                    .from('tickets')
+                    .select('ticket_number')
+                    .in('ticket_number', selectedTickets);
+
+                if (checkError) {
+                    console.error('Error checking availability:', checkError);
+                    alert('Error verificando disponibilidad. Intenta nuevamente.');
+                    btnFinishManual.textContent = 'Apartar y Pagar';
+                    btnFinishManual.disabled = false;
+                    return;
+                }
+
+                // If any tickets are now taken, alert user and remove them
+                if (nowTaken && nowTaken.length > 0) {
+                    const takenNums = nowTaken.map(t => t.ticket_number);
+                    const takenList = takenNums.slice(0, 10).join(', ');
+                    const moreText = takenNums.length > 10 ? ` y ${takenNums.length - 10} más` : '';
+
+                    alert(`¡Atención! Los siguientes boletos ya fueron apartados por alguien más: ${takenList}${moreText}. Por favor selecciona otros números.`);
+
+                    // Remove taken tickets from selection
+                    selectedTickets = selectedTickets.filter(t => !takenNums.includes(t));
+
+                    // Update taken set and re-render
+                    takenNums.forEach(n => takenTicketsSet.add(n));
+                    updateManualTracker();
+                    syncSelectedList();
+                    renderMosaic();
+
+                    btnFinishManual.textContent = 'Apartar y Pagar';
+                    btnFinishManual.disabled = selectedTickets.length !== targetQuantity;
+                    return;
+                }
+            } catch (err) {
+                console.error('Error in availability check:', err);
+                alert('Error de conexión. Intenta nuevamente.');
+                btnFinishManual.textContent = 'Apartar y Pagar';
+                btnFinishManual.disabled = false;
+                return;
+            }
+        }
+
+        btnFinishManual.textContent = 'Procesando...';
+
+        // 2. Insert into Supabase (now with conflict handling)
         if (window.sbClient) {
             const rows = selectedTickets.map(num => ({
                 ticket_number: num,
@@ -828,16 +966,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Chunk Inserts to avoid limits (500 per request)
             const chunkSize = 500;
+            let allSuccess = true;
+            let failedTickets = [];
+
             for (let i = 0; i < rows.length; i += chunkSize) {
                 const chunk = rows.slice(i, i + chunkSize);
                 const { error } = await window.sbClient.from('tickets').insert(chunk);
+
                 if (error) {
                     console.error("Chunk insert error:", error);
-                    alert('Ocurrió un error al apartar. Algunos boletos no se guardaron. Intenta nuevamente.');
-                    btnFinishManual.textContent = 'Apartar y Pagar';
-                    btnFinishManual.disabled = false;
-                    return;
+
+                    // Handle unique constraint violation
+                    if (error.code === '23505' || error.message.includes('duplicate') || error.message.includes('unique')) {
+                        // Some tickets in this chunk were duplicates
+                        failedTickets.push(...chunk.map(r => r.ticket_number));
+                        allSuccess = false;
+                    } else {
+                        alert('Ocurrió un error al apartar. Intenta nuevamente.');
+                        btnFinishManual.textContent = 'Apartar y Pagar';
+                        btnFinishManual.disabled = false;
+                        return;
+                    }
                 }
+            }
+
+            if (!allSuccess && failedTickets.length > 0) {
+                const failedList = failedTickets.slice(0, 5).join(', ');
+                alert(`Algunos boletos (${failedList}...) ya estaban apartados. Los demás se guardaron correctamente.`);
             }
         }
 
