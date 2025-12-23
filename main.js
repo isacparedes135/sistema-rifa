@@ -1042,6 +1042,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // Fallback to web link if protocol isn't handled after a short delay
         setTimeout(() => {
             window.location.href = url;
+
+            // --- POST-PURCHASE CLEANUP ---
+            // Close modals and reset manual selection to "Index" state
+            // This prevents users from thinking their previous tickets were not saved if they return
+            setTimeout(() => {
+                closeAllModals();
+                selectedTickets = [];
+                updateManualTracker();
+                if (manualSelectedList) manualSelectedList.innerHTML = '';
+            }, 1000); // Small delay to ensure WhatsApp opens first
         }, 500);
     }
 
