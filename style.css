@@ -1193,6 +1193,35 @@ h1 {
 }
 
 /* ================================= 
+   Lucky Summary - Restaurar diseño original
+   Cuando el modal manual muestra resultados del corazón
+   ================================= */
+#manual-modal .selected-list:has(.btn-reset-lucky) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    grid-template-columns: unset;
+}
+
+/* Fallback para navegadores sin :has() - usar clase JS */
+#manual-modal.lucky-summary-mode .selected-list {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    justify-content: center !important;
+    grid-template-columns: unset !important;
+}
+
+#manual-modal.lucky-summary-mode .ticket-pill {
+    background: rgba(168, 230, 207, 0.25);
+    border: 2px solid var(--accent);
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    border-radius: 20px;
+}
+
+/* ================================= 
    PC / Laptop - Modal Mis Boletos más ancho
    ================================= */
 @media (min-width: 769px) {

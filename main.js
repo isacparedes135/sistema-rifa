@@ -443,6 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Manual Selection Logic ---
     async function openManualModal() {
         manualModal.classList.add('active');
+        manualModal.classList.remove('lucky-summary-mode'); // Ensure normal selection mode
 
         // Ensure UI elements are visible (in case they were hidden by Lucky Summary)
         // Set to empty string to use CSS defaults (display: block for tracker, display: flex for search-box)
@@ -878,6 +879,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show Summary using standard helper
         openModal(manualModal);
 
+        // Add class for lucky summary specific styling
+        manualModal.classList.add('lucky-summary-mode');
+
         manualModal.querySelector('h3').textContent = '¡Tus Números de la Suerte!';
 
         manualSelectedList.innerHTML = '';
@@ -889,6 +893,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // COMMIT logic: only update global state when user confirms
         btnFinishManual.onclick = () => {
             selectedTickets = tickets;
+            manualModal.classList.remove('lucky-summary-mode');
             proceedToPayment();
         };
 
@@ -906,7 +911,8 @@ document.addEventListener('DOMContentLoaded', () => {
         tryAgainBtn.id = 'btn-reopen-chest-summary';
         tryAgainBtn.innerText = '¿No te gustaron? Inténtalo de nuevo';
         tryAgainBtn.onclick = () => {
-            manualModal.classList.remove('active'); // Fixed: Use correct modal closing logic
+            manualModal.classList.remove('active');
+            manualModal.classList.remove('lucky-summary-mode');
             // Pass previous quantity to prefill
             startLuckyChestSequence(tickets.length);
         };
@@ -937,14 +943,16 @@ document.addEventListener('DOMContentLoaded', () => {
         btnFinishManual.textContent = 'Validando disponibilidad...';
         btnFinishManual.disabled = true;
 
-        // 1. FINAL AVAILABILITY CHECK before insert
+        // 1. FINAL AVAILABILITY CHECK before insert (with 5-hour expiration)
         if (window.sbClient) {
             try {
-                // Check which of the selected tickets are already taken
+                // Check which of the selected tickets are ACTUALLY taken (paid OR reserved within 5h)
+                const fiveHoursAgo = new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString();
                 const { data: nowTaken, error: checkError } = await window.sbClient
                     .from('tickets')
                     .select('ticket_number')
-                    .in('ticket_number', selectedTickets);
+                    .in('ticket_number', selectedTickets)
+                    .or(`status.eq.paid,and(status.eq.reserved,created_at.gte.${fiveHoursAgo})`);
 
                 if (checkError) {
                     console.error('Error checking availability:', checkError);
