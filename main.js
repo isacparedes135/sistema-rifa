@@ -255,9 +255,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Finish Selection Manually
+    // REMOVED: Static listener causes conflict with Lucky Summary dynamic listener.
+    // Listener is now assigned dynamically in openManualModal() and showLuckySummary()
+    /*
     btnFinishManual.addEventListener('click', () => {
         proceedToPayment();
     });
+    */
 
     // Cart Button -> Checkout (WhatsApp)
     btnViewCart.addEventListener('click', () => {
