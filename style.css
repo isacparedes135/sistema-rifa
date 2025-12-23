@@ -695,10 +695,9 @@ h1 {
 }
 
 .selected-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
     margin: 20px 0;
     min-height: 50px;
     max-height: 300px;
@@ -725,15 +724,17 @@ h1 {
     background: var(--surface-light);
     border: 2px solid var(--primary-light);
     color: var(--text);
-    padding: 6px 14px;
-    border-radius: 25px;
-    font-size: 0.9rem;
+    padding: 6px 8px;
+    border-radius: 20px;
+    font-size: 0.85rem;
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 4px;
     font-weight: 600;
     box-shadow: var(--shadow-soft);
     transition: var(--transition-fast);
+    text-align: center;
 }
 
 .ticket-pill:hover {
@@ -1118,6 +1119,11 @@ h1 {
     /* Grid de tickets más pequeño en móvil */
     .tickets-mosaic {
         grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Lista de seleccionados - 4 columnas en móvil */
+    .selected-list {
+        grid-template-columns: repeat(4, 1fr);
     }
 
     /* Promotions Stack */
