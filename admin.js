@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
             tr.innerHTML = `
                 <td data-label="Cliente"><strong>${group.client}</strong></td>
                 <td data-label="Teléfono">${group.phone}</td>
-                <td data-label="Boletos"><span class="badge available" style="color:white;">${ticketCount} boletos</span></td>
+                <td data-label="Boletos"><span class="badge available">${ticketCount} boletos</span></td>
                 <td data-label="Total">${formattedTotal}</td>
                 <td data-label="Estado"><span class="badge ${badgeClass}">${statusText}</span></td>
                 <td data-label="Acciones">
