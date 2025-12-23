@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (validateUserData()) {
             userDataModal.classList.remove('active');
             // Proceed to Original Flow
-            openQuantityModal(currentMode);
+            if (currentMode === 'lucky') { startLuckyChestSequence(); } else { openQuantityModal(currentMode); }
         }
     });
 
@@ -668,6 +668,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const particlesContainer = document.querySelector('.particles');
         if (particlesContainer) particlesContainer.innerHTML = '';
 
+        // Use enhancement for combined modal
+        if (window.initLuckyEnhancement) {
+            window.initLuckyEnhancement(
+                chestModal,
+                chestContainer,
+                generateLuckyNumbers,
+                createAdvancedParticles,
+                (qty) => { targetQuantity = qty; }
+            );
+        }
+
         // Initialize 3D Heart with a small delay
         requestAnimationFrame(() => {
             if (window.init3DHeart) {
@@ -991,8 +1002,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (!allSuccess && failedTickets.length > 0) {
-                const failedList = failedTickets.slice(0, 5).join(', ');
-                alert(`Algunos boletos (${failedList}...) ya estaban apartados. Los demás se guardaron correctamente.`);
+                console.log('Issues with some tickets:', failedTickets);
             }
         }
 
