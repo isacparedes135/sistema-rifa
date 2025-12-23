@@ -245,13 +245,18 @@ input:focus {
 }
 
 .badge.reserved {
-    background: rgba(234, 179, 8, 0.2);
-    color: var(--warning);
+    background: rgba(234, 179, 8, 0.25);
+    color: #fcd34d;
+    /* Amarillo brillante para contraste */
+    border: 1px solid rgba(234, 179, 8, 0.3);
 }
 
 .badge.available {
-    background: rgba(148, 163, 184, 0.2);
+    background: transparent;
     color: var(--text-secondary);
+    padding: 0;
+    font-weight: normal;
+    font-size: 0.95rem;
 }
 
 .action-buttons-group {
@@ -299,7 +304,37 @@ input:focus {
 
     .toolbar {
         flex-direction: column;
+        gap: 10px;
     }
+
+    /* Compact Filter for Mobile */
+    .filter-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        /* Optional: visual container */
+        padding: 5px 10px;
+        border-radius: 8px;
+        border: 1px solid #334155;
+    }
+
+    .filter-wrapper label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    .filter-wrapper select {
+        flex: 1;
+        background: transparent;
+        border: none;
+        padding: 8px 0;
+        color: white;
+        text-align: right;
+        /* Align text right like iOS native */
+    }
+
 
     /* Keep table as table, but make it scrollable */
     .tickets-table-container {

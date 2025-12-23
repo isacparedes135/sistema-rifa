@@ -69,11 +69,14 @@
             <div class="management-area">
                 <div class="toolbar">
                     <input type="text" id="ticket-search" placeholder="Buscar por nombre o teléfono...">
-                    <select id="filter-status">
-                        <option value="all">Todos</option>
-                        <option value="paid">Pagados</option>
-                        <option value="reserved">Apartados</option>
-                    </select>
+                    <div class="filter-wrapper">
+                        <label for="filter-status">Filtrar:</label>
+                        <select id="filter-status">
+                            <option value="all">Todos</option>
+                            <option value="paid">Pagados</option>
+                            <option value="reserved">Apartados</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="tickets-table-container">
@@ -115,6 +118,7 @@
     </div>
 
     <script src="admin.js"></script>
+
 </body>
 
 </html>
