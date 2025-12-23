@@ -1124,6 +1124,21 @@ h1 {
     /* Lista de seleccionados - 4 columnas en móvil */
     .selected-list {
         grid-template-columns: repeat(4, 1fr);
+        gap: 4px;
+        padding: 8px 4px;
+    }
+
+    /* Pills más compactos en móvil */
+    .ticket-pill {
+        padding: 4px 2px;
+        font-size: 0.7rem;
+        border-radius: 12px;
+        border-width: 1px;
+        gap: 2px;
+    }
+
+    .ticket-pill .remove-ticket {
+        font-size: 0.85em;
     }
 
     /* Promotions Stack */
