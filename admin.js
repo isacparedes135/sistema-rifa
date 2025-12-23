@@ -373,10 +373,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Detail Modal Actions ---
     window.viewDetails = function (phone) {
-        // Group might be across multiple pages, but for details we can fetch all of them just for this client
+        // Use accumulatedTickets instead of legacy currentFilteredData
         console.log(`Buscando detalles para: ${phone}`);
-        // We filter from currentFilteredData first, but better to fetch fresh to be sure
-        const groupTickets = currentFilteredData.filter(t => t.client_phone === phone);
+        const groupTickets = accumulatedTickets.filter(t => t.client_phone === phone);
         if (groupTickets.length === 0) return;
 
         const clientName = groupTickets[0].client_name;
@@ -427,7 +426,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Refresh Data
-            fetchRevenueData();
+            // Refresh Data
+            resetAndLoadDashboard();
         }
     }
 
@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            fetchRevenueData();
+            resetAndLoadDashboard();
         }
     };
 
