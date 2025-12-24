@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información del Sorteo | RIFAS ME</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Outfit:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <style>
+        .info-page-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .info-section {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--primary-light);
+            scroll-margin-top: 100px;
+        }
+
+        .info-section h2 {
+            color: var(--primary);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 2px solid var(--surface-light);
+            padding-bottom: 15px;
+        }
+
+        .faq-steps {
+            list-style: none;
+            padding: 0;
+        }
+
+        .faq-step {
+            margin-bottom: 20px;
+            padding-left: 50px;
+            position: relative;
+        }
+
+        .faq-step::before {
+            content: attr(data-step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 35px;
+            height: 35px;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 800;
+        }
+
+        .faq-step h4 {
+            margin-bottom: 5px;
+            color: var(--text);
+        }
+
+        .faq-step p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .back-home {
+            margin-bottom: 20px;
+            display: inline-block;
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Reuse lookup styles */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--surface-light);
+            border-radius: 12px;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        .payment-cards-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .payment-cards-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .payment-card {
+            background: var(--surface-light);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid var(--primary-light);
+        }
+
+        .payment-card h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .lookup-item {
+            background: var(--surface-light);
+            border: 1px solid var(--primary-light);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .ticket-status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 8px;
+        }
+
+        .status-reserved {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-paid {
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="info-page-container">
+        <a href="index.html" class="back-home"><i class="fas fa-arrow-left"></i> Volver al Inicio</a>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="info-section">
+            <h2><i class="fas fa-question-circle"></i> Preguntas Frecuentes</h2>
+            <div class="faq-steps">
+                <div class="faq-step" data-step="1">
+                    <h4>Selecciona tus boletos</h4>
+                    <p>Utiliza la selección manual o permite que el corazón de la suerte seleccione números aleatorios
+                        por ti.</p>
+                </div>
+                <div class="faq-step" data-step="2">
+                    <h4>Ingresa tu información personal</h4>
+                    <p>Completa los campos requeridos para proceder con la reserva de tus boletos (Nombre, Teléfono,
+                        Estado).</p>
+                </div>
+                <div class="faq-step" data-step="3">
+                    <h4>Confirmación de reserva</h4>
+                    <p>Tras reservar, tus boletos quedarán apartados a tu nombre durante un periodo de 5 horas.</p>
+                </div>
+                <div class="faq-step" data-step="4">
+                    <h4>Redirección automática</h4>
+                    <p>Serás enviado a un chat de WhatsApp con un mensaje predeterminado con tus datos y números
+                        elegidos.</p>
+                </div>
+                <div class="faq-step" data-step="5">
+                    <h4>Confirma tu pago</h4>
+                    <p>Envía el comprobante de pago por el mismo chat de WhatsApp para finalizar la validación de tus
+                        boletos.</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; border-top: 1px solid var(--surface-light); padding-top: 20px;">
+                <div class="faq-step" style="padding-left: 0;">
+                    <h4>¿Cómo se eligen los ganadores?</h4>
+                    <p>Los ganadores se determinan con base en las últimas 3 cifras del Premio Mayor de la Lotería
+                        Nacional en la fecha indicada.</p>
+                </div>
+                <div class="faq-step" style="padding-left: 0;">
+                    <h4>¿Qué ocurre si el número ganador no fue vendido?</h4>
+                    <p>El sorteo se celebrará nuevamente en la siguiente fecha oficial de la Lotería Nacional hasta que
+                        haya un ganador entre los boletos vendidos.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Payment Methods Section -->
+        <section id="formas-pago" class="info-section">
+            <h2><i class="fas fa-credit-card"></i> Formas de Pago</h2>
+            <p style="margin-bottom: 20px; color: var(--text-muted);">Realiza tu pago y envía el comprobante al WhatsApp
+                del organizador.</p>
+            <div class="payment-cards-container">
+                <div class="payment-card">
+                    <h4>Transferencia Bancaria</h4>
+                    <p><strong>Banco:</strong> Citibanamex</p>
+                    <p><strong>Titular:</strong> Marisela Enriquez</p>
+                    <p><strong>CLABE:</strong> 000 000 0000 0000 0000</p>
+                </div>
+                <div class="payment-card">
+                    <h4>Pago en OXXO</h4>
+                    <p><strong>Titular:</strong> Marisela Enriquez</p>
+                    <p><strong>Tarjeta:</strong> 0000 0000 0000 0000</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- My Tickets Section -->
+        <section id="mis-boletos" class="info-section">
+            <h2><i class="fas fa-ticket-alt"></i> Mis Boletos</h2>
+            <p style="margin-bottom: 20px; color: var(--text-muted);">Consulta el estado de tus boletos ingresando tu
+                número de teléfono.</p>
+            <div class="search-box">
+                <input type="tel" id="lookup-phone" placeholder="Teléfono a 10 dígitos" maxlength="10">
+                <button id="btn-search-tickets" class="btn-primary">Buscar</button>
+            </div>
+            <div id="lookup-results" class="lookup-results-container"
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px;">
+                <!-- Results will be filled by JS -->
+            </div>
+        </section>
+    </div>
+
+    <script src="info.js"></script>
+</body>
+
+</html>

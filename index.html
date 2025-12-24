@@ -31,24 +31,31 @@
     </div>
     <header>
         <div class="containerHeader">
-            <div class="logo">RIFAS<span>ME</span></div>
-
-            <!-- Hamburger Button -->
-            <button id="mobile-menu-btn" class="mobile-menu-btn">
-                <i class="fas fa-bars"></i>
-            </button>
-
-            <!-- Navigation Actions (Desktop & Mobile Menu Content) -->
-            <nav id="nav-menu" class="nav-menu">
-                <div class="mobile-menu-header">
-                    <div class="logo">RIFAS<span>ME</span></div>
-                    <button id="close-menu-btn" class="close-menu-btn">&times;</button>
+            <!-- Left: Menu Side -->
+            <div class="header-left">
+                <button id="menu-dropdown-btn" class="menu-dropdown-btn">
+                    <i class="fas fa-bars"></i> Menú
+                </button>
+                <div id="dropdown-menu" class="dropdown-content">
+                    <a href="info.html#mis-boletos" target="_blank"><i class="fas fa-ticket-alt"></i> Mis Boletos</a>
+                    <a href="info.html#formas-pago" target="_blank"><i class="fas fa-credit-card"></i> Formas de
+                        Pago</a>
+                    <a href="info.html#faq" target="_blank"><i class="fas fa-question-circle"></i> Preguntas
+                        Frecuentes</a>
                 </div>
-                <div class="nav-actions">
-                    <button id="btn-payment-methods" class="btn-secondary">Formas de Pago</button>
-                    <button id="btn-mis-boletos" class="btn-secondary">Mis Boletos</button>
+            </div>
+
+            <!-- Center: Logo -->
+            <div class="header-center">
+                <div class="logo-circle">
+                    <!-- Placeholder for future logo -->
                 </div>
-            </nav>
+            </div>
+
+            <!-- Right: Empty/Social (Spacer) -->
+            <div class="header-right">
+                <!-- Reserved for future use -->
+            </div>
         </div>
     </header>
 
@@ -58,49 +65,43 @@
             <div class="container">
                 <div class="hero-content">
                     <span class="badge">Sorteo Activo</span>
-                    <h1>Sorteo Gran Camioneta 2024</h1>
-                    <p class="prize-description">¡Participa y gana la camioneta de tus sueños! Cada boleto cuenta.</p>
+                    <h1>Sorteo $50,000 Pesos</h1>
+                    <p class="prize-description">¡Gana el premio mayor de $50,000 en efectivo! <br>
+                        Basado en las <strong>últimas 3 cifras del Premio Mayor</strong> de la Lotería Nacional.</p>
 
-                    <!-- Countdown Timer -->
-                    <div class="countdown-container">
-                        <div class="time-block">
-                            <span class="time-value" id="days">15</span>
-                            <span class="time-label">DÍAS</span>
+                    <!-- Countdown Timer & Event Date -->
+                    <div class="event-info-wrapper">
+                        <div class="countdown-container" style="margin: 15px 0;">
+                            <div class="time-block">
+                                <span class="time-value" id="days">00</span>
+                                <span class="time-label">DÍAS</span>
+                            </div>
+                            <div class="time-separator">:</div>
+                            <div class="time-block">
+                                <span class="time-value" id="hours">00</span>
+                                <span class="time-label">HRS</span>
+                            </div>
+                            <div class="time-separator">:</div>
+                            <div class="time-block">
+                                <span class="time-value" id="minutes">00</span>
+                                <span class="time-label">MIN</span>
+                            </div>
+                            <div class="time-separator">:</div>
+                            <div class="time-block">
+                                <span class="time-value" id="seconds">00</span>
+                                <span class="time-label">SEG</span>
+                            </div>
                         </div>
-                        <div class="time-separator">:</div>
-                        <div class="time-block">
-                            <span class="time-value" id="hours">00</span>
-                            <span class="time-label">HRS</span>
-                        </div>
-                        <div class="time-separator">:</div>
-                        <div class="time-block">
-                            <span class="time-value" id="minutes">00</span>
-                            <span class="time-label">MIN</span>
-                        </div>
-                        <div class="time-separator">:</div>
-                        <div class="time-block">
-                            <span class="time-value" id="seconds">00</span>
-                            <span class="time-label">SEG</span>
+                        <div class="event-date"
+                            style="font-weight: 700; color: var(--primary); margin-bottom: 20px; font-size: 1.2rem;">
+                            <i class="fas fa-calendar-alt"></i> 24 de Diciembre, 2025
                         </div>
                     </div>
 
-                    <!-- Visual Progress Bar (No Numbers) -->
-                    <div class="progress-container-premium">
-                        <div class="progress-bar-track">
-                            <div class="progress-fill-animated" style="width: 0%;"></div>
-                        </div>
-                        <p class="progress-shimmer-text">¡Últimos boletos disponibles!</p>
-                    </div>
-
-                    <div class="promotions">
-                        <div class="promo-card">
-                            <p>3 Boletos por</p>
-                            <span class="price">$500</span>
-                        </div>
-                        <div class="promo-card featured">
-                            <p>10 Boletos por</p>
-                            <span class="price">$1,200</span>
-                        </div>
+                    <div class="ticket-info">
+                        <p class="price-hero" style="font-size: 1.5rem; font-weight: 800; color: var(--text);">
+                            $1 PESO X BOLETO
+                        </p>
                     </div>
                 </div>
                 <div class="hero-image">
@@ -143,9 +144,25 @@
 
     <footer>
         <div class="container text-center">
+            <div class="contact-section">
+                <h3>CONTACTANOS</h3>
+                <div class="contact-buttons">
+                    <a href="https://wa.me/526444627178" target="_blank" class="social-btn whatsapp">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+                    <a href="#" target="_blank" class="social-btn facebook">
+                        <i class="fab fa-facebook-f"></i> Facebook
+                    </a>
+                </div>
+            </div>
             <p>&copy; 2025 RifasME. Todos los derechos reservados.</p>
         </div>
     </footer>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/526444627178" target="_blank" class="whatsapp-float">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
     <!-- Modals -->
 
