@@ -21,10 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const luckyQuantityModal = document.getElementById('lucky-quantity-modal');
     const myTicketsModal = document.getElementById('my-tickets-modal');
     const paymentMethodsModal = document.getElementById('payment-methods-modal');
+    const faqModal = document.getElementById('faq-modal');
 
     // Buttons
     const btnMisBoletosHeader = document.getElementById('btn-mis-boletos');
     const btnPaymentMethods = document.getElementById('btn-payment-methods');
+    const btnFaqHeader = document.getElementById('btn-faq');
 
     // New Actions
     const btnSearchTickets = document.getElementById('btn-search-tickets');
@@ -70,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function closeAllModals() {
-        const modals = [userDataModal, quantityModal, manualModal, chestModal, luckyQuantityModal, myTicketsModal, paymentMethodsModal];
+        const modals = [userDataModal, quantityModal, manualModal, chestModal, luckyQuantityModal, myTicketsModal, paymentMethodsModal, faqModal];
         modals.forEach(m => {
             if (m) m.classList.remove('active');
         });
@@ -204,6 +206,12 @@ document.addEventListener('DOMContentLoaded', () => {
     btnPaymentMethods.addEventListener('click', () => {
         paymentMethodsModal.classList.add('active');
     });
+
+    if (btnFaqHeader) {
+        btnFaqHeader.addEventListener('click', () => {
+            openModal(faqModal);
+        });
+    }
 
     btnSearchTickets.addEventListener('click', lookupTickets);
     lookupPhoneInput.addEventListener('keypress', (e) => {
