@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let targetQuantity = 0;
     let currentMode = ''; // 'manual' or 'lucky'
     let currentUser = null; // { name, lastname, phone, state }
-    const TICKET_PRICE = 1; // 1 peso per ticket
+    const TICKET_PRICE = 500; // Example price
     let takenTicketsSet = new Set(); // Tracks tickets already reserved/paid in database
 
     // --- Elements ---
@@ -197,11 +197,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Header Actions ---
 
     btnMisBoletosHeader.addEventListener('click', () => {
-        window.open('info.html#mis-boletos', '_blank');
+        myTicketsModal.classList.add('active');
+        lookupPhoneInput.focus();
     });
 
     btnPaymentMethods.addEventListener('click', () => {
-        window.open('info.html#formas-pago', '_blank');
+        paymentMethodsModal.classList.add('active');
     });
 
     btnSearchTickets.addEventListener('click', lookupTickets);
@@ -229,23 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (lookupPhoneInput) lookupPhoneInput.value = '';
         }
     };
-
-    // --- Dropdown Menu Logic ---
-    const menuBtn = document.getElementById('menu-dropdown-btn');
-    const dropdownMenu = document.getElementById('dropdown-menu');
-
-    if (menuBtn && dropdownMenu) {
-        menuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('active');
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!menuBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                dropdownMenu.classList.remove('active');
-            }
-        });
-    }
 
     // 2. User Data Form Logic
     userPhoneInput.addEventListener('blur', () => {
