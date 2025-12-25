@@ -70,22 +70,41 @@
                 text-align: right;
             ">Elige cantidad<br>de boletos:</label>
             
-            <input type="number" id="lucky-quantity-input" min="1" max="500" placeholder="#" 
+            <select id="lucky-quantity-select" 
                 style="
-                    width: 90px; 
-                    padding: 10px; 
+                    width: 140px; 
+                    padding: 8px 12px; 
                     border: 2px solid var(--primary); 
                     border-radius: 10px; 
                     text-align: center; 
-                    font-size: 1.5rem; 
-                    font-weight: 800; 
-                    background: #ffffff; /* Solid White Background */
-                    color: #333333; /* Dark Text */
+                    font-size: 1.1rem; 
+                    font-weight: 700; 
+                    background: #ffffff; 
+                    color: #333333; 
                     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-                    transition: all 0.2s ease;
+                    outline: none;
+                    cursor: pointer;
+                    font-family: 'Outfit', sans-serif;
                 ">
+                <option value="" disabled selected>Selecciona...</option>
+            </select>
         `;
         layoutContainer.appendChild(quantityBox);
+
+        // POPULATE SELECT
+        const luckySelect = layoutContainer.querySelector('#lucky-quantity-select');
+        const amounts = [
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+            15, 20, 25, 30,
+            40, 50, 60, 70, 80, 90, 100,
+            150, 200, 250, 300, 500
+        ];
+        amounts.forEach(amt => {
+            const opt = document.createElement('option');
+            opt.value = amt;
+            opt.textContent = `${amt} - $${amt}`;
+            luckySelect.appendChild(opt);
+        });
 
         // 4. Create Heart Box (Large)
         let heartBox = document.createElement('div');
@@ -164,17 +183,17 @@
         }
 
         // Logic
-        const luckyQtyInput = document.getElementById('lucky-quantity-input');
+        const luckySelectRef = document.getElementById('lucky-quantity-select');
         const heartWrapperRef = document.getElementById('lucky-heart-wrapper');
         const placeholderRef = document.getElementById('lucky-heart-placeholder');
 
-        luckyQtyInput.value = '';
-
-        luckyQtyInput.oninput = function () {
+        luckySelectRef.onchange = function () {
             const val = parseInt(this.value);
             if (!isNaN(val) && val > 0) {
-                placeholderRef.style.opacity = '0';
-                setTimeout(() => { if (placeholderRef.style.opacity === '0') placeholderRef.style.display = 'none'; }, 300);
+                if (placeholderRef.style.display !== 'none') {
+                    placeholderRef.style.opacity = '0';
+                    setTimeout(() => { if (placeholderRef.style.opacity === '0') placeholderRef.style.display = 'none'; }, 300);
+                }
 
                 heartWrapperRef.style.opacity = '1';
                 heartWrapperRef.style.transform = 'scale(1) translateY(0)';
@@ -191,11 +210,13 @@
 
         // PREFILL LOGIC
         if (initialQty) {
-            luckyQtyInput.value = initialQty;
+            luckySelectRef.value = initialQty;
             // Manually trigger visual update
-            luckyQtyInput.oninput.call(luckyQtyInput);
+            if (luckySelectRef.value == initialQty) {
+                luckySelectRef.onchange.call(luckySelectRef);
+            }
         } else {
-            luckyQtyInput.focus();
+            // luckySelect.focus(); // Focus on select not always great on mobile, let user click
         }
 
         if (window.updateChestInstruction) window.updateChestInstruction('');
@@ -203,7 +224,7 @@
         if (oldInstruction) oldInstruction.style.display = 'none';
 
         const onChestClick = function () {
-            const qty = parseInt(luckyQtyInput.value);
+            const qty = parseInt(luckySelectRef.value);
             console.log('[LUCKY] Heart Triggered. Qty:', qty);
 
             const tapLabel = document.getElementById('lucky-tap-label');
@@ -215,6 +236,10 @@
             if (window.startHeartBreak) {
                 window.startHeartBreak(function () {
                     console.log('[LUCKY] Break finished. Generating numbers...');
+                    if (isNaN(qty) || qty < 1 || qty > 500) {
+                        luckySelectRef.focus();
+                        return;
+                    }
                     generateLuckyNumbersFn(qty);
                     createAdvancedParticlesFn();
                 });
