@@ -309,6 +309,97 @@ h1 {
     }
 }
 
+/* Loading Logo Specifics - Unique "Planetary Pulse" Animation */
+.loader-content {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Ripple Effect Rings */
+.loader-content::before,
+.loader-content::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid transparent;
+    animation: rippleExpand 2.5s infinite linear;
+}
+
+.loader-content::before {
+    width: 60px;
+    height: 60px;
+    border-top-color: var(--primary);
+    border-bottom-color: var(--primary);
+    animation-delay: 0s;
+}
+
+.loader-content::after {
+    width: 80px;
+    height: 80px;
+    border-left-color: var(--accent);
+    border-right-color: var(--accent);
+    animation: rippleExpandReverse 2.5s infinite linear;
+}
+
+.loader-logo {
+    width: 50px;
+    /* Reduced size significantly */
+    height: auto;
+    position: relative;
+    z-index: 10;
+    animation: logoFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 15px rgba(248, 165, 194, 0.6));
+}
+
+@keyframes logoFloat {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-8px) scale(1.1) rotate(5deg);
+    }
+}
+
+@keyframes rippleExpand {
+    0% {
+        width: 50px;
+        height: 50px;
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    100% {
+        width: 140px;
+        height: 140px;
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+@keyframes rippleExpandReverse {
+    0% {
+        width: 60px;
+        height: 60px;
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    100% {
+        width: 160px;
+        height: 160px;
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(-360deg);
+    }
+}
+
 /* Selection Buttons */
 .selection-options {
     display: flex;

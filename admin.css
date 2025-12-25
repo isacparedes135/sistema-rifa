@@ -476,61 +476,96 @@ input:focus {
     transition: opacity 0.3s ease;
 }
 
+/* Loading Logo Specifics - Unique "Planetary Pulse" Animation */
 .loader-content {
-    text-align: center;
+    position: relative;
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+}
+
+/* Ripple Effect Rings */
+.loader-content::before,
+.loader-content::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid transparent;
+    animation: rippleExpand 2.5s infinite linear;
+}
+
+.loader-content::before {
+    width: 60px;
+    height: 60px;
+    border-top-color: var(--primary);
+    border-bottom-color: var(--primary);
+    animation-delay: 0s;
+}
+
+.loader-content::after {
+    width: 80px;
+    height: 80px;
+    border-left-color: var(--accent);
+    /* Assuming --accent is defined in admin.css, checking file... yes it is */
+    border-right-color: var(--accent);
+    animation: rippleExpandReverse 2.5s infinite linear;
 }
 
 .loader-logo {
-    width: 120px;
+    width: 50px;
+    /* Reduced size significantly */
     height: auto;
-    margin-bottom: 20px;
-    filter: drop-shadow(0 0 10px rgba(248, 165, 194, 0.4));
-    animation: logoPulse 2s ease-in-out infinite;
+    position: relative;
+    z-index: 10;
+    margin-bottom: 0;
+    /* Remove margin as text is gone */
+    animation: logoFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 15px rgba(248, 165, 194, 0.6));
 }
 
-@keyframes logoPulse {
-    0% {
-        transform: scale(1);
-        filter: drop-shadow(0 0 10px rgba(248, 165, 194, 0.4));
+@keyframes logoFloat {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1) rotate(0deg);
     }
 
     50% {
-        transform: scale(1.08);
-        filter: drop-shadow(0 0 25px rgba(168, 230, 207, 0.6));
-    }
-
-    100% {
-        transform: scale(1);
-        filter: drop-shadow(0 0 10px rgba(248, 165, 194, 0.4));
+        transform: translateY(-8px) scale(1.1) rotate(5deg);
     }
 }
 
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid var(--primary-light);
-    border-top: 5px solid var(--primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
-}
-
-.loading-text {
-    font-size: 1.2rem;
-    color: var(--text);
-    font-weight: 600;
-}
-
-@keyframes spin {
+@keyframes rippleExpand {
     0% {
-        transform: rotate(0deg);
+        width: 50px;
+        height: 50px;
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(0deg);
     }
 
     100% {
-        transform: rotate(360deg);
+        width: 140px;
+        height: 140px;
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+@keyframes rippleExpandReverse {
+    0% {
+        width: 60px;
+        height: 60px;
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    100% {
+        width: 160px;
+        height: 160px;
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(-360deg);
     }
 }
