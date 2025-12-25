@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let targetQuantity = 0;
     let currentMode = ''; // 'manual' or 'lucky'
     let currentUser = null; // { name, lastname, phone, state }
-    const TICKET_PRICE = 500; // Example price
+    const TICKET_PRICE = 1; // Updated to $1 per ticket as requested
     let takenTicketsSet = new Set(); // Tracks tickets already reserved/paid in database
 
     // --- Elements ---
@@ -400,11 +400,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openQuantityModal(mode) {
         quantityTitle.textContent = mode === 'manual'
-            ? '¿Cuántos boletos quieres elegir manuelmente?'
+            ? '¿Cuántos boletos quieres elegir manualmente?'
             : '¿Cuántos boletos quieres que la suerte elija por ti?';
-        ticketQuantityInput.value = 1;
+
+        renderQuantityButtons(); // Generated dynamic buttons
         openModal(quantityModal);
-        ticketQuantityInput.focus();
+    }
+
+    function renderQuantityButtons() {
+        const grid = document.getElementById('qty-selection-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        const amounts = [
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+            15, 20, 25, 30,
+            40, 50, 60, 70, 80, 90, 100,
+            150, 200, 250, 300, 500
+        ];
+
+        amounts.forEach(amt => {
+            const btn = document.createElement('button');
+            btn.className = 'qty-btn';
+            btn.textContent = amt;
+            if (amt >= 50) btn.classList.add('wide'); // Make larger numbers span nicely
+
+            btn.onclick = () => {
+                // Visual selection
+                document.querySelectorAll('.qty-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Confirm logic
+                targetQuantity = amt;
+                quantityModal.classList.remove('active');
+                startSelectionFlow();
+            };
+            grid.appendChild(btn);
+        });
     }
 
     function startSelectionFlow() {
@@ -1078,9 +1110,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // 2. WhatsApp Redirection (Updated Number)
         const total = selectedTickets.length * TICKET_PRICE;
         let message = `¡Hola! Quiero proceder al pago de mis boletos.\n\n`;
-        message += `👤 *Datos del Usuario*:\nName: ${currentUser.name} ${currentUser.lastname}\nPhone: ${currentUser.phone}\nState: ${currentUser.state}\n\n`;
+        message += `👤 *Datos del Usuario*:\nNombre: ${currentUser.name} ${currentUser.lastname}\nTeléfono: ${currentUser.phone}\nEstado: ${currentUser.state}\n\n`;
         message += `🎫 *Boletos Apartados* (${selectedTickets.length}):\n${selectedTickets.join(', ')}\n\n`;
-        message += `💰 *Total a Pagar*: $${total} MXN`;
+        message += `💰 *Total a Pagar*: $${total} MXN\n\n`;
+        message += `💸 *MÉTODOS DE PAGO* 💸\n`;
+        message += `🏦 *Transferencia Citibanamex*\nTitular: Marisela Enriquez\nCLABE: 000 000 0000 0000 0000\n\n`;
+        message += `🏪 *OXXO / Depósito*\nTitular: Marisela Enriquez\nTarjeta: 0000 0000 0000 0000\n\n`;
+        message += `📸 *IMPORTANTE*:\n`;
+        message += `1. Envía FOTO del comprobante en este chat.\n`;
+        message += `2. Tienes un máximo de *5 HORAS* para pagar.\n`;
 
         const phoneNum = '526444627178'; // Corrected
         const url = `https://api.whatsapp.com/send?phone=${phoneNum}&text=${encodeURIComponent(message)}`;

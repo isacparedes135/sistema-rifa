@@ -1494,8 +1494,52 @@ h1 {
     color: var(--primary-light);
 }
 
-.copyright {
-    color: var(--text-light);
-    font-size: 0.8rem;
-    margin-top: 0.5rem;
+/* Quantity Selection Grid */
+.qty-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+.qty-btn {
+    background: #ffffff;
+    border: 1px solid var(--primary-light);
+    color: var(--text);
+    padding: 12px 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+    font-family: 'Outfit', sans-serif;
+}
+
+.qty-btn:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(248, 165, 194, 0.2);
+}
+
+/* Active State */
+.qty-btn.active,
+.qty-btn:active {
+    background: var(--gradient-primary);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(248, 165, 194, 0.4);
+    transform: scale(0.98);
+}
+
+/* Larger amounts span wider */
+.qty-btn.wide {
+    grid-column: span 2;
+}
+
+@media (max-width: 480px) {
+    .qty-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
