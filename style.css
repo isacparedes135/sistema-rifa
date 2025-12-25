@@ -1343,76 +1343,54 @@ h1 {
     letter-spacing: 0.5px;
 }
 
-/* Footer with Contact Info */
-footer {
+/* Compact Footer */
+.compact-footer {
     background: white;
-    padding: 3rem 0 2rem;
-    border-top: 2px solid var(--primary-light);
-    margin-top: 4rem;
-}
-
-.footer-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 2rem;
-    margin-bottom: 2rem;
-}
-
-.footer-brand .logo {
-    font-size: 1.5rem;
-    color: var(--text);
-    margin-bottom: 0.5rem;
-}
-
-.footer-brand p {
-    color: var(--text-muted);
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--primary-light);
+    margin-top: 3rem;
     font-size: 0.9rem;
 }
 
-.footer-contact {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    align-items: flex-end;
+.developed-by {
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
 }
 
-.contact-item {
+.brand-name {
+    font-weight: 700;
+    color: var(--primary);
+    font-family: 'Outfit', sans-serif;
+}
+
+.footer-contact-inline {
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.footer-contact-inline a {
     color: var(--text-muted);
-    font-size: 0.95rem;
     text-decoration: none;
     transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
-.contact-item:hover {
+.footer-contact-inline a:hover {
     color: var(--primary);
 }
 
-.contact-item i {
-    color: var(--primary);
-    font-size: 1.1rem;
+.footer-contact-inline .separator {
+    color: var(--primary-light);
 }
 
-.footer-bottom {
-    border-top: 1px solid var(--surface-light);
-    padding-top: 2rem;
+.copyright {
     color: var(--text-light);
-    font-size: 0.85rem;
-    text-align: center;
-}
-
-@media (max-width: 768px) {
-    .footer-content {
-        flex-direction: column;
-        text-align: center;
-        align-items: center;
-    }
-
-    .footer-contact {
-        align-items: center;
-    }
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
 }
