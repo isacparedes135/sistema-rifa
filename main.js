@@ -364,14 +364,29 @@ document.addEventListener('DOMContentLoaded', () => {
             ? '¿Cuántos boletos quieres elegir manualmente?'
             : '¿Cuántos boletos quieres que la suerte elija por ti?';
 
-        renderQuantityButtons(); // Generated dynamic buttons
+        populateQuantitySelect();
+
+        // Re-attach confirm button listener (since we replaced it in HTML sometimes or just want to be sure)
+        // Access element freshly
+        const confirmBtn = document.getElementById('btn-confirm-quantity');
+        const select = document.getElementById('ticket-quantity-select');
+
+        confirmBtn.onclick = () => {
+            const qty = parseInt(select.value);
+            if (qty > 0) {
+                targetQuantity = qty;
+                quantityModal.classList.remove('active');
+                startSelectionFlow();
+            }
+        };
+
         openModal(quantityModal);
     }
 
-    function renderQuantityButtons() {
-        const grid = document.getElementById('qty-selection-grid');
-        if (!grid) return;
-        grid.innerHTML = '';
+    function populateQuantitySelect() {
+        const select = document.getElementById('ticket-quantity-select');
+        if (!select) return;
+        select.innerHTML = '';
 
         const amounts = [
             1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
@@ -381,22 +396,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
 
         amounts.forEach(amt => {
-            const btn = document.createElement('button');
-            btn.className = 'qty-btn';
-            btn.textContent = amt;
-            if (amt >= 50) btn.classList.add('wide'); // Make larger numbers span nicely
-
-            btn.onclick = () => {
-                // Visual selection
-                document.querySelectorAll('.qty-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-
-                // Confirm logic
-                targetQuantity = amt;
-                quantityModal.classList.remove('active');
-                startSelectionFlow();
-            };
-            grid.appendChild(btn);
+            const opt = document.createElement('option');
+            opt.value = amt;
+            // Format nice text: "10 Boletos - $10"
+            opt.textContent = `${amt} Boleto${amt > 1 ? 's' : ''} - $${amt}`;
+            select.appendChild(opt);
         });
     }
 
