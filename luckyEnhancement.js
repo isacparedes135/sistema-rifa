@@ -102,7 +102,8 @@
         amounts.forEach(amt => {
             const opt = document.createElement('option');
             opt.value = amt;
-            opt.textContent = `${amt} - $${amt}`;
+            // Matches format: "10 Boletos - $10"
+            opt.textContent = `${amt} Boleto${amt > 1 ? 's' : ''} - $${amt}`;
             luckySelect.appendChild(opt);
         });
 
