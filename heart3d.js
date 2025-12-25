@@ -37,7 +37,9 @@ function init3DHeart() {
         camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 1000);
         renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
         renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        // Optimization: limit pixel ratio on mobile to 1 to avoid lag
+        const isMobile = window.innerWidth < 768;
+        renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 2));
 
         // High quality settings
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -92,8 +94,8 @@ function buildHeart() {
     const extrudeSettings = {
         depth: 1.5, // Deeper for more relief
         bevelEnabled: true,
-        bevelSegments: 20,
-        steps: 2,
+        bevelSegments: 8, // Optimized from 20
+        steps: 1, // Optimized from 2
         bevelSize: 0.6, // Larger bevel for smoother rounds
         bevelThickness: 0.6 // Thicker relief
     };
