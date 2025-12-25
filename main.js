@@ -240,12 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // 2. User Data Form Logic
-    userPhoneInput.addEventListener('blur', () => {
-        const phone = userPhoneInput.value.replace(/\D/g, '');
-        if (phone.length === 10) {
-            checkMockUser(phone);
-        }
-    });
+    // Removed redundant blur listener - input listener handles this now
 
     btnConfirmUserData.addEventListener('click', () => {
         if (validateUserData()) {
@@ -255,55 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 3. Confirm Quantity
-    btnConfirmQuantity.addEventListener('click', () => {
-        const qty = parseInt(ticketQuantityInput.value);
-        if (qty > 0 && qty <= 500) {
-            targetQuantity = qty;
-            quantityModal.classList.remove('active');
-            startSelectionFlow();
-        } else {
-            alert('Por favor ingresa una cantidad válida (1-500)');
-        }
-    });
-
-    // Manual Search Add
-    btnSearchAdd.addEventListener('click', addManualTicket);
-    manualSearchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') addManualTicket();
-    });
-
-    // Finish Selection Manually
-    // REMOVED: Static listener causes conflict with Lucky Summary dynamic listener.
-    // Listener is now assigned dynamically in openManualModal() and showLuckySummary()
-    /*
-    btnFinishManual.addEventListener('click', () => {
-        proceedToPayment();
-    });
-    */
-
-    // Cart Button -> Checkout (WhatsApp)
-    btnViewCart.addEventListener('click', () => {
-        proceedToPayment();
-    });
-    // Finish Selection Manually (This listener is now replaced by direct assignment in openManualModal and showLuckySummary)
-    // btnFinishManual.addEventListener('click', () => {
-    //     manualModal.classList.remove('active');
-    //     // Flow Ends here -> User goes to Cart
-    //     alert('Selección guardada. Ve al carrito para pagar.');
-    // });
-
-    // Cart Button -> Checkout (WhatsApp) (This listener is now removed)
-    // btnViewCart.addEventListener('click', () => {
-    //     proceedToPayment();
-    // });
-
-    // Chest Interaction (Only for Lucky Mode triggered automatically)
-    // Removed old click listener to avoid conflict, logic is now centralized
-
-    // --- Logic Functions ---
-
-    // --- Smart Form Logic ---
+    // ... (Logic Functions) ...
     userPhoneInput.addEventListener('input', handlePhoneInput);
 
     async function handlePhoneInput(e) {
@@ -313,60 +260,74 @@ document.addEventListener('DOMContentLoaded', () => {
             await checkUserDB(phone);
         } else {
             // Reset/Disable if number incomplete
+            // Only disable if we are strictly enforcing 10 digits before entry
+            // But to be safe, we disable until 10 digits (common pattern)
             userNameInput.disabled = true;
             userLastnameInput.disabled = true;
             userStateInput.disabled = true;
-            userNameInput.value = '';
-            userLastnameInput.value = '';
-            userStateInput.value = '';
-            userNameInput.style.borderColor = '';
+
+            // Only clear if user is backspacing significantly? 
+            // Better to keep clear for security/consistency if they change number
+            if (phone.length < 10) {
+                userNameInput.value = '';
+                userLastnameInput.value = '';
+                userStateInput.value = '';
+                userNameInput.style.borderColor = '';
+            }
         }
     }
 
     async function checkUserDB(phone) {
-        if (!window.sbClient) return;
+        if (!window.sbClient) {
+            console.warn("Supabase client not found, unlocking fields manually.");
+            unlockUserFields();
+            return;
+        }
 
         userNameInput.placeholder = "Buscando...";
 
-        const { data, error } = await window.sbClient
-            .from('tickets')
-            .select('client_name, client_state')
-            .eq('client_phone', phone)
-            .limit(1)
-            .single();
+        try {
+            const { data, error } = await window.sbClient
+                .from('tickets')
+                .select('client_name, client_state')
+                .eq('client_phone', phone)
+                .limit(1)
+                .single();
 
-        // Default: Keep disabled until we know result (or unlock in 'else')
-        // Actually user logic: "If found, keep locked. If not found, unlock."
+            if (data) {
+                if (data.client_name) {
+                    const parts = data.client_name.split(' ');
+                    userNameInput.value = parts[0];
+                    userLastnameInput.value = parts.slice(1).join(' ');
+                }
+                userStateInput.value = data.client_state || '';
 
-        if (data) {
-            if (data.client_name) {
-                const parts = data.client_name.split(' ');
-                userNameInput.value = parts[0];
-                userLastnameInput.value = parts.slice(1).join(' ');
+                // Visual feedback of success
+                userNameInput.style.borderColor = '#a8e6cf'; // Pastel Mint
+                // Found -> KEEP DISABLED (Auto-filled)
+                userNameInput.disabled = true;
+                userLastnameInput.disabled = true;
+                userStateInput.disabled = true;
+            } else {
+                // Not found -> Unlock
+                unlockUserFields();
             }
-            userStateInput.value = data.client_state || '';
-
-            // Visual feedback of success
-            userNameInput.style.borderColor = '#a8e6cf'; // Pastel Mint
-            // Found -> KEEP DISABLED
-            userNameInput.disabled = true;
-            userLastnameInput.disabled = true;
-            userStateInput.disabled = true;
-        } else {
-            // Not found, clear (in case of retry) and focus
-            userNameInput.value = '';
-            userLastnameInput.value = '';
-            userStateInput.value = '';
-            // NOT Found -> UNLOCK
-            userNameInput.disabled = false;
-            userLastnameInput.disabled = false;
-            userStateInput.disabled = false;
-
-            userNameInput.focus();
-            userNameInput.style.borderColor = '';
+        } catch (err) {
+            console.error("Error checking user DB:", err);
+            // On error, safest bet is to UNLOCK so user can continue
+            unlockUserFields();
         }
 
         userNameInput.placeholder = "Nombre(s)";
+    }
+
+    function unlockUserFields() {
+        userNameInput.disabled = false;
+        userLastnameInput.disabled = false;
+        userStateInput.disabled = false;
+        userNameInput.style.borderColor = '';
+        // Focus name if empty
+        if (!userNameInput.value) userNameInput.focus();
     }
 
     function openUserDataModal() {
