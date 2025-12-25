@@ -392,6 +392,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!select) return;
         select.innerHTML = '';
 
+        // Add default placeholder
+        const defaultOpt = document.createElement('option');
+        defaultOpt.value = "";
+        defaultOpt.disabled = true;
+        defaultOpt.selected = true;
+        defaultOpt.textContent = "Selecciona cantidad...";
+        select.appendChild(defaultOpt);
+
         const amounts = [
             1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
             15, 20, 25, 30,

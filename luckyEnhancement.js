@@ -78,7 +78,7 @@
                     border-radius: 10px; 
                     text-align: center; 
                     font-size: 1.1rem; 
-                    font-weight: 700; 
+                    font-weight: 400; 
                     background: #ffffff; 
                     color: #333333; 
                     box-shadow: 0 4px 10px rgba(0,0,0,0.2);

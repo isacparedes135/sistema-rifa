@@ -1510,6 +1510,8 @@ h1 {
     color: var(--text);
     outline: none;
     font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    /* Ensure normal weight */
     cursor: pointer;
     appearance: none;
     /* Remove default arrow */
