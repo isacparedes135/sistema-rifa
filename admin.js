@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const statPending = document.getElementById('stat-pending');
 
     // --- Supabase Config ---
-    const TICKET_PRICE = 500;
+    const TICKET_PRICE = 1;
 
     // Pagination & Search State
     let currentPage = 0;
