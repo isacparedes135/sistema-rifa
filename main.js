@@ -245,8 +245,8 @@ document.addEventListener('DOMContentLoaded', () => {
     btnConfirmUserData.addEventListener('click', () => {
         if (validateUserData()) {
             userDataModal.classList.remove('active');
-            // Proceed to Original Flow
-            if (currentMode === 'lucky') { startLuckyChestSequence(); } else { openQuantityModal(currentMode); }
+            // Unified Flow: Always go to Quantity Selection (Dropdown) first
+            openQuantityModal(currentMode);
         }
     });
 
