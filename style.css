@@ -257,7 +257,7 @@ body.lock-scroll {
 
 @media (max-width: 992px) {
     .hero {
-        padding-top: 1rem;
+        padding-top: 3rem;
         padding-bottom: 2rem;
     }
 
@@ -271,23 +271,23 @@ body.lock-scroll {
     }
 
     .hero-content {
-        order: 2;
-        /* Content second */
+        order: 1;
+        /* Content first (Title top) */
         padding: 0 2rem;
         /* Restore padding centered */
         text-align: center;
-        margin-top: 20px;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
     }
 
     .hero-image {
-        order: 1;
-        /* Image first */
+        order: 2;
+        /* Image second */
         width: 100%;
-        margin-top: 10px;
+        margin-top: 0;
         margin-bottom: 0;
         padding-bottom: 0;
-        border-bottom: 4px solid var(--accent);
-        /* Línea resaltada */
+        border-bottom: none;
         max-width: 100%;
         display: block;
         /* Disable flex centering */
