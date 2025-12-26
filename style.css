@@ -1309,12 +1309,12 @@ h1 {
 }
 
 /* ================================= 
-   Lucky Summary - Grid 6 columnas móvil, 7 PC
+   Lucky Summary - Grid 5 columnas móvil, 7 PC
    Cuando el modal manual muestra resultados del corazón
    ================================= */
 #manual-modal .selected-list:has(.btn-reset-lucky) {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 8px;
     justify-content: center;
 }
@@ -1329,7 +1329,7 @@ h1 {
 /* Fallback para navegadores sin :has() - usar clase JS */
 #manual-modal.lucky-summary-mode .selected-list {
     display: grid !important;
-    grid-template-columns: repeat(6, 1fr) !important;
+    grid-template-columns: repeat(5, 1fr) !important;
     gap: 8px !important;
     justify-content: center !important;
 }
@@ -1348,6 +1348,12 @@ h1 {
     font-size: 0.8rem;
     border-radius: 10px;
     text-align: center;
+}
+
+/* Botón "Inténtalo de nuevo" ocupa todo el ancho */
+#manual-modal .selected-list .btn-reset-lucky,
+#manual-modal.lucky-summary-mode .selected-list .btn-reset-lucky {
+    grid-column: 1 / -1;
 }
 
 /* ================================= 
