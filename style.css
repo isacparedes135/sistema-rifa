@@ -262,7 +262,7 @@ body.lock-scroll {
 
 @media (max-width: 992px) {
     .hero {
-        padding-top: 1rem;
+        padding-top: 0.5rem;
         padding-bottom: 1rem;
     }
 
@@ -283,18 +283,20 @@ body.lock-scroll {
         width: 100%;
         padding: 0 1rem;
         text-align: center;
-        margin-bottom: 0.2rem;
+        margin-bottom: 5px;
+        /* Minimal space before image */
     }
 
     .mobile-hero-title h1 {
-        margin-bottom: 0.5rem !important;
-        margin-top: 0.2rem;
+        margin-bottom: 0 !important;
+        margin-top: 0;
         font-size: 2.2rem;
-        line-height: 1.1;
+        line-height: 1;
+        padding-bottom: 0;
     }
 
     .mobile-hero-title .badge {
-        margin-bottom: 0.5rem;
+        margin-bottom: 5px;
     }
 
     .desktop-hero-title {
@@ -317,7 +319,8 @@ body.lock-scroll {
         order: 3;
         padding: 0 2rem;
         text-align: center;
-        margin-top: 0.2rem;
+        margin-top: 10px;
+        /* Minimal space after image */
         margin-bottom: 1rem;
     }
 
