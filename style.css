@@ -242,6 +242,11 @@ body.lock-scroll {
     margin-left: 2px;
 }
 
+/* Mobile Title Logic */
+.mobile-hero-title {
+    display: none;
+}
+
 /* Hero Section */
 .hero {
     padding: 8rem 0;
@@ -257,7 +262,7 @@ body.lock-scroll {
 
 @media (max-width: 992px) {
     .hero {
-        padding-top: 3rem;
+        padding-top: 2rem;
         padding-bottom: 2rem;
     }
 
@@ -265,32 +270,44 @@ body.lock-scroll {
         display: flex;
         flex-direction: column;
         padding: 0;
-        /* Full width container */
         width: 100%;
         max-width: 100%;
     }
 
-    .hero-content {
+    /* 1. Mobile Title (Top) */
+    .mobile-hero-title {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         order: 1;
-        /* Content first (Title top) */
-        padding: 0 2rem;
-        /* Restore padding centered */
+        width: 100%;
+        padding: 0 1rem;
         text-align: center;
-        margin-top: 2rem;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
     }
 
+    .desktop-hero-title {
+        display: none;
+    }
+
+    /* 2. Carousel (Middle) */
     .hero-image {
         order: 2;
-        /* Image second */
         width: 100%;
-        margin-top: 0;
-        margin-bottom: 0;
-        padding-bottom: 0;
+        margin: 0;
+        padding: 0;
         border-bottom: none;
         max-width: 100%;
         display: block;
-        /* Disable flex centering */
+    }
+
+    /* 3. Rest of Content (Bottom) */
+    .hero-content {
+        order: 3;
+        padding: 0 2rem;
+        text-align: center;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
     }
 
     /* Full width carousel styles */
