@@ -284,8 +284,8 @@ body.lock-scroll {
         width: 100%;
         padding: 0 1rem;
         text-align: center;
-        margin-bottom: 2px;
-        /* Minimal space before image */
+        margin-bottom: 5px;
+        /* Small space before image */
     }
 
     .mobile-hero-title h1 {
@@ -320,8 +320,8 @@ body.lock-scroll {
         order: 3;
         padding: 0 2rem;
         text-align: center;
-        margin-top: 2px;
-        /* Minimal space after image */
+        margin-top: 5px;
+        /* Small space after image */
         margin-bottom: 1rem;
     }
 
