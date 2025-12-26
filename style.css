@@ -1815,12 +1815,35 @@ h1 {
     }
 }
 
-/* Prize Tiers Styles (New) */
+/* Sectioning Styles */
+.hero-section-group {
+    width: 100%;
+    padding: 2rem 1rem;
+    border-radius: 20px;
+    margin: 1.5rem 0;
+}
+
+/* Tone 2: Timer Section (Light Surface) */
+.section-timer {
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+/* Tone 3: Tiers Section (Different Surface) */
+.section-tiers {
+    background: rgba(255, 182, 193, 0.05);
+    /* Very light pink tint */
+    border: 1px solid rgba(248, 165, 194, 0.1);
+}
+
 .prize-tiers-container {
-    margin-top: 1rem;
+    /* Reset margins as padding is handled by group now */
+    margin-top: 0;
+    margin-bottom: 0;
     text-align: center;
     width: 100%;
-    margin-bottom: 1rem;
 }
 
 .tier-title {
@@ -1850,7 +1873,6 @@ h1 {
     padding: 1rem;
     border-radius: 16px;
     border: 1px solid var(--primary-light);
-    box-shadow: var(--shadow-soft);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1858,18 +1880,41 @@ h1 {
     transition: var(--transition);
 }
 
+/* UPDATED FEATURED CARD: White bg, distinct border/shadow */
 .tier-card.featured {
-    background: var(--gradient-primary);
-    border: none;
+    background: white;
+    /* Changed from gradient to white */
+    border: 2px solid var(--primary);
+    /* Stronger border */
     transform: scale(1.1);
-    box-shadow: var(--shadow-medium);
+    box-shadow: 0 10px 30px rgba(248, 165, 194, 0.3);
+    /* Pinkish shadow */
     z-index: 1;
+    position: relative;
 }
 
-.tier-card.featured .tier-qty,
-.tier-card.featured .tier-amount {
+.tier-card.featured::before {
+    content: 'POPULAR';
+    position: absolute;
+    top: -12px;
+    background: var(--primary);
     color: white;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+}
+
+/* Reset text colors for featured card since bg is white now */
+.tier-card.featured .tier-qty {
+    color: var(--primary);
+    /* Highlight color */
+}
+
+.tier-card.featured .tier-amount {
+    color: var(--primary-dark);
+    text-shadow: none;
 }
 
 .tier-qty {
@@ -1893,13 +1938,19 @@ h1 {
         grid-template-columns: 1fr;
         /* Stack vertically on mobile */
         gap: 0.8rem;
-        padding: 0 1rem;
+        padding: 0 0.5rem;
+    }
+
+    .hero-section-group {
+        padding: 1.5rem 0.5rem;
+        /* Less padding on mobile */
+        margin: 1rem 0;
     }
 
     .tier-card.featured {
         transform: scale(1.02);
         /* Less scale on mobile */
-        background: var(--gradient-primary) !important;
+        background: white !important;
     }
 
     .tier-card {
