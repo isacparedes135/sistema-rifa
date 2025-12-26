@@ -7,11 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const TICKET_PRICE = 1; // Updated to $1 per ticket as requested
     let takenTicketsSet = new Set(); // Tracks tickets already reserved/paid in database
 
-    // --- Prize Carousel Logic ---
+    // --- Prize Carousel Logic - Premium ---
     const carouselSlides = document.querySelectorAll('.carousel-slide');
     const carouselDots = document.querySelectorAll('.carousel-dot');
+    const progressBar = document.getElementById('carousel-progress-bar');
     let currentSlide = 0;
     const slideInterval = 3000; // 3 seconds per slide
+    let carouselTimer = null;
 
     function showSlide(index) {
         carouselSlides.forEach((slide, i) => {
@@ -21,6 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
             dot.classList.toggle('active', i === index);
         });
         currentSlide = index;
+
+        // Reset progress bar animation
+        if (progressBar) {
+            progressBar.style.animation = 'none';
+            progressBar.offsetHeight; // Trigger reflow
+            progressBar.style.animation = 'progressFill 3s linear forwards';
+        }
     }
 
     function nextSlide() {
@@ -28,15 +37,26 @@ document.addEventListener('DOMContentLoaded', () => {
         showSlide(next);
     }
 
+    function startCarouselTimer() {
+        if (carouselTimer) clearInterval(carouselTimer);
+        carouselTimer = setInterval(nextSlide, slideInterval);
+    }
+
     // Auto-advance carousel
     if (carouselSlides.length > 0) {
-        setInterval(nextSlide, slideInterval);
+        startCarouselTimer();
+
+        // Initial progress bar animation
+        if (progressBar) {
+            progressBar.style.animation = 'progressFill 3s linear forwards';
+        }
 
         // Allow clicking dots to jump to slide
         carouselDots.forEach(dot => {
             dot.addEventListener('click', () => {
                 const slideIndex = parseInt(dot.dataset.slide);
                 showSlide(slideIndex);
+                startCarouselTimer(); // Reset timer on manual navigation
             });
         });
     }
