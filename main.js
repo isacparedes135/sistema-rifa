@@ -7,6 +7,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const TICKET_PRICE = 1; // Updated to $1 per ticket as requested
     let takenTicketsSet = new Set(); // Tracks tickets already reserved/paid in database
 
+    // --- Prize Carousel Logic ---
+    const carouselSlides = document.querySelectorAll('.carousel-slide');
+    const carouselDots = document.querySelectorAll('.carousel-dot');
+    let currentSlide = 0;
+    const slideInterval = 3000; // 3 seconds per slide
+
+    function showSlide(index) {
+        carouselSlides.forEach((slide, i) => {
+            slide.classList.toggle('active', i === index);
+        });
+        carouselDots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === index);
+        });
+        currentSlide = index;
+    }
+
+    function nextSlide() {
+        const next = (currentSlide + 1) % carouselSlides.length;
+        showSlide(next);
+    }
+
+    // Auto-advance carousel
+    if (carouselSlides.length > 0) {
+        setInterval(nextSlide, slideInterval);
+
+        // Allow clicking dots to jump to slide
+        carouselDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const slideIndex = parseInt(dot.dataset.slide);
+                showSlide(slideIndex);
+            });
+        });
+    }
+
     // --- Elements ---
     const btnManual = document.getElementById('btn-manual');
     const btnLucky = document.getElementById('btn-lucky');

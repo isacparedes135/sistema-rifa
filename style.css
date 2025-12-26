@@ -260,6 +260,89 @@ body.lock-scroll {
         grid-template-columns: 1fr;
         text-align: center;
     }
+
+    /* En móvil: imagen arriba del contenido */
+    .hero .container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .hero-image {
+        order: -1;
+        /* Mover imagen arriba */
+        margin-bottom: 2rem;
+    }
+}
+
+/* Prize Carousel Styles */
+.hero-image {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.prize-carousel {
+    position: relative;
+    width: 100%;
+    max-width: 450px;
+    aspect-ratio: 1 / 1;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-medium);
+}
+
+.carousel-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+}
+
+.carousel-slide.active {
+    opacity: 1;
+}
+
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.carousel-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--surface-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid var(--primary-light);
+}
+
+.carousel-dot.active {
+    background: var(--primary);
+    transform: scale(1.2);
+}
+
+.carousel-dot:hover {
+    background: var(--primary-light);
+}
+
+/* Mobile carousel adjustments */
+@media (max-width: 768px) {
+    .prize-carousel {
+        max-width: 300px;
+    }
+
+    .carousel-dot {
+        width: 10px;
+        height: 10px;
+    }
 }
 
 .badge {

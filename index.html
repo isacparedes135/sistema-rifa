@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RIFAS ME | Sorteos de Lujo</title>
-    <link rel="stylesheet" href="style.css?v=1.7">
+    <link rel="stylesheet" href="style.css?v=1.8">
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -104,7 +104,18 @@
                     </div>
                 </div>
                 <div class="hero-image">
-                    <img src="prize.png" alt="Premio Mayor" class="floating-prize">
+                    <div class="prize-carousel" id="prize-carousel">
+                        <img src="prize1.jpg" alt="Premio 1" class="carousel-slide active">
+                        <img src="prize2.jpg" alt="Premio 2" class="carousel-slide">
+                        <img src="prize3.jpg" alt="Premio 3" class="carousel-slide">
+                        <img src="prize4.jpg" alt="Premio 4" class="carousel-slide">
+                    </div>
+                    <div class="carousel-dots">
+                        <span class="carousel-dot active" data-slide="0"></span>
+                        <span class="carousel-dot" data-slide="1"></span>
+                        <span class="carousel-dot" data-slide="2"></span>
+                        <span class="carousel-dot" data-slide="3"></span>
+                    </div>
                 </div>
             </div>
         </section>
