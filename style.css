@@ -262,8 +262,9 @@ body.lock-scroll {
 
 @media (max-width: 992px) {
     .hero {
-        padding-top: 0.5rem;
-        padding-bottom: 1rem;
+        padding-top: 0.2rem;
+        /* Even tighter */
+        padding-bottom: 0.5rem;
     }
 
     .hero .container {
@@ -320,9 +321,21 @@ body.lock-scroll {
         order: 3;
         padding: 0 2rem;
         text-align: center;
-        margin-top: 5px;
-        /* Small space after image */
-        margin-bottom: 1rem;
+        margin-top: 2px;
+        /* Very small space */
+        margin-bottom: 0.5rem;
+    }
+
+    /* 4. Timer section strictly after content */
+    .section-timer {
+        order: 4 !important;
+        margin: 0.5rem 0 !important;
+    }
+
+    /* 5. Tiers section at the end */
+    .section-tiers {
+        order: 5 !important;
+        margin: 0.5rem 0 !important;
     }
 
     /* Full width carousel styles */
@@ -449,6 +462,14 @@ body.lock-scroll {
 
 
 
+h1 {
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 1rem;
+    /* Reduced */
+}
+
 .badge {
     background: rgba(255, 255, 255, 0.05);
     padding: 0.5rem 1rem;
@@ -457,14 +478,8 @@ body.lock-scroll {
     font-weight: 700;
     border: 1px solid rgba(255, 255, 255, 0.1);
     display: inline-block;
-    margin-bottom: 2rem;
-}
-
-h1 {
-    font-size: 4rem;
-    font-weight: 800;
-    line-height: 1;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
+    /* Reduced */
 }
 
 .prize-description {
@@ -1733,12 +1748,14 @@ h1 {
     }
 }
 
-/* Sectioning Styles - High Contrast */
+/* Sectioning Styles - High Contrast & Compact */
 .hero-section-group {
     width: 100%;
-    padding: 2.5rem 1.5rem;
-    border-radius: 24px;
-    margin: 2rem 0;
+    padding: 1.5rem 1rem;
+    /* Reduced padding */
+    border-radius: 20px;
+    margin: 1rem 0;
+    /* Reduced margin */
 }
 
 /* Tone 2: Timer Section (Light Surface - Higher Contrast) */
@@ -1761,8 +1778,8 @@ h1 {
 /* Desktop Grid Updates */
 @media (min-width: 993px) {
     .hero {
-        padding: 3rem 0;
-        /* Reduced from 8rem */
+        padding: 1.5rem 0;
+        /* Drastically reduced to glue header */
     }
 
     .hero .container {
