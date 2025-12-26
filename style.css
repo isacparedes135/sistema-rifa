@@ -795,12 +795,13 @@ h1 {
 
 .selected-list {
     display: grid;
-    grid-template-columns: repeat(6, 1fr) !important;
+    grid-template-columns: repeat(5, 1fr) !important;
     gap: 5px;
     margin: 20px 0;
     min-height: 50px;
     max-height: 400px;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 5px;
 }
 
