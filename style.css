@@ -1309,32 +1309,45 @@ h1 {
 }
 
 /* ================================= 
-   Lucky Summary - Restaurar diseño original
+   Lucky Summary - Grid 6 columnas móvil, 7 PC
    Cuando el modal manual muestra resultados del corazón
    ================================= */
 #manual-modal .selected-list:has(.btn-reset-lucky) {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
     gap: 8px;
     justify-content: center;
-    grid-template-columns: unset;
+}
+
+/* Desktop: 7 columnas */
+@media (min-width: 768px) {
+    #manual-modal .selected-list:has(.btn-reset-lucky) {
+        grid-template-columns: repeat(7, 1fr);
+    }
 }
 
 /* Fallback para navegadores sin :has() - usar clase JS */
 #manual-modal.lucky-summary-mode .selected-list {
-    display: flex !important;
-    flex-wrap: wrap !important;
+    display: grid !important;
+    grid-template-columns: repeat(6, 1fr) !important;
     gap: 8px !important;
     justify-content: center !important;
-    grid-template-columns: unset !important;
+}
+
+/* Desktop: 7 columnas (fallback) */
+@media (min-width: 768px) {
+    #manual-modal.lucky-summary-mode .selected-list {
+        grid-template-columns: repeat(7, 1fr) !important;
+    }
 }
 
 #manual-modal.lucky-summary-mode .ticket-pill {
     background: rgba(168, 230, 207, 0.25);
     border: 2px solid var(--accent);
-    padding: 8px 14px;
-    font-size: 0.9rem;
-    border-radius: 20px;
+    padding: 6px 4px;
+    font-size: 0.8rem;
+    border-radius: 10px;
+    text-align: center;
 }
 
 /* ================================= 
