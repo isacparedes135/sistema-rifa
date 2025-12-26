@@ -1247,7 +1247,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Countdown Logic ---
     // Target Date: A fixed point in time so it's consistent for all users
-    const targetTime = new Date('December 24, 2025 20:00:00').getTime();
+    const targetTime = new Date('February 14, 2026 20:00:00').getTime();
 
     function updateCountdown() {
         const now = new Date().getTime();

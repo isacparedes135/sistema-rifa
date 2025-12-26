@@ -91,6 +91,23 @@ h3,
     padding: 0 2rem;
 }
 
+.raffle-date {
+    font-size: 1.1rem;
+    color: var(--primary-dark);
+    margin-bottom: -15px;
+    /* Pull timer up slightly */
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.raffle-date strong {
+    color: var(--primary);
+    background: rgba(248, 165, 194, 0.1);
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
 /* Countdown Timer Styles */
 .countdown-container {
     display: flex;
