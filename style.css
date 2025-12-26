@@ -1760,32 +1760,59 @@ h1 {
 
 /* Desktop Grid Updates */
 @media (min-width: 993px) {
+    .hero {
+        padding: 3rem 0;
+        /* Reduced from 8rem */
+    }
+
     .hero .container {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 3rem;
+        grid-template-rows: auto auto;
+        /* Two rows */
+        gap: 2rem;
+        /* Reduced gap */
         align-items: start;
-        /* Align to top */
     }
 
-    /* Make Tiers section span full width */
-    .section-tiers {
-        grid-column: 1 / -1;
-        margin-top: 1rem;
-    }
-
-    /* Hero Text stays left */
+    /* Row 1, Col 1 */
     .hero-content {
-        padding-top: 2rem;
+        grid-column: 1;
+        grid-row: 1;
+        padding-top: 1rem;
         text-align: left;
     }
 
-    /* Carousel + Timer go right */
+    /* Row 1, Col 2 */
     .hero-image {
+        grid-column: 2;
+        grid-row: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 2rem;
+        gap: 0;
+        margin-top: 2rem;
+        /* Align top with text visually */
+    }
+
+    /* Row 2, Col 1 - Timer */
+    .section-timer {
+        grid-column: 1;
+        grid-row: 2;
+        margin: 0;
+        /* Tighten up */
+        background: rgba(255, 255, 255, 0.85);
+        /* Tone 2 */
+    }
+
+    /* Row 2, Col 2 - Tiers */
+    .section-tiers {
+        grid-column: 2;
+        grid-row: 2;
+        margin: 0;
+        /* Tighten up */
+        background: rgba(255, 230, 240, 0.6);
+        /* Tone 3 */
     }
 }
 
